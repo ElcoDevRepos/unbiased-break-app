@@ -1,0 +1,84 @@
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4575624656787324"
+     crossorigin="anonymous"></script>
+</head>
+<ion-header [translucent]="false"> 
+  <ion-toolbar>
+    <ion-buttons slot="start">
+        <ion-back-button [defaultHref]="artticleType === 'trending-articles' ? '/tabs/tab2' : '/'" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title mode="ios">Article</ion-title>
+    <ion-buttons slot="end">
+      <!--<ion-button (click)="toggleTextToSpeech()">
+        <ion-icon *ngIf="playing" slot="icon-only" name="headset" ></ion-icon>
+        <ion-icon *ngIf="!playing" slot="icon-only" name="headset-outline" ></ion-icon>
+      </ion-button>-->
+      <ion-button (click)="share()">
+        <ion-icon slot="icon-only" name="share-social"></ion-icon>
+      </ion-button>
+      <ion-button (click)="favoriteArticle()">
+        <ion-icon *ngIf="favorited" slot="icon-only" name="bookmark" ></ion-icon>
+        <ion-icon *ngIf="!favorited" slot="icon-only" name="bookmark-outline" ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="show-gradient">
+  <google-adsense *ngIf="isDesktop"></google-adsense>
+  <ion-card *ngIf="!loading" style="margin-top: 75px">
+    <img [src]="article.image" (error) ="onImgError($event)"/>
+    <ion-card-header>
+      <ion-card-title style="padding: 0"><ion-grid style="padding: 0;"><ion-row style="display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-content: center;
+        align-items: center;"><ion-col style="font-size: 24px;">{{article.title}}</ion-col></ion-row></ion-grid></ion-card-title>
+      <ion-card-subtitle>{{article.siteName}}</ion-card-subtitle>
+      <ion-card-subtitle>{{article.date?.toDate() | date:'mediumDate'}}</ion-card-subtitle>
+      <ion-card-subtitle><a [href]="article.link">{{article.link}}</a></ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content class="news-article">
+      <div [innerHTML]="article.content" ></div>
+      <!--{{article.textBody}}-->
+    </ion-card-content>
+    <hr>
+    <ion-card-content>
+      <ion-row>
+        <ion-col size="10" class="ion-align-self-center">
+          <ion-textarea class="comment-area" placeholder="Comment" [(ngModel)]="comment"></ion-textarea>
+        </ion-col>
+        <ion-col size="2" class="ion-align-self-center">
+          <ion-button (click)="submitComment()" [disabled]="comment == ''">
+            <ion-icon name="paper-plane" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      
+    </ion-card-content>
+    
+  </ion-card>
+  <ion-card *ngIf="comments && comments.length > 0">
+    <ion-card-content>
+      <ion-list lines="none">
+        <ion-item *ngFor="let item of comments" detail button (click)="goToCommentThread(item)">
+          <ion-avatar slot="start">
+            <img [src]="item.data.photo" (error) ="onImgError($event)"/>
+          </ion-avatar>
+          <ion-label>
+            <h2>{{item.data.author}} <span *ngIf="item.data.comments" style="opacity: 0.5">{{item.data.comments.length}} Replies</span></h2>
+            <h3>{{item.data.date | date:'mediumDate'}}</h3>
+            <p style="white-space: initial; font-size: 19px">{{item.data.text}}</p>
+            
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+  <ion-card *ngIf="loading">
+    <ion-card-content>
+      <p>Loading</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

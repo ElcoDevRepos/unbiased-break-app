@@ -1,0 +1,56 @@
+<ion-content class="show-gradient scrollbar-hidden" [hidden]="isDesktop">
+  <div class="header">
+    <!--<img class="header-image" src="../../../assets/img/header.png" />-->
+  </div>
+  <div class="button-container show-gradient">    
+      <img src="../../../assets/img/logo.png" class="logo-img" />
+    <div>
+      <ion-grid>
+        <ion-row >
+          <ion-col class="center-btn">
+            <ion-button shape="round" size="large" [routerLink]="['form']" [state]="{'islogin': true}">Login</ion-button>
+          </ion-col>
+          <ion-col class="center-btn">
+            <ion-button shape="round" fill="outline" size="large" [routerLink]="['form']" [state]="{'islogin': false}">Sign Up</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </div>  
+</ion-content>
+<ion-content [hidden]="!isDesktop">
+  <div>
+    <ion-card>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Email</ion-label>
+          <ion-input [(ngModel)]="email" type="email"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Password</ion-label>
+          <ion-input [(ngModel)]="password" type="password"></ion-input>
+        </ion-item>
+        <ion-grid>
+          <ion-row>
+            <ion-col class="center-btn"><ion-button color="light" shape="round" [routerLink]="['..']">Cancel</ion-button></ion-col>
+            <ion-col class="center-btn">
+              <ion-button color="primary" shape="round" (click)="isLogin ? login() : createAccount()">
+                <span *ngIf="isLogin">Login</span>
+                <span *ngIf="!isLogin">Create</span>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col *ngIf="isLogin" style="display: flex;
+            flex-direction: row;
+            justify-content: center;"><a (click)="isLogin = !isLogin">Create an Account</a></ion-col>
+             <ion-col *ngIf="!isLogin" style="display: flex;
+             flex-direction: row;
+             justify-content: center;"><a (click)="isLogin = !isLogin">Go Back</a></ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+

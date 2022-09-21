@@ -1,1 +1,12 @@
+.blue-background {
+    --background: #ffffff;
+    --color: white;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    box-shadow: -1px 3px 20px 0px #404040;
+}
 
+ion-tab-button {
+    --color-selected: #193052;
+    --color: #b3b3b3;
+}

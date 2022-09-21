@@ -1,0 +1,27 @@
+<ion-content>
+  <div>
+    <ion-card>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Email</ion-label>
+          <ion-input [(ngModel)]="email" type="email"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Password</ion-label>
+          <ion-input [(ngModel)]="password" type="password"></ion-input>
+        </ion-item>
+        <ion-grid>
+          <ion-row>
+            <ion-col class="center-btn"><ion-button color="light" shape="round" [routerLink]="['..']">Cancel</ion-button></ion-col>
+            <ion-col class="center-btn">
+              <ion-button color="primary" shape="round" (click)="isLogin ? login() : createAccount()">
+                <span *ngIf="isLogin">Login</span>
+                <span *ngIf="!isLogin">Create</span>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

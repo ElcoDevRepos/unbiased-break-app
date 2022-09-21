@@ -1,17 +1,52 @@
-<ion-header [translucent]="true">
+<ion-header [translucent]="false">
   <ion-toolbar>
-    <ion-title>
-      Tab 2
-    </ion-title>
+    <ion-buttons slot="start" [hidden]="!isDesktop">
+      <ion-button routerLink="../tab1">
+        My Feed
+      </ion-button>
+      <ion-button routerLink="../tab3">
+        Settings
+      </ion-button>
+    </ion-buttons>
+    <ion-title mode="ios">Trending</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content [fullscreen]="true" class="show-gradient">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" pullFactor="0.8" pullMin="100" pullMax="130" style="background: #f3f3f3">
+    <ion-refresher-content 
+    pullingIcon="chevron-down-circle-outline"
+    pullingText="Pull to refresh"
+    refreshingSpinner="circles"
+    refreshingText="Refreshing..."></ion-refresher-content>
+  </ion-refresher>
+  <ion-searchbar class="search" [(ngModel)]="search" debounce="500" (ionChange)="searchShownArticles()" (ionClear)="clearSearch()"></ion-searchbar>
+  <div class="news-section">
+    <div style="margin-top:15px">
+      <ion-item class="news-bg-label no-border" style="border-radius: 12px;" lines="none">
+        <ion-label style="font-weight: bold;">Trending Topics</ion-label>
+      </ion-item>
+      <ion-list lines="none" *ngIf="!loading">
+        <ion-item class="news-link" *ngFor="let item of items" (click)="readArticles.push(item.id)"
+          [routerLink]="['/news-article/' + item.id + '/trending-articles']" [state]="{ article: item }">
+          <ion-thumbnail slot="start">
+            <img [src]="getImage(item)" (error)="onImgError($event)">
+          </ion-thumbnail>
+          <ion-label class="article-data-thumb">
+            <h3 style="white-space: initial;" [ngStyle]="{'font-weight': !isRead(item.id) ? 'bold': 'normal'}">{{item.title}}</h3>
+            <p>{{item.siteName}}</p>
+            <p>{{item.date?.toDate() | date:'mediumDate'}}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+        <div *ngIf="loading">
+          <ion-spinner name="dots"></ion-spinner>
+        </div>
+    </div>
+  </div>
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-tabs',
@@ -6,7 +8,12 @@ import { Component } from '@angular/core';
   styleUrls: ['tabs.page.scss']
 })
 export class TabsPage {
+  isDesktop: boolean;
+  constructor(private router: Router, private platform: Platform) {}
 
-  constructor() {}
+  ngOnInit() {
+    this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
+
+  }
 
 }

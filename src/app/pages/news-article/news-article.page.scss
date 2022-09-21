@@ -1,0 +1,137 @@
+.search {
+    width: 165px;
+    --color: white;
+    --placeholder-color: white;
+    --placeholder-opacity: 1;
+    --icon-color: white;
+    margin-top: 15px;
+}
+
+ion-avatar {
+    margin-top: 15px;
+}
+
+.show-gradient {
+    --background: #f3f3f3;
+}
+
+ion-toolbar {
+    --background:white;
+    --min-height: 75px;
+    --border-width: 0 0 0 !important;
+    ion-title {
+        font-weight: bold;
+    }
+}
+
+.label {
+    font-weight: bold;
+    margin: 15px;
+    margin-top: 25px;
+}
+
+.no-border {
+    --border-width: 0;
+    --border-style: hidden;
+}
+.center {
+    display: block;
+    margin: auto;
+}
+
+ion-segment {
+    width: 95%;
+    margin: auto;
+    border: 1px solid #78ebff;
+    --background: #193052;
+    margin-top: 15px;
+    ion-segment-button {
+    --background: #193052;
+    --background-color: #193052;
+    --background-checked: #193052;
+    --background-focused: #193052;
+    --color: #ffffff;
+    --color-checked: black;
+    --color-focused: white;
+    --indicator-color: #78ebff;
+}}
+
+.news-section {
+    background-color: #193052;
+    height: 100vh;
+}
+
+.news-articles-label {
+    color: white;
+    margin: 12px;
+}
+
+.news-bg {
+    ion-thumbnail {
+        img {border-radius: 12px;}
+        height: inherit;
+        width: inherit;
+    }
+    --background: #26497e;
+    --border-width: 0;
+    --color: white;
+    --border-radius: 12px;
+    width: 90%;
+    margin:auto;
+    margin-top: 12px;
+    --inner-padding-top: 16px;
+    --inner-padding-bottom: 16px;
+}
+
+
+.card {
+    height: 75px;
+    width: 75px;
+}
+
+.gun-card {
+    --background: #030303;
+}
+.med-card {
+    --background: #0004e1;
+}
+.labor-card {
+    --background: #007782;
+}
+.money-card {
+    --background: #7d0202;
+}
+.po-card {
+    --background: #00067e;
+}
+.hemp-card {
+    --background: #156900;
+}
+
+.card-icon {
+    color: white;
+    font-size: 25px;
+    display: flex;
+    justify-content: center;
+}
+
+.comment-area {
+    --background: #f3f3f3; 
+    border-radius: 12px; 
+    --padding-start: 15px;
+    margin: 0;
+}
+
+.news-article {
+    img {
+        max-width: 100%;
+        max-height: 225px !important;
+    }
+    p {
+        font-size: 100px;
+    }
+}
+
+.big-font {
+    p {font-size: 100px !important;}
+}

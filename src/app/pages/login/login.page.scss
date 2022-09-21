@@ -1,0 +1,62 @@
+.center-btn {
+    display: flex;
+    justify-content: center;
+    background-color: transparent;
+}
+
+@media only screen and (max-width: 300px){   
+    .button-container {
+        position: absolute;
+        display: block;
+        top: 20%;
+        background-color: transparent;
+        height: 100vh;
+    }
+}
+@media only screen and (max-width: 375px){
+    .button-container {
+        position: absolute;
+        display: block;
+        top: 20%;
+        background-color: transparent;
+        height: 100vh;
+    }
+}
+@media only screen and (max-width:600px){
+    .button-container {
+        position: absolute;
+        display: block;
+        top: 20%;
+        background-color: transparent;
+        height: 100vh;
+    }
+}
+@media only screen and (max-width:1000px){
+    .button-container {
+        position: absolute;
+        display: block;
+        top: 20%;
+        background-color: transparent;
+        height: 100vh;
+    }
+}
+.show-gradient {
+}
+
+.header-image {
+    min-width: 100vw;
+    max-width: 100vw;
+    max-height: 600px;
+}
+
+.logo-img {
+    max-width: 100vw;
+    min-width: 100vw;
+    max-height: 370px;
+}
+
+.header {
+    position: absolute;
+    z-index: 1;
+}
+ion-content {--overflow: hidden}
