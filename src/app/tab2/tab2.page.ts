@@ -39,12 +39,15 @@ export class Tab2Page {
       this.firestore,
       'users'
     );
-    let q = query(ref, where('email', '==', this.userService.getLoggedInUser().email));
-    getDocs(q).then((docSnaps) => {
-      docSnaps.forEach((d) => {
-        this.readArticles = d.data().readArticles || [];
+    if (this.userService.getLoggedInUser()) {
+      let q = query(ref, where('email', '==', this.userService.getLoggedInUser().email));
+      getDocs(q).then((docSnaps) => {
+        docSnaps.forEach((d) => {
+          this.readArticles = d.data().readArticles || [];
+        })
       })
-    })
+    }
+    
   }
 
   isRead(id) {

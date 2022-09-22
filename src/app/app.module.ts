@@ -14,8 +14,9 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment'
 import { provideFirebaseApp, getApp, initializeApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getAuth, provideAuth, initializeAuth } from '@angular/fire/auth';
 import { getStorage, provideStorage } from '@angular/fire/storage';
+import { indexedDBLocalPersistence } from 'firebase/auth';
 
 import { HttpClientModule } from '@angular/common/http';
 
@@ -26,16 +27,9 @@ import { HttpClientModule } from '@angular/common/http';
     // Register the ServiceWorker as soon as the application is stable
     // or after 30 seconds (whichever comes first).
     registrationStrategy: 'registerWhenStable:30000'
-  }), provideFirebaseApp(() => initializeApp({
-    apiKey: "AIzaSyDbwxaT5GWvE-VmPfGNgTSPFwEMgE8BPNc",
-    authDomain: "voter-certified.firebaseapp.com",
-    projectId: "voter-certified",
-    storageBucket: "voter-certified.appspot.com",
-    messagingSenderId: "732092749136",
-    appId: "1:732092749136:web:8482641fe486e579010855"
-  })),
+  }), provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore()),
-    provideAuth(() => getAuth()),
+    provideAuth(() => initializeAuth(getApp(), { persistence: indexedDBLocalPersistence })),
     provideStorage(() => getStorage())],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
