@@ -21,7 +21,6 @@ const routes: Routes = [
   {
     path: 'news-article/:id/:type',
     loadChildren: () => import('./pages/news-article/news-article.module').then( m => m.NewsArticlePageModule),
-    ...canActivate(redirectUnauthorizedToLogin),
 
   }
 ];

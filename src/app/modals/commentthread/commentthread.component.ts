@@ -13,7 +13,7 @@ export class CommentthreadComponent implements OnInit {
   comments = [];
   comment;
   commenttext = '';
-  constructor(private navParams: NavParams, private userService: UserService, private firestore: Firestore, public modal: ModalController) { }
+  constructor(private navParams: NavParams, public userService: UserService, private firestore: Firestore, public modal: ModalController) { }
 
   ngOnInit() {
     this.comment = {...this.navParams.data.comment};

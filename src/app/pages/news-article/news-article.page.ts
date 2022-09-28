@@ -27,12 +27,12 @@ export class NewsArticlePage implements OnInit {
   playing = false;
   urlsToPlay = [];
   isDesktop;
-  constructor(private userService: UserService, public sanitizer: DomSanitizer, private route: ActivatedRoute, private firestore: Firestore,
+  constructor(public userService: UserService, public sanitizer: DomSanitizer, private route: ActivatedRoute, private firestore: Firestore,
     private modalCtrl: ModalController, private admobService: AdmobService, private platform: Platform) { }
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
-
+    console.log(this.userService.getLoggedInUser());
     //this.article = this.router.getCurrentNavigation().extras.state.article;
     this.route.params.subscribe((params) => this.getNewsArticle(params.id, params.type));
     this.addToRead();
@@ -48,6 +48,7 @@ export class NewsArticlePage implements OnInit {
   }
 
   async addToRead() {
+    if (!this.userService.getLoggedInUser()) return;
     let user = await getDoc(doc(this.firestore, 'users', this.userService.getLoggedInUser().uid));
     let readArticles = user.data().readArticles || [];
     
@@ -140,6 +141,7 @@ export class NewsArticlePage implements OnInit {
   }
 
   async goToCommentThread(comment) {
+    if (!this.userService.getLoggedInUser()) return;
     const modal = await this.modalCtrl.create({
       component: CommentthreadComponent,
       componentProps: {
@@ -161,6 +163,7 @@ export class NewsArticlePage implements OnInit {
   }
 
   favoriteArticle(flag = false) {
+    if (!this.userService.getLoggedInUser()) return;
     if (flag) {
       this.favorited = flag;
     } else {
@@ -170,7 +173,6 @@ export class NewsArticlePage implements OnInit {
   }
 
   async share() {
-    console.log(this.article);
     await Share.share({
       title: this.article.title,
       text: this.article.excerpt,

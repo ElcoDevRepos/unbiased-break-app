@@ -3,10 +3,11 @@ import { Router } from '@angular/router';
 import {
   Auth,
   signOut,
+  deleteUser,
   updateProfile
 } from '@angular/fire/auth';
 import { Firestore, doc, updateDoc, query, where, getDoc, orderBy, limit, startAfter } from '@angular/fire/firestore';
-import { ActionSheetController, LoadingController, ModalController, Platform } from '@ionic/angular';
+import { ActionSheetController, AlertController, LoadingController, ModalController, Platform } from '@ionic/angular';
 import { UserService } from '../services/user.service';
 import {
   Storage,
@@ -15,6 +16,7 @@ import {
   getDownloadURL
 } from '@angular/fire/storage';
 import { Camera, CameraResultType,CameraSource } from '@capacitor/camera';
+import { async } from '@angular/core/testing';
 
 @Component({
   selector: 'app-tab3',
@@ -29,7 +31,7 @@ export class Tab3Page {
   isDesktop: boolean;
   displayName = this.auth.currentUser.displayName
   constructor(private router: Router, public auth: Auth, private modal: ModalController, private userService: UserService, private actionSheetController: ActionSheetController,
-   private storage: Storage, private loadingCtrl: LoadingController, private fireStore: Firestore, private platform: Platform) { }
+   private storage: Storage, private loadingCtrl: LoadingController, private fireStore: Firestore, private platform: Platform, private alertCtrl: AlertController) { }
 
    ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
@@ -120,5 +122,28 @@ export class Tab3Page {
         replyNotifications: this.replies
       })
     }
+  }
+
+  async deleteAccount() {
+    const alertW = await this.alertCtrl.create({
+      header: 'Are you sure you want to delete your account?',
+      buttons: [
+        {
+          text: 'Yes',
+          role: 'destructive',
+          handler: async () => {
+            deleteUser(this.auth.currentUser).then(() => window.location.reload());
+          }
+        },
+      {
+        text: 'No',
+        handler:  async() => {
+          return;
+        }
+      }
+      ]
+    });
+
+    alertW.present();
   }
 }
