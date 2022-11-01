@@ -10,6 +10,7 @@ import { ExpandableComponent } from '../components/expandable/expandable.compone
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { OrderByPipe } from '../pipes/order-by.pipe';
 import { PipesModule } from '../pipes/pipes.module';
+import { TopicComponent } from '../modals/topic/topic.component';
 
 @NgModule({
   imports: [
@@ -21,6 +22,6 @@ import { PipesModule } from '../pipes/pipes.module';
     FontAwesomeModule,
     PipesModule
   ],
-  declarations: [Tab1Page]
+  declarations: [Tab1Page, TopicComponent]
 })
 export class Tab1PageModule {}

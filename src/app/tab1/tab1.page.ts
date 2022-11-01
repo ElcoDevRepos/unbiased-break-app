@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
+import { Auth } from '@angular/fire/auth';
 import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { ModalController, Platform } from '@ionic/angular';
 import FuzzySearch from 'fuzzy-search';
 import _ from 'lodash';
+import { TopicComponent } from '../modals/topic/topic.component';
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -20,7 +22,6 @@ export class Tab1Page {
   loading = true;
   spinning = false;
   lastVisible;
-  activeTopics = [{ on: false, id: 0 }, { on: false, id: 1 }, { on: false, id: 2 }, { on: false, id: 3 }, { on: false, id: 4 }, { on: false, id: 5 }];
   leftFilters = [];
   middleFilters = [];
   rightFilters = [];
@@ -29,6 +30,7 @@ export class Tab1Page {
   hasSearched = false;
   sourceImages = [];
   search = "";
+  topicOptions = [];
   canGetMoreData = true;
   customAlertOptions = {
     header: 'Subscribed Topics',
@@ -38,12 +40,15 @@ export class Tab1Page {
   topicSelectList;
   isDesktop: boolean;
   readArticles = [];
-  constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform) { }
+  constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform,
+    private auth: Auth) { }
 
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
-    this.getUserData();
+    setTimeout(() => {
+      this.getUserData();
+    }, 1200);
   }
 
   ionViewWillEnter() {
@@ -59,7 +64,6 @@ export class Tab1Page {
         })
       })
     }
-    
   }
 
 
@@ -68,7 +72,7 @@ export class Tab1Page {
   }
 
   async getUserData() {
-    let user = this.userService.getLoggedInUser();
+    let user = this.auth.currentUser;
     if (user) {
       this.userService.setDeviceToken(window.localStorage.getItem('pushtoken'));
       this.userService.setLastSeen();
@@ -85,16 +89,17 @@ export class Tab1Page {
           this.leftFilters = JSON.parse(d.data().filters[0]) || [];
           this.middleFilters = JSON.parse(d.data().filters[1]) || [];
           this.rightFilters = JSON.parse(d.data().filters[2]) || [];
-  
+
           if (this.leftFilters.length === 0) {
             promises.push(this.setupFilters());
           }
         } else {
           promises.push(this.setupFilters());
         }
-  
+
         if (d.data().topics) {
           this.topicSelectList = d.data().topics;
+          this.topicOptions = this.topicSelectList;
         } else {
           promises.push(this.setupTopics());
         }
@@ -105,8 +110,8 @@ export class Tab1Page {
       await this.setupFilters();
       await this.getData();
     }
-    
   }
+
 
   isRead(id) {
     return this.readArticles.includes(id);
@@ -136,14 +141,70 @@ export class Tab1Page {
     })
   }
 
+  async openTopicModal() {
+    let modal = await this.modal.create({
+      component: TopicComponent,
+      componentProps: { topics: this.topicOptions, currentUser: this.currentUserDoc.id }
+    });
+    modal.onDidDismiss().then((response) => {
+      this.items = [];
+      this.topicOptions = response.data;
+      this.getData();
+    })
+    modal.present();
+  }
+
   async setupTopics() {
     let userRef = doc(
       this.firestore,
       'users',
       this.currentUserDoc.id
     );
-    this.topicSelectList = ["0", "1", "2", "3", "4", "5"];
-    await updateDoc(userRef, {topics: this.topicSelectList})
+    this.topicSelectList = [
+      {
+        "display": "Economy",
+        "id": 4,
+        "name": "economy",
+        "checked": true
+      },
+      {
+        "display": "Abortion",
+        "name": "abortion",
+        "id": 3,
+        "checked": true
+
+      },
+      {
+        "id": 2,
+        "display": "Police",
+        "name": "police",
+        "checked": true
+
+      },
+      {
+        "id": 0,
+        "display": "Gun Control",
+        "name": "gun",
+        "checked": true
+
+      },
+      {
+        "name": "healthcare",
+        "id": 5,
+        "display": "Healthcare",
+        "checked": true
+
+      },
+      {
+        "id": 1,
+        "display": "Cannabis",
+        "name": "cannabis",
+        "checked": true
+
+      }
+    ];
+    this.topicOptions = this.topicSelectList;
+
     this.toggleCard();
   }
 
@@ -177,23 +238,16 @@ export class Tab1Page {
         ]
       })
     }
-    
+
   }
 
   toggleCard() {
-    this.activeTopics = [{ on: false, id: 0 }, { on: false, id: 1 }, { on: false, id: 2 }, { on: false, id: 3 }, { on: false, id: 4 }, { on: false, id: 5 }];
-
-    for (let i = 0; i < this.topicSelectList.length; i++) {
-      let flag = parseInt(this.topicSelectList[i]);
-      this.activeTopics[flag].on = true;
-    }
-
     let userRef = doc(
       this.firestore,
       'users',
       this.currentUserDoc.id
     );
-    updateDoc(userRef, {topics: this.topicSelectList})
+    updateDoc(userRef, { topics: this.topicSelectList })
     this.items = [];
     this.lastVisible = null;
     this.loading = true;
@@ -201,17 +255,18 @@ export class Tab1Page {
   }
 
   getFilteredTopics(value) {
-    let onTopics = [];
-    for (let i = 0; i < this.activeTopics.length; i++) {
-      if (this.activeTopics[i].on) onTopics.push(this.activeTopics[i].id);
-    }
-    if (onTopics.length === 0) {
+    if (this.topicOptions.length === 0) {
       let a = this.getFilteredArticles(value);
       return a;
     } else {
       let allowedArticles = [];
       for (let i = 0; i < value.length; i++) {
-        if (onTopics.includes(value[i].topic)) allowedArticles.push(value[i]);
+        for (let j = 0; j < this.topicOptions.length; j++) {
+          if (value[i].topic === this.topicOptions[j].id && this.topicOptions[j].checked) {
+            allowedArticles.push(value[i]);
+            break;
+          }
+        }
       }
       return this.getFilteredArticles(allowedArticles);
     }
@@ -244,9 +299,7 @@ export class Tab1Page {
 
   getSelectedTopic() {
     let onTopics = [];
-    for (let i = 0; i < this.activeTopics.length; i++) {
-      if (this.activeTopics[i].on) onTopics.push(this.activeTopics[i].id);
-    }
+
     return onTopics.length > 0 ? "filtered" : "all";
   }
 

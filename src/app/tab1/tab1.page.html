@@ -29,15 +29,14 @@
   <ion-item class="show-gradient no-border">
     <ion-label style="font-weight: bold">Subscribed Topics</ion-label>
   </ion-item>
-  <ion-item class="show-gradient no-border" lines="none">
-    <ion-select placeholder="Filter by Topics" [multiple]="true" (ionChange)="toggleCard()" [(ngModel)]="topicSelectList" [interfaceOptions]="customAlertOptions">
-      <ion-select-option value="0">Guns</ion-select-option>
-      <ion-select-option value="5">Medical</ion-select-option>
-      <ion-select-option value="3">Abortion</ion-select-option>
-      <ion-select-option value="4">Economy</ion-select-option>
-      <ion-select-option value="2">Police</ion-select-option>
-      <ion-select-option value="1">Cannabis</ion-select-option>
-    </ion-select>
+  <ion-item class="show-gradient no-border" lines="none" detail button (click)="openTopicModal()">
+    <div style="text-overflow: ellipsis;
+    white-space: nowrap;">
+      <span *ngFor="let topic of topicOptions" style="padding: 3px;">{{topic.display}}</span>
+    </div>
+    <!--<ion-select placeholder="Filter by Topics" [multiple]="true" (ionChange)="toggleCard()" [(ngModel)]="topicSelectList" [interfaceOptions]="customAlertOptions">
+      <ion-select-option *ngFor="let topic of topicOptions" [value]="topic.id">{{topic.display}}</ion-select-option>
+    </ion-select>-->
   </ion-item>
   <div class="news-section" style="margin-left: 12px; margin-right: 12px; border-radius: 12px;">
     <div style="padding-top:6px">

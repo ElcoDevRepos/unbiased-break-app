@@ -2,6 +2,7 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const fetch = require("node-fetch");
+var cron = require('node-cron');
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -9,6 +10,7 @@ const db = admin.firestore();
 let leftSources = [];
 let middleSources = [];
 let rightSources = [];
+let sources = [];
 
 let baseURL = "https://url-content-extractor.p.rapidapi.com/";
 const options = {
@@ -42,7 +44,6 @@ function getProperCollection(a) {
 }
 
 async function getContent(json) {
-    
     try {
         baseURL = "https://url-content-extractor.herokuapp.com/";
 
@@ -53,7 +54,6 @@ async function getContent(json) {
     } catch (error) {
         return { status: 500 };
     }
-
 }
 async function doTrending() {
     try {
@@ -99,75 +99,67 @@ async function doTrending() {
 
 }
 async function doFeed(searchTopics, flag) {
-    await getSources();
-    let searches = [];
-    for (let i = 0; i < searchTopics.length; i++) {
-        if (flag === 'left') {
-            leftSources.forEach((s) => {
-                let str = s.split('.')[0];
-                searches.push({ topic: str + " " + searchTopics[i].topic, id: searchTopics[i].id });
-            })
-        } else if (flag === 'middle') {
-            middleSources.forEach((s) => {
-                let str = s.split('.')[0];
-                searches.push({ topic: str + " " + searchTopics[i].topic, id: searchTopics[i].id });
-            })
-        } else if (flag === 'right') {
-            rightSources.forEach((s) => {
-                let str = s.split('.')[0];
-                searches.push({ topic: str + " " + searchTopics[i].topic, id: searchTopics[i].id });
-            });
-        }
-    }
-    let searchTopicsResp = [];
-    for (let i = 0; i < searches.length; i++) {
-        try {
-            searchTopicsResp.push({ article: await doSearch(searches[i]), topic: searches[i].id });
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    return new Promise(async (resolve, reject) => {
+        let searches = [];
 
-    let final = [];
-    for (let i = 0; i < searchTopicsResp.length; i++) {
-        try {
-            let aList = searchTopicsResp[i].article;
-            for (let j = 0; j < aList.length; j++) {
-                try {
-                    let a = aList[j];
-                    let art = await getContent(a);
-                    if (art.status === 200) {
-                        final.push({ ...art.article, date: new Date(a.date), rating: 0, hearts: 0, topic: searchTopicsResp[i].topic, deleted: false });
+        sources.forEach((s) => {
+            let str = s.split('.')[0];
+            searches.push({ topic: str + " " + searchTopics.topic, id: searchTopics.id });
+        });
+
+        let searchTopicsResp = [];
+
+        for (let i = 0; i < searches.length; i++) {
+            try {
+                searchTopicsResp.push({ article: await doSearch(searches[i]), topic: searches[i].id });
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        let promises = [];
+
+        let final = [];
+
+        for (let i = 0; i < searchTopicsResp.length; i++) {
+            let s = searchTopicsResp[i];
+            let aList = s.article;
+            if (aList.length > 0) {
+                aList.forEach(async (a) => {
+                    try {
+                        console.log(a.link);
+                        let art = await getContent(a);
+                        if (art.status === 200) {
+                            final.push({ ...art.article, date: new Date(a.date), rating: 0, hearts: 0, topic: s.topic, deleted: false });
+                        } else {
+                            console.log(art);
+                        }
+                    } catch (error) {
+                        console.log(error);
                     }
-                } catch (error) {
-                    console.log(error)
+                })
+            }
+        }
+        console.log(final);
+        for (let i = 0; i < final.length; i++) {
+            let a = final[i];
+            let collectionName = getProperCollection(a);
+
+            if (collectionName === 'No Source Found') {
+                console.log(collectionName + ": " + a.link);
+            } else {
+                let collection = db.collection(collectionName);
+                let query = collection.where("link", "==", a.link);
+                let docs = await query.get();
+
+                if (docs.empty) {
+                    await db.collection(collectionName).add(a);
                 }
-
-
-            }
-        } catch (error) {
-            console.log(error);
-        }
-
-    }
-
-    for (let i = 0; i < final.length; i++) {
-        let a = final[i];
-        let collectionName = getProperCollection(a);
-
-        if (collectionName === 'No Source Found') {
-            console.log(collectionName + ": " + a.link);
-        } else {
-            let collection = db.collection(collectionName);
-            let query = collection.where("link", "==", a.link);
-            let docs = await query.get();
-
-            if (docs.empty) {
-                await db.collection(collectionName).add(a);
             }
         }
 
-    }
+        resolve();
+    })
+
 }
 
 async function doSearch(query) {
@@ -272,10 +264,9 @@ async function getSources() {
     let midDocs = await db.collection("middle-sources").get();
     let rightDocs = await db.collection("right-sources").get();
 
-    leftDocs.forEach((d) => leftSources.push(d.data().url));
-    midDocs.forEach((d) => middleSources.push(d.data().url));
-    rightDocs.forEach((d) => rightSources.push(d.data().url));
-
+    leftDocs.forEach((d) => sources.push(d.data().url));
+    midDocs.forEach((d) => sources.push(d.data().url));
+    rightDocs.forEach((d) => sources.push(d.data().url));
 }
 
 const runtimeOpts = {
@@ -288,80 +279,23 @@ exports.trendingFunction = functions.runWith(runtimeOpts).pubsub.schedule("45 */
     return Promise.all(promise);
 });
 
-exports.topic0LeftFunction = functions.runWith(runtimeOpts).pubsub.schedule("0 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "gun", id: 0 }], 'left')];
-    return Promise.all(promise);
-});
-exports.topic1LeftFunction = functions.runWith(runtimeOpts).pubsub.schedule("0 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "cannabis", id: 1 }], 'left')];
-    return Promise.all(promise);
-});
+exports.doTopics = functions.runWith(runtimeOpts).https.onRequest(async (context) => {
 
-exports.topic2LeftFunction = functions.runWith(runtimeOpts).pubsub.schedule("0 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "police", id: 2 }], 'left')];
-    return Promise.all(promise);
-});
-exports.topic3LeftFunction = functions.runWith(runtimeOpts).pubsub.schedule("0 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "abortion", id: 3 }], 'left')];
-    return Promise.all(promise);
-});
-exports.topic4LeftFunction = functions.runWith(runtimeOpts).pubsub.schedule("0 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "economy", id: 4 }], 'left')];
-    return Promise.all(promise);
-});
-exports.topic5LeftFunction = functions.runWith(runtimeOpts).pubsub.schedule("0 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "healthcare", id: 5 }], 'left')];
-    return Promise.all(promise);
-});
-exports.topic0MiddleFunction = functions.runWith(runtimeOpts).pubsub.schedule("15 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "gun", id: 0 }], 'middle')];
-    return Promise.all(promise);
-});
-exports.topic1MiddleFunction = functions.runWith(runtimeOpts).pubsub.schedule("15 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "cannabis", id: 1 }], 'middle')];
-    return Promise.all(promise);
-});
+})
 
-exports.topic2MiddleFunction = functions.runWith(runtimeOpts).pubsub.schedule("15 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "police", id: 2 }], 'middle')];
-    return Promise.all(promise);
-});
-exports.topic3MiddleFunction = functions.runWith(runtimeOpts).pubsub.schedule("15 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "abortion", id: 3 }], 'middle')];
-    return Promise.all(promise);
-});
-exports.topic4MiddleFunction = functions.runWith(runtimeOpts).pubsub.schedule("15 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "economy", id: 4 }], 'middle')];
-    return Promise.all(promise);
-});
-exports.topic5MiddleFunction = functions.runWith(runtimeOpts).pubsub.schedule("15 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "healthcare", id: 5 }], 'middle')];
-    return Promise.all(promise);
-});
-exports.topic0RightFunction = functions.runWith(runtimeOpts).pubsub.schedule("30 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "gun", id: 0 }], 'right')];
-    return Promise.all(promise);
-});
-exports.topic1RightFunction = functions.runWith(runtimeOpts).pubsub.schedule("30 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "cannabis", id: 1 }], 'right')];
-    return Promise.all(promise);
-});
+cron.schedule('0 */30 * * *', () => {
+    await getSources();
 
-exports.topic2RightFunction = functions.runWith(runtimeOpts).pubsub.schedule("30 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "police", id: 2 }], 'right')];
-    return Promise.all(promise);
-});
-exports.topic3RightFunction = functions.runWith(runtimeOpts).pubsub.schedule("30 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "abortion", id: 3 }], 'right')];
-    return Promise.all(promise);
-});
-exports.topic4RightFunction = functions.runWith(runtimeOpts).pubsub.schedule("30 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "economy", id: 4 }], 'right')];
-    return Promise.all(promise);
-});
-exports.topic5RightFunction = functions.runWith(runtimeOpts).pubsub.schedule("30 */1 * * *").onRun(async (context) => {
-    let promise = [doFeed([{ topic: "healthcare", id: 5 }], 'right')];
-    return Promise.all(promise);
+    let topicsSnap = await db.collection("topics").get();
+    let topics = [];
+    topicsSnap.forEach((top) => {
+        topics.push({ topic: top.data().name, id: top.data().id });
+    });
+    let promises = [];
+    for (let i = 0; i < topics.length; i++) {
+        promises.push(doFeed(topics[i]));
+    }
+    return Promise.all(promises);
 });
 exports.deleteTrending = functions.runWith(runtimeOpts).pubsub.schedule("every 24 hours").onRun(async (context) => {
     let promise = [deleteOldArticles()];
@@ -371,7 +305,6 @@ exports.deleteFeed = functions.runWith(runtimeOpts).pubsub.schedule("every 24 ho
     let promise = [deleteMyFeedArticles()];
     return Promise.all(promise);
 })
-
 async function doReplyNotifification(change) {
     let userId = change.after.data().uid;
     let comments = change.after.data().comments;
