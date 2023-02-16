@@ -6,6 +6,9 @@ import {
   PushNotifications,
   Token,
 } from '@capacitor/push-notifications';
+import { App as CapacitorApp } from '@capacitor/app';
+
+
 import { UserService } from './services/user.service';
 import { AlertController, Platform, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -34,6 +37,13 @@ export class AppComponent {
   }
 
   async ngOnInit() {
+    CapacitorApp.addListener('backButton', ({canGoBack}) => {
+      if(!canGoBack){
+        CapacitorApp.exitApp();
+      } else {
+        window.history.back();
+      }
+    });
     const submittedFeedback = window.localStorage.getItem("hasSubmittedFeedback");
     if (!submittedFeedback) {
       const alert = await this.alertCtrl.create({
@@ -58,7 +68,7 @@ export class AppComponent {
         ],
       });
   
-      await alert.present();
+      //await alert.present();
     }
   }
 

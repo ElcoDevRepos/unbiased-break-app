@@ -44,6 +44,9 @@
             <ion-col *ngIf="isLogin" style="display: flex;
             flex-direction: row;
             justify-content: center;"><a (click)="isLogin = !isLogin">Create an Account</a></ion-col>
+            <ion-col *ngIf="isLogin" style="display: flex;
+            flex-direction: row;
+            justify-content: center;"><a (click)="forgotPassword()">Reset Password</a></ion-col>
              <ion-col *ngIf="!isLogin" style="display: flex;
              flex-direction: row;
              justify-content: center;"><a (click)="isLogin = !isLogin">Go Back</a></ion-col>

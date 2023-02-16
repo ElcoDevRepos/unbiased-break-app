@@ -1,0 +1,8 @@
+<ion-list>
+  <ion-item *ngFor="let item of results" button detail (click)="addToList(item)">
+    {{item.item.name | titlecase }}
+  </ion-item>
+  <ion-item button detail (click)="addToList('new')">
+    Add New
+  </ion-item>
+</ion-list>

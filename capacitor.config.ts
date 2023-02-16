@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.example.app',
-  appName: 'voter-certified',
+  appId: 'com.votercertified.votercertified',
+  appName: 'Unbiased Break',
   webDir: 'www',
   bundledWebRuntime: false
 };

@@ -9,6 +9,7 @@ import { AdMob } from '@capacitor-community/admob';
 import { AdmobService } from 'src/app/services/admob.service';
 import { HttpClient } from '@angular/common/http';
 import { Share } from '@capacitor/share';
+import { Auth } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-news-article',
@@ -28,7 +29,7 @@ export class NewsArticlePage implements OnInit {
   urlsToPlay = [];
   isDesktop;
   constructor(public userService: UserService, public sanitizer: DomSanitizer, private route: ActivatedRoute, private firestore: Firestore,
-    private modalCtrl: ModalController, private admobService: AdmobService, private platform: Platform) { }
+    private modalCtrl: ModalController, private admobService: AdmobService, private platform: Platform, private auth: Auth) { }
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');

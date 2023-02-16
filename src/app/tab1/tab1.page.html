@@ -10,7 +10,7 @@
     </ion-buttons>
     <ion-title mode="ios">My Feed</ion-title>
     <ion-buttons slot="end">
-      <ion-button id="open-modal">
+      <ion-button id="open-modal" [disabled]="!currentUserDoc">
         <ion-icon name="filter"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -54,7 +54,20 @@
     </div>
     <div style="margin-top:15px; border-radius: 12px; margin-left: 12px; margin-right: 12px">
       <ion-label class="news-articles-label"> {{getSelectedTopic() | titlecase}} News Articles</ion-label>
-      <ion-list lines="none" *ngIf="!loading">
+      <!--<div class="card-container">
+        <ion-card *ngFor="let item of items" class="content-card" (click)="readArticles.push(item.id)"
+        [routerLink]="['/news-article/' + item.id + '/' + selectedTab + '-articles']" [state]="{ article: item }">
+          <img [src]="getImage(item)" (error)="onImgError(item, $event)">
+          <ion-card-content>
+            <ion-label class="article-data-thumb">
+              <h3 style="white-space: initial;" [ngStyle]="{'font-weight': !isRead(item.id) ? 'bold': 'normal'}">{{item.title}}</h3>
+              <p>{{item.siteName}}</p>
+              <p>{{item.date?.toDate() | date:'mediumDate'}}</p>
+            </ion-label>
+          </ion-card-content>
+        </ion-card>
+      </div>-->
+     <ion-list lines="none" *ngIf="!loading">
         <ion-item class="news-link"
           *ngFor="let item of items"
           (click)="readArticles.push(item.id)"

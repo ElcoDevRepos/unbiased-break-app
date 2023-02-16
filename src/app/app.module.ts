@@ -19,9 +19,10 @@ import { getStorage, provideStorage } from '@angular/fire/storage';
 import { indexedDBLocalPersistence } from 'firebase/auth';
 
 import { HttpClientModule } from '@angular/common/http';
+import { PressDirective } from './press.directive';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, PressDirective],
   imports: [BrowserModule, IonicModule.forRoot({ mode: 'ios' }),  HttpClientModule, AppRoutingModule, FontAwesomeModule, ServiceWorkerModule.register('ngsw-worker.js', {
     enabled: environment.production,
     // Register the ServiceWorker as soon as the application is stable

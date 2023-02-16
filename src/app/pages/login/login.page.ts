@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { AlertController, Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 import {
   Auth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from '@angular/fire/auth';
 import { Firestore, doc, query, where, orderBy, limit, startAfter, getDocs, updateDoc, setDoc } from '@angular/fire/firestore';
 
@@ -18,7 +19,7 @@ export class LoginPage implements OnInit {
   password: string;
   isDesktop: boolean;
   isLogin = true;
-  constructor(private platform: Platform, private router: Router, public auth: Auth, private firestore: Firestore) { }
+  constructor(private platform: Platform, private router: Router, public auth: Auth, private firestore: Firestore, private alertController: AlertController) { }
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop');
@@ -51,6 +52,30 @@ export class LoginPage implements OnInit {
     } catch (error) {
       alert(error);
     }
+  }
+
+  async forgotPassword() {
+    try {
+      const alertBox = await this.alertController.create({
+        header: 'Please enter your email',
+        buttons: ['OK'],
+        inputs: [
+          {
+            placeholder: 'Email',
+          },
+        ],
+      });
+  
+  
+      await alertBox.present();
+  
+      const { data } = await alertBox.onDidDismiss();
+      await sendPasswordResetEmail(this.auth, data.values[0]);
+      alert("Password Reset Email Sent");
+    } catch (error) {
+      alert("Something went wrong")
+    }
+    
   }
 
 }

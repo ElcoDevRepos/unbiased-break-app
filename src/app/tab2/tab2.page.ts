@@ -3,7 +3,7 @@ import { Firestore, collectionData, collection, query, where, getDocs, orderBy, 
 import { Observable } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
 import FuzzySearch from 'fuzzy-search';
-import _ from 'lodash';
+import _ from 'lodash-es';
 import { HttpClient } from '@angular/common/http';
 import { Platform } from '@ionic/angular';
 import { UserService } from '../services/user.service';
@@ -18,7 +18,7 @@ export class Tab2Page {
   };
   items$: Observable<any>;
   items = [];
-  limit = 20;
+  limit = 10;
   sourceImages = [];
   loading = true;
   lastVisible;

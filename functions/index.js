@@ -108,7 +108,7 @@ async function doFeed(searchTopics, flag) {
         });
 
         let searchTopicsResp = [];
-
+        
         for (let i = 0; i < searches.length; i++) {
             try {
                 searchTopicsResp.push({ article: await doSearch(searches[i]), topic: searches[i].id });
@@ -120,37 +120,37 @@ async function doFeed(searchTopics, flag) {
 
         let final = [];
 
-        for (let i = 0; i < searchTopicsResp.length; i++) {
-            let s = searchTopicsResp[i];
+        searchTopicsResp.forEach((s) => {
             let aList = s.article;
             if (aList.length > 0) {
-                aList.forEach(async (a) => {
-                    try {
-                        console.log(a.link);
-                        let art = await getContent(a);
-                        if (art.status === 200) {
-                            final.push({ ...art.article, date: new Date(a.date), rating: 0, hearts: 0, topic: s.topic, deleted: false });
-                        } else {
-                            console.log(art);
+                aList.forEach((a) => {
+                    promises.push(new Promise(async (res, rej) => {
+                        try {
+                            let art = await getContent(a);
+                            if (art.status === 200) {
+                                final.push({ ...art.article, date: new Date(a.date), rating: 0, hearts: 0, topic: s.topic, deleted: false });
+                            }
+                        } catch (error) {
+                            console.log(error);
                         }
-                    } catch (error) {
-                        console.log(error);
-                    }
+                    }))
                 })
             }
-        }
+        });
+        console.log("WAITING");
+        await Promise.all(promises);
         console.log(final);
         for (let i = 0; i < final.length; i++) {
             let a = final[i];
             let collectionName = getProperCollection(a);
-
+    
             if (collectionName === 'No Source Found') {
                 console.log(collectionName + ": " + a.link);
             } else {
                 let collection = db.collection(collectionName);
                 let query = collection.where("link", "==", a.link);
                 let docs = await query.get();
-
+    
                 if (docs.empty) {
                     await db.collection(collectionName).add(a);
                 }
@@ -159,7 +159,7 @@ async function doFeed(searchTopics, flag) {
 
         resolve();
     })
-
+    
 }
 
 async function doSearch(query) {
@@ -280,7 +280,7 @@ exports.trendingFunction = functions.runWith(runtimeOpts).pubsub.schedule("45 */
 });
 
 exports.doTopics = functions.runWith(runtimeOpts).https.onRequest(async (context) => {
-
+   
 })
 
 cron.schedule('0 */30 * * *', () => {
@@ -293,10 +293,10 @@ cron.schedule('0 */30 * * *', () => {
     });
     let promises = [];
     for (let i = 0; i < topics.length; i++) {
-        promises.push(doFeed(topics[i]));
+       promises.push(doFeed(topics[i]));
     }
     return Promise.all(promises);
-});
+  });
 exports.deleteTrending = functions.runWith(runtimeOpts).pubsub.schedule("every 24 hours").onRun(async (context) => {
     let promise = [deleteOldArticles()];
     return Promise.all(promise);

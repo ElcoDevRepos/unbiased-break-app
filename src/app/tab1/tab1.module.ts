@@ -11,6 +11,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { OrderByPipe } from '../pipes/order-by.pipe';
 import { PipesModule } from '../pipes/pipes.module';
 import { TopicComponent } from '../modals/topic/topic.component';
+import { TopiclistComponent } from '../components/topiclist/topiclist.component';
 
 @NgModule({
   imports: [
@@ -22,6 +23,6 @@ import { TopicComponent } from '../modals/topic/topic.component';
     FontAwesomeModule,
     PipesModule
   ],
-  declarations: [Tab1Page, TopicComponent]
+  declarations: [Tab1Page, TopicComponent, TopiclistComponent]
 })
 export class Tab1PageModule {}

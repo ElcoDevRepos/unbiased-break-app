@@ -26,6 +26,18 @@
       <ion-item class="news-bg-label no-border" style="border-radius: 12px;" lines="none">
         <ion-label style="font-weight: bold;">Trending Topics</ion-label>
       </ion-item>
+      <!--<div class="card-container">
+        <ion-card *ngFor="let item of items" class="content-card" (click)="readArticles.push(item.id)" [routerLink]="['/news-article/' + item.id + '/trending-articles']" [state]="{ article: item }">
+          <img [src]="getImage(item)" (error)="onImgError(item, $event)">
+          <ion-card-content>
+            <ion-label class="article-data-thumb">
+              <h3 style="white-space: initial;" [ngStyle]="{'font-weight': !isRead(item.id) ? 'bold': 'normal'}">{{item.title}}</h3>
+              <p>{{item.siteName}}</p>
+              <p>{{item.date?.toDate() | date:'mediumDate'}}</p>
+            </ion-label>
+          </ion-card-content>
+        </ion-card>
+      </div>-->
       <ion-list lines="none" *ngIf="!loading">
         <ion-item class="news-link" *ngFor="let item of items" (click)="readArticles.push(item.id)"
           [routerLink]="['/news-article/' + item.id + '/trending-articles']" [state]="{ article: item }">

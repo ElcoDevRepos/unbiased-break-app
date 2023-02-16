@@ -4,8 +4,10 @@ import {
   Auth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from '@angular/fire/auth';
 import { Firestore, doc, query, where, orderBy, limit, startAfter, getDocs, updateDoc, setDoc } from '@angular/fire/firestore';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-form',
@@ -16,7 +18,7 @@ export class FormPage implements OnInit {
   email: string;
   password: string;
   isLogin: boolean;
-  constructor(private router: Router, public auth: Auth, private firestore: Firestore) { }
+  constructor(private router: Router, public auth: Auth, private firestore: Firestore, private alertController: AlertController) { }
 
   ngOnInit() {
     this.isLogin = this.router.getCurrentNavigation().extras.state.islogin;
@@ -49,6 +51,30 @@ export class FormPage implements OnInit {
     } catch (error) {
       alert(error);
     }
+  }
+
+  async forgotPassword() {
+    try {
+      const alertBox = await this.alertController.create({
+        header: 'Please enter your email',
+        buttons: ['OK'],
+        inputs: [
+          {
+            placeholder: 'Email',
+          },
+        ],
+      });
+  
+  
+      await alertBox.present();
+  
+      const { data } = await alertBox.onDidDismiss();
+      await sendPasswordResetEmail(this.auth, data.values[0]);
+      alert("Password Reset Email Sent");
+    } catch (error) {
+      alert("Something went wrong")
+    }
+    
   }
 
 }

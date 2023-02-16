@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController, NavParams} from '@ionic/angular';
 import { Firestore, collectionData, collection, where, query, getDoc, updateDoc, doc } from '@angular/fire/firestore';
 import { UserService } from 'src/app/services/user.service';
-import _ from 'lodash';
+import _ from 'lodash-es';
 
 @Component({
   selector: 'app-commentthread',

@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { ModalController, Platform } from '@ionic/angular';
 import FuzzySearch from 'fuzzy-search';
-import _ from 'lodash';
+import _ from 'lodash-es';
 import { TopicComponent } from '../modals/topic/topic.component';
 @Component({
   selector: 'app-tab1',
@@ -16,7 +16,7 @@ export class Tab1Page {
   expanded = false;
   items$: Observable<any>;
   items = [];
-  limit = 20;
+  limit = 10;
   selectedTab = "middle";
   selectedTopic = "all";
   loading = true;
@@ -46,24 +46,24 @@ export class Tab1Page {
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
-    setTimeout(() => {
-      this.getUserData();
-    }, 1200);
-  }
-
-  ionViewWillEnter() {
-    let ref = collection(
-      this.firestore,
-      'users'
-    );
-    if (this.userService.getLoggedInUser()) {
-      let q = query(ref, where('email', '==', this.userService.getLoggedInUser().email));
-      getDocs(q).then((docSnaps) => {
+    this.auth.onAuthStateChanged(async () => {
+      let ref = collection(
+        this.firestore,
+        'users'
+      );
+      if (this.userService.getLoggedInUser()) {
+        let q = query(ref, where('email', '==', this.userService.getLoggedInUser().email));
+        const docSnaps = await getDocs(q);
         docSnaps.forEach((d) => {
           this.readArticles = d.data().readArticles || [];
+          console.log(this.readArticles);
         })
-      })
-    }
+      } else console.log("ELSE");
+  
+      setTimeout(() => {
+        this.getUserData();
+      }, 1200);
+    })
   }
 
 
@@ -108,6 +108,7 @@ export class Tab1Page {
       Promise.all(promises).then(() => this.getData());
     } else {
       await this.setupFilters();
+      await this.setupTopics()
       await this.getData();
     }
   }
@@ -142,24 +143,31 @@ export class Tab1Page {
   }
 
   async openTopicModal() {
-    let modal = await this.modal.create({
-      component: TopicComponent,
-      componentProps: { topics: this.topicOptions, currentUser: this.currentUserDoc.id }
-    });
-    modal.onDidDismiss().then((response) => {
-      this.items = [];
-      this.topicOptions = response.data;
-      this.getData();
-    })
-    modal.present();
+    if (this.currentUserDoc) {
+      let modal = await this.modal.create({
+        component: TopicComponent,
+        componentProps: { topics: this.topicOptions, currentUser: this.currentUserDoc.id }
+      });
+      modal.onDidDismiss().then((response) => {
+        this.items = [];
+        this.topicOptions = response.data;
+        this.getData();
+      })
+      modal.present();
+    } else {
+      alert("Please sign in to edit your subscribed topics!")
+    }
   }
 
   async setupTopics() {
-    let userRef = doc(
+    let user = this.auth.currentUser;
+    if (user) {
+      let userRef = doc(
       this.firestore,
       'users',
       this.currentUserDoc.id
-    );
+      );
+    }
     this.topicSelectList = [
       {
         "display": "Economy",
@@ -242,16 +250,19 @@ export class Tab1Page {
   }
 
   toggleCard() {
-    let userRef = doc(
-      this.firestore,
-      'users',
-      this.currentUserDoc.id
-    );
-    updateDoc(userRef, { topics: this.topicSelectList })
-    this.items = [];
-    this.lastVisible = null;
-    this.loading = true;
-    this.getData();
+    let user = this.auth.currentUser;
+    if (user) {
+      let userRef = doc(
+        this.firestore,
+        'users',
+        this.currentUserDoc.id
+      );
+      updateDoc(userRef, { topics: this.topicSelectList })
+      this.items = [];
+      this.lastVisible = null;
+      this.loading = true;
+      this.getData();
+    }
   }
 
   getFilteredTopics(value) {
@@ -344,7 +355,8 @@ export class Tab1Page {
     if (index != -1) {
       return this.sourceImages[index].image;
     }
-    event.target.src = "../../assets/icons/newspaper.svg";
+
+    return event.target.src = "../../assets/icons/newspaper.svg";
   }
 
   getImage(item) {

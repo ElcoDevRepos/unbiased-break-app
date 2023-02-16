@@ -20,6 +20,11 @@
               </ion-button>
             </ion-col>
           </ion-row>
+          <ion-row>
+            <ion-col *ngIf="isLogin" style="display: flex;
+            flex-direction: row;
+            justify-content: center;"><a (click)="forgotPassword()">Reset Password</a></ion-col>
+          </ion-row>
         </ion-grid>
       </ion-card-content>
     </ion-card>

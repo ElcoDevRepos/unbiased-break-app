@@ -6,7 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signOut
 } from '@angular/fire/auth';
-import _ from "lodash"
+import _ from 'lodash-es';
 
 @Injectable({
   providedIn: 'root'
