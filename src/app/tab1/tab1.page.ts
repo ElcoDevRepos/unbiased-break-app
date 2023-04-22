@@ -7,6 +7,7 @@ import { ModalController, Platform } from '@ionic/angular';
 import FuzzySearch from 'fuzzy-search';
 import _ from 'lodash-es';
 import { TopicComponent } from '../modals/topic/topic.component';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -41,8 +42,16 @@ export class Tab1Page {
   isDesktop: boolean;
   readArticles = [];
   constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform,
-    private auth: Auth) { }
+    private auth: Auth, private iab: InAppBrowser) { }
 
+  onArticleClick(item: any) {
+    const link = item.link;
+    if (link.includes('nytimes.com') || link.includes('wsj.com')) {
+      const browser = this.iab.create(link, '_blank');
+      browser.show();
+    }
+  }
+    
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
