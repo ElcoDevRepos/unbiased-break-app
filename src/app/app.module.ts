@@ -20,6 +20,7 @@ import { indexedDBLocalPersistence } from 'firebase/auth';
 
 import { HttpClientModule } from '@angular/common/http';
 import { PressDirective } from './press.directive';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 @NgModule({
   declarations: [AppComponent, PressDirective],
@@ -32,7 +33,7 @@ import { PressDirective } from './press.directive';
     provideFirestore(() => getFirestore()),
     provideAuth(() => initializeAuth(getApp(), { persistence: indexedDBLocalPersistence })),
     provideStorage(() => getStorage())],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, InAppBrowser],
   bootstrap: [AppComponent],
 })
 export class AppModule {
