@@ -38,6 +38,7 @@ export class Tab1Page {
     translucent: true
   }
   topicSelectList;
+  topicCheckedList;
   isDesktop: boolean;
   readArticles = [];
   constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform,
@@ -100,6 +101,7 @@ export class Tab1Page {
         if (d.data().topics) {
           this.topicSelectList = d.data().topics;
           this.topicOptions = this.topicSelectList;
+          this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
         } else {
           promises.push(this.setupTopics());
         }
@@ -152,6 +154,7 @@ export class Tab1Page {
         this.items = [];
         this.topicOptions = response.data;
         this.getData();
+        this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
       })
       modal.present();
     } else {
@@ -212,6 +215,7 @@ export class Tab1Page {
       }
     ];
     this.topicOptions = this.topicSelectList;
+    this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
 
     this.toggleCard();
   }
