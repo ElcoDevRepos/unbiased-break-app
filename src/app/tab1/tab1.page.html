@@ -71,7 +71,7 @@
         <ion-item class="news-link"
           *ngFor="let item of items"
           (click)="readArticles.push(item.id); onArticleClick(item)"
-          [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? null : ['/news-article/' + item.id + '/' + selectedTab + '-articles']">
+          [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/' + selectedTab + '-articles']">
           <ion-thumbnail slot="start">
             <img [src]="getImage(item)" (error)="onImgError(item, $event)">
           </ion-thumbnail>
