@@ -46,74 +46,17 @@
 
     <ion-card-content style="overflow-x: scroll;">
       <ion-card-content style="display: flex; width: 100%;">
-        <ion-card style="height: 170px; width: 200px; flex-shrink: 0;">
-          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" style="height: 100px; width: auto;"/>
-          <ion-card-header>
-            <ion-card-title style="font-size: large;">Article Title</ion-card-title>
-          </ion-card-header>
-        </ion-card>
-        <ion-card style="height: 170px; width: 200px; flex-shrink: 0;">
-          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" style="height: 100px; width: auto;"/>
-          <ion-card-header>
-            <ion-card-title style="font-size: large;">Article Title</ion-card-title>
-          </ion-card-header>
-        </ion-card>
-        <ion-card style="height: 170px; width: 200px; flex-shrink: 0;">
-          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" style="height: 100px; width: auto;"/>
-          <ion-card-header>
-            <ion-card-title style="font-size: large;">Article Title</ion-card-title>
-          </ion-card-header>
-        </ion-card>
-        <ion-card style="height: 170px; width: 200px; flex-shrink: 0;">
-          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" style="height: 100px; width: auto;"/>
-          <ion-card-header>
-            <ion-card-title style="font-size: large;">Article Title</ion-card-title>
-          </ion-card-header>
-        </ion-card>
-        <ion-card style="height: 170px; width: 200px; flex-shrink: 0;">
-          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" style="height: 100px; width: auto;"/>
-          <ion-card-header>
-            <ion-card-title style="font-size: large;">Article Title</ion-card-title>
-          </ion-card-header>
-        </ion-card>
-        <ion-card style="height: 170px; width: 200px; flex-shrink: 0;">
-          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" style="height: 100px; width: auto;"/>
-          <ion-card-header>
-            <ion-card-title style="font-size: large;">Article Title</ion-card-title>
-          </ion-card-header>
-        </ion-card>
-        <ion-card style="height: 170px; width: 200px; flex-shrink: 0;">
-          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" style="height: 100px; width: auto;"/>
-          <ion-card-header>
-            <ion-card-title style="font-size: large;">Article Title</ion-card-title>
-          </ion-card-header>
-        </ion-card>
-        <ion-card style="height: 170px; width: 200px; flex-shrink: 0;">
-          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" style="height: 100px; width: auto;"/>
-          <ion-card-header>
-            <ion-card-title style="font-size: large;">Article Title</ion-card-title>
-          </ion-card-header>
-        </ion-card>
-        <ion-card style="height: 170px; width: 200px; flex-shrink: 0;">
-          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" style="height: 100px; width: auto;"/>
-          <ion-card-header>
-            <ion-card-title style="font-size: large;">Article Title</ion-card-title>
-          </ion-card-header>
-        </ion-card>
-        <ion-card style="height: 170px; width: 200px; flex-shrink: 0;">
-          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" style="height: 100px; width: auto;"/>
-          <ion-card-header>
-            <ion-card-title style="font-size: large;">Article Title</ion-card-title>
-          </ion-card-header>
-        </ion-card>
-        <ion-card style="height: 170px; width: 200px; flex-shrink: 0;">
-          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" style="height: 100px; width: auto;"/>
-          <ion-card-header>
-            <ion-card-title style="font-size: large;">Article Title</ion-card-title>
-          </ion-card-header>
-        </ion-card>
+        <ng-container *ngFor="let article of allRelatedArticles">
+          <ion-card style="height: 170px; width: 200px; flex-shrink: 0;">
+            <img alt="Related article image" [src]="article.image" style="height: 100px; width: auto;"/>
+            <ion-card-header>
+              <ion-card-title style="font-size: small;">{{ article.title }}</ion-card-title>
+            </ion-card-header>
+          </ion-card>
+        </ng-container>
       </ion-card-content>
     </ion-card-content>
+    
 
     
 
