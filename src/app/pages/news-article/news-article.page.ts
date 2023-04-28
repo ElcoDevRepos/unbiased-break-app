@@ -232,6 +232,11 @@ export class NewsArticlePage implements OnInit {
     }
   }
 
+  checkIfAnyRelatedArticles () {
+    if(this.allRelatedArticles.length > 0) return true;
+    else return false;
+  }
+
   getRelatedArticleImage(image) {
     if(image) return image;
     else return 'https://assets.digitalocean.com/labs/images/community_bg.png';
