@@ -85,9 +85,11 @@ export class NewsArticlePage implements OnInit {
     docs.forEach((d) => {
       this.article = d.data();
 
-      d.data().related_articles.forEach((relatedArticle) => {
-        this.loadRelatedArticles(relatedArticle); //Gets the related_articles from articles document and calls loadRelatedArticles
-      });
+      if(d.data().related_articles) {
+        d.data().related_articles.forEach((relatedArticle) => {
+          this.loadRelatedArticles(relatedArticle); //Gets the related_articles from articles document and calls loadRelatedArticles
+        });
+      }
 
       this.docid = d.id;
       let articleUpdate = doc(this.firestore, type, d.id);
@@ -233,8 +235,10 @@ export class NewsArticlePage implements OnInit {
   }
 
   checkIfAnyRelatedArticles () {
-    if(this.allRelatedArticles.length > 0) return true;
-    else return false;
+    if(this.allRelatedArticles) {
+      if(this.allRelatedArticles.length > 0) return true;
+      else return false;
+    }
   }
 
   getRelatedArticleImage(image) {
