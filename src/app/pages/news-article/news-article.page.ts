@@ -201,7 +201,8 @@ export class NewsArticlePage implements OnInit {
         this.allRelatedArticles.push({
           title: data.title,
           image: data.image,
-          link: data.link
+          id: data.id,
+          articleGroup: "left-articles"
         });
       }
     }
@@ -212,7 +213,8 @@ export class NewsArticlePage implements OnInit {
         this.allRelatedArticles.push({
           title: data.title,
           image: data.image,
-          link: data.link
+          id: data.id,
+          articleGroup: "middle-articles"
         });
       }
     }
@@ -223,9 +225,15 @@ export class NewsArticlePage implements OnInit {
         this.allRelatedArticles.push({
           title: data.title,
           image: data.image,
-          link: data.link
+          id: data.id,
+          articleGroup: "right-articles"
         });
       }
     }
+  }
+
+  getRelatedArticleImage(image) {
+    if(image) return image;
+    else return 'https://assets.digitalocean.com/labs/images/community_bg.png';
   }
 }
