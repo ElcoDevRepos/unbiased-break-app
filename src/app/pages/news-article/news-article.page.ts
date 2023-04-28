@@ -194,6 +194,7 @@ export class NewsArticlePage implements OnInit {
     const leftDocRef = await getDoc(doc(this.firestore, 'left-articles', `${relatedArticle}`));
     const middleDocRef = await getDoc(doc(this.firestore, 'middle-articles', `${relatedArticle}`));
     const rightDocRef = await getDoc(doc(this.firestore, 'right-articles', `${relatedArticle}`));
+    const trendingDocRef = await getDoc(doc(this.firestore, 'trending-articles', `${relatedArticle}`));
 
     if(leftDocRef.exists) {
       const data = leftDocRef.data();
@@ -227,6 +228,18 @@ export class NewsArticlePage implements OnInit {
           image: data.image,
           id: data.id,
           articleGroup: "right-articles"
+        });
+      }
+    }
+
+    if(trendingDocRef.exists) {
+      const data = trendingDocRef.data();
+      if(data) {
+        this.allRelatedArticles.push({
+          title: data.title,
+          image: data.image,
+          id: data.id,
+          articleGroup: "trending-articles"
         });
       }
     }
