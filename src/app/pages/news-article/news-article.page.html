@@ -45,16 +45,14 @@
     </ion-card-content>
 
     <ng-container *ngIf="checkIfAnyRelatedArticles()">
-      <h2 style="padding-left: 55px; padding-bottom: 5px;">Related Articles</h2>
-      <ion-card-content style="overflow-x: scroll; padding-top: 0px;">
-        <ion-card-content style="display: flex; width: 100%; padding-top: 5px;">
+      <h2 class="related-article-header">Related Articles</h2>
+      <ion-card-content class="related-article-scroll">
+        <ion-card-content class="related-article-card-container">
           <ng-container *ngFor="let article of allRelatedArticles">
-            <ion-card style="height: 170px; width: 180px; flex-shrink: 0; display: flex;"
+            <ion-card class="related-article-card"
             [routerLink]="['/news-article/' + article.id + '/' + article.articleGroup]" [state]="{ article: article }">
-            <img alt="Related article image" [src]="getRelatedArticleImage(article.image)" style="height: 100px; width: 100%;" />
-              <ion-card-header style="padding: 5px; padding-top: 0px;">
-                <ion-card-title style="font-size: small; padding: 5px;">{{ article.title }}</ion-card-title>
-              </ion-card-header>
+            <img alt="Related article image" [src]="getRelatedArticleImage(article.image)" class="related-article-image" />
+            <ion-card-title class="related-article-title">{{ article.title }}</ion-card-title>
             </ion-card>
           </ng-container>
         </ion-card-content>
