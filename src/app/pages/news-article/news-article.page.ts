@@ -85,12 +85,10 @@ export class NewsArticlePage implements OnInit {
     docs.forEach((d) => {
       this.article = d.data();
 
-      if(d.data().related_articles) {
-        d.data().related_articles.forEach((relatedArticle) => {
-          this.loadRelatedArticles(relatedArticle); //Gets the related_articles from articles document and calls loadRelatedArticles
-        });
-      }
-
+      d.data().related_articles.forEach((relatedArticle) => {
+        this.loadRelatedArticles(relatedArticle); //Gets the related_articles from articles document and calls loadRelatedArticles
+      });
+      
       this.docid = d.id;
       let articleUpdate = doc(this.firestore, type, d.id);
       updateDoc(articleUpdate, {
