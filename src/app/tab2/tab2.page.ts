@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Auth } from '@angular/fire/auth';
 import { Firestore, collectionData, collection, query, where, getDocs, orderBy, limit, startAfter } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -26,7 +27,7 @@ export class Tab2Page {
   hasSearched = false;
   isDesktop: boolean;
   readArticles = [];
-  constructor(private firestore: Firestore, public sanitizer: DomSanitizer, private http: HttpClient, private platform: Platform, private userService: UserService) { }
+  constructor(private firestore: Firestore, public sanitizer: DomSanitizer, private http: HttpClient, private platform: Platform, private userService: UserService, private auth: Auth) { }
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
@@ -35,19 +36,20 @@ export class Tab2Page {
   }
 
   ionViewWillEnter() {
-    let ref = collection(
-      this.firestore,
-      'users'
-    );
-    if (this.userService.getLoggedInUser()) {
-      let q = query(ref, where('email', '==', this.userService.getLoggedInUser().email));
-      getDocs(q).then((docSnaps) => {
-        docSnaps.forEach((d) => {
-          this.readArticles = d.data().readArticles || [];
+    this.auth.onAuthStateChanged(async () => {
+      let ref = collection(
+        this.firestore,
+        'users'
+      );
+      if (this.userService.getLoggedInUser()) {
+        let q = query(ref, where('email', '==', this.userService.getLoggedInUser().email));
+        getDocs(q).then((docSnaps) => {
+          docSnaps.forEach((d) => {
+            this.readArticles = d.data().readArticles || [];
+          })
         })
-      })
-    }
-    
+      }
+    }); 
   }
 
   isRead(id) {
