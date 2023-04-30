@@ -85,6 +85,7 @@ export class NewsArticlePage implements OnInit {
     docs.forEach((d) => {
       this.article = d.data();
 
+      this.allRelatedArticles = [];
       d.data().related_articles.forEach((relatedArticle) => {
         this.loadRelatedArticles(relatedArticle); //Gets the related_articles from articles document and calls loadRelatedArticles
       });
