@@ -137,12 +137,13 @@ export class Tab2Page {
       return;
     }
     this.hasSearched = true;
-    const searcher = new FuzzySearch(this.items, ['title', 'byline', 'excerpt', 'siteName'], {
+    const searcher = new FuzzySearch(this.items, ['title'], {
       caseSensitive: false,
       sort: true
     });
     const result = searcher.search(this.search);
     this.items = result;
+    
   }
 
   clearSearch() {
