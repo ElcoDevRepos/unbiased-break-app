@@ -118,10 +118,4 @@ export class TopicComponent implements OnInit {
     this.isAdding = false;
     this.newTopic = "";
   }
-
-  //Capitilize first letter in every word
-  capitalizeWords(str) {
-    return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  }
-  
 }

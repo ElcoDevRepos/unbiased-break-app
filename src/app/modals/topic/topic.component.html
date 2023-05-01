@@ -19,13 +19,13 @@
     </ion-card-header>
     <ion-card-content>
       <ion-list lines="none">
-        <ion-item *ngFor="let topic of topics; let i = index"><ion-icon name="trash" *ngIf="!topic.checked" (click)="removeTopic(topic)" class="topic-remove-icon"></ion-icon>{{capitalizeWords(topic.display)}}<ion-toggle slot="end" [checked]="topic.checked"
+        <ion-item *ngFor="let topic of topics; let i = index"><ion-icon name="trash" *ngIf="!topic.checked" (click)="removeTopic(topic)" class="topic-remove-icon"></ion-icon>{{ topic.display | titlecase }}<ion-toggle slot="end" [checked]="topic.checked"
             (ionChange)="toggleChanged(i, $event)"></ion-toggle>
         </ion-item>
         <ion-item *ngIf="isAdding">
-          <ion-input placeholder="Type to find topics" [(ngModel)]="newTopic" (ionChange)="showPopup($event)" debounce="750"></ion-input>
+          <ion-input placeholder="Type to find new topics..." [(ngModel)]="newTopic" (ionChange)="showPopup($event)" debounce="750"></ion-input>
         </ion-item>
-        <ion-item button *ngIf="!isAdding" (click)="isAdding = true;">+ Add Topic</ion-item>
+        <ion-item button *ngIf="!isAdding" (click)="isAdding = true;"><ion-icon name="search"></ion-icon> Find Topics</ion-item>
       </ion-list>
       <p *ngIf="isAdding">Note: Newly added topics can sometimes take up to 24 hours to populate.</p>
     </ion-card-content>
