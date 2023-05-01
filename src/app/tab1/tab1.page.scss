@@ -273,3 +273,17 @@ ion-label p {
     flex-direction: row;
     flex-wrap: wrap;
 }
+
+.topic-card-container {
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+    display: flex; 
+    flex-direction: row;
+    gap: 5px;
+}
+
+.topic-card {
+    margin: 0px;
+    padding: 3px 7px 3px 7px;
+    font-size: medium;
+}

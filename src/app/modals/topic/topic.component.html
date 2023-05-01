@@ -22,7 +22,7 @@
         <ion-item *ngFor="let topic of topics; let i = index"><ion-icon name="trash" *ngIf="!topic.checked" (click)="removeTopic(topic)" class="topic-remove-icon"></ion-icon>{{ topic.display | titlecase }}<ion-toggle slot="end" [checked]="topic.checked"
             (ionChange)="toggleChanged(i, $event)"></ion-toggle>
         </ion-item>
-        <ion-searchbar animated="true" placeholder="Type to find new topics..." [(ngModel)]="newTopic" (ionFocus)="isAdding = true" (ionBlur)="isAdding = false" (ionChange)="showPopup($event)" debounce="750"></ion-searchbar>
+        <ion-searchbar class="search" animated="true" placeholder="Type to find new topics..." [(ngModel)]="newTopic" (ionFocus)="isAdding = true" (ionBlur)="isAdding = false" (ionChange)="showPopup($event)" debounce="750"></ion-searchbar>
       </ion-list>
       <p *ngIf="isAdding">Note: Newly added topics can sometimes take up to 24 hours to populate.</p>
     </ion-card-content>

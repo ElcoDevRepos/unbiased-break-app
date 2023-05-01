@@ -27,13 +27,11 @@
   </ion-refresher>
   <ion-searchbar class="search" [(ngModel)]="search" debounce="500" (ionChange)="searchShownArticles()" (ionClear)="clearSearch()"></ion-searchbar>
   <ion-item class="show-gradient no-border">
-    <ion-label style="font-weight: bold">Subscribed Topics</ion-label>
+    <ion-label style="font-weight: bold">Your Topics</ion-label>
   </ion-item>
   <ion-item class="show-gradient no-border" lines="none" detail button (click)="openTopicModal()">
-    <div style="text-overflow: ellipsis;
-    white-space: nowrap;">
-      <span *ngIf="topicCheckedList && topicCheckedList.length > 0"> | </span>
-      <span *ngFor="let topic of topicCheckedList" style="padding: 3px;">{{ topic.display | titlecase}} |</span>
+    <div class="topic-card-container">
+      <ion-card class="topic-card" color="primary" *ngFor="let topic of topicCheckedList">{{ topic.display | titlecase}}</ion-card>
     </div>
     <!--<ion-select placeholder="Filter by Topics" [multiple]="true" (ionChange)="toggleCard()" [(ngModel)]="topicSelectList" [interfaceOptions]="customAlertOptions">
       <ion-select-option *ngFor="let topic of topicOptions" [value]="topic.id">{{topic.display}}</ion-select-option>
