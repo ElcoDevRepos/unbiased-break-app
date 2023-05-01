@@ -19,7 +19,7 @@
     </ion-card-header>
     <ion-card-content>
       <ion-list lines="none">
-        <ion-item *ngFor="let topic of topics; let i = index"><ion-icon name="close" *ngIf="!topic.checked" (click)="removeTopic(topic)"></ion-icon>{{topic.display}}<ion-toggle slot="end" [checked]="topic.checked"
+        <ion-item *ngFor="let topic of topics; let i = index"><ion-icon name="trash" *ngIf="!topic.checked" (click)="removeTopic(topic)" class="topic-remove-icon"></ion-icon>{{topic.display}}<ion-toggle slot="end" [checked]="topic.checked"
             (ionChange)="toggleChanged(i, $event)"></ion-toggle>
         </ion-item>
         <ion-item *ngIf="isAdding">
