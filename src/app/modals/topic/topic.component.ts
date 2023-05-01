@@ -67,6 +67,7 @@ export class TopicComponent implements OnInit {
 
 
   async showPopup(e) {
+    if(this.newTopic != ""){
     const popover = await this.popoverController.create({
       component: TopiclistComponent,
       componentProps: {
@@ -94,7 +95,7 @@ export class TopicComponent implements OnInit {
         this.isAdding = false;      }
       
     }
-    
+  }
   }
 
   dismiss() {
