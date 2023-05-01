@@ -33,7 +33,7 @@
     <div style="text-overflow: ellipsis;
     white-space: nowrap;">
       <span *ngIf="topicCheckedList && topicCheckedList.length > 0"> | </span>
-      <span *ngFor="let topic of topicCheckedList" style="padding: 3px;">{{topic.display}} |</span>
+      <span *ngFor="let topic of topicCheckedList" style="padding: 3px;">{{capitalizeWords(topic.display)}} |</span>
     </div>
     <!--<ion-select placeholder="Filter by Topics" [multiple]="true" (ionChange)="toggleCard()" [(ngModel)]="topicSelectList" [interfaceOptions]="customAlertOptions">
       <ion-select-option *ngFor="let topic of topicOptions" [value]="topic.id">{{topic.display}}</ion-select-option>

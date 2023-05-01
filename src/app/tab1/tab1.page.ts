@@ -449,4 +449,8 @@ export class Tab1Page {
     event.target.complete();
   }
 
+  //Capitilize first letter in every word
+  capitalizeWords(str) {
+    return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  }
 }
