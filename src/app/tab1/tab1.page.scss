@@ -274,6 +274,11 @@ ion-label p {
     flex-wrap: wrap;
 }
 
+.topic-label {
+    font-weight: bold;
+    margin-bottom: 0px;
+}
+
 .topic-card-container {
     text-overflow: ellipsis;
     white-space: nowrap; 
