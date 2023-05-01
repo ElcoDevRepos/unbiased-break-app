@@ -70,7 +70,8 @@ export class TopicComponent implements OnInit {
     const popover = await this.popoverController.create({
       component: TopiclistComponent,
       componentProps: {
-        query: this.newTopic
+        query: this.newTopic,
+        currentTopics: this.topics
       },
       event: e,
     });
