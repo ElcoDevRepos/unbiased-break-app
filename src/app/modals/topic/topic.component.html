@@ -24,7 +24,7 @@
         </ion-item>
         <ion-searchbar class="search" animated="true" placeholder="Type to find new topics..." [(ngModel)]="newTopic" (ionFocus)="isAdding = true" (ionBlur)="isAdding = false" (ionChange)="showPopup($event)" debounce="750"></ion-searchbar>
       </ion-list>
-      <p *ngIf="isAdding">Note: Newly added topics can sometimes take up to 24 hours to populate.</p>
+      <p class="topic-note" *ngIf="isAdding">Note: Newly added topics can sometimes take up to 24 hours to populate.</p>
     </ion-card-content>
   </ion-card>
 </ion-content>
