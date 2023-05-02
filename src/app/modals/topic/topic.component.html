@@ -19,7 +19,7 @@
     </ion-card-header>
     <ion-card-content>
       <ion-list lines="none">
-        <ion-item *ngFor="let topic of topics; let i = index"><ion-icon name="trash" *ngIf="!topic.checked" (click)="removeTopic(topic)" class="topic-remove-icon"></ion-icon>{{ topic.display | titlecase }}<ion-toggle slot="end" [checked]="topic.checked"
+        <ion-item *ngFor="let topic of topics; let i = index">{{ topic.display | titlecase }}<ion-icon name="trash" *ngIf="!topic.checked" (click)="removeTopic(topic)" class="topic-remove-icon" slot="end"></ion-icon><ion-toggle slot="end" [checked]="topic.checked"
             (ionChange)="toggleChanged(i, $event)"></ion-toggle>
         </ion-item>
         <ion-searchbar class="search" animated="true" placeholder="Type to find new topics..." [(ngModel)]="newTopic" (ionFocus)="isAdding = true" (ionBlur)="isAdding = false" (ionChange)="showPopup($event)" debounce="750"></ion-searchbar>

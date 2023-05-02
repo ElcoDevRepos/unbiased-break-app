@@ -2,7 +2,7 @@
   <ion-item *ngFor="let item of results" (click)="addToList(item)">
     {{item.item.name | titlecase }} <ion-icon name="add" slot="end"></ion-icon>
   </ion-item>
-  <ion-item color="secondary" (click)="addToList('new')">
-    Create Topic <ion-icon name="create-outline" slot="end"></ion-icon>
+  <ion-item class="create-new-topic" color="secondary" (click)="addToList('new')">
+    Create New Topic <ion-icon name="create-outline" slot="end"></ion-icon>
   </ion-item>
 </ion-list>
