@@ -10,3 +10,21 @@
 .search {
     --placeholder-opacity: 1;
 }
+
+.topic-subtitle {
+    margin-bottom: 10px;
+    box-shadow: 0px 0px 10px lightgray; 
+    padding: 10px;
+}
+
+.topic-subtitle-text {
+    font-size: 14px;
+    text-align: center;
+    margin: 0px;
+}
+
+.topic-container {
+    box-shadow: 0px 0px 10px lightgray; 
+    border-radius: 5px;
+}
+
