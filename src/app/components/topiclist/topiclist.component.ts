@@ -29,8 +29,10 @@ export class TopiclistComponent implements OnInit {
     
     const fuse = new Fuse(topics, options)
     
-    const result = fuse.search(query).filter(r => !currentTopics.some(t => t.name === r.item.name)); //Ensures that user can not add a topic that is already added
-    this.results = result;
+    const fuseResults = fuse.search(query);
+    const filteredResults = fuseResults.filter(r => !currentTopics.some(t => t.name === r.item.name));
+    const limitedResults = filteredResults.slice(0, 8); // Extract the first 5 results
+    this.results = limitedResults;
   }
 
   addToList(item) {
