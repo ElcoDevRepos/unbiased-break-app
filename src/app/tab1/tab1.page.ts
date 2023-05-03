@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc } from '@angular/fire/firestore';
+import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { ModalController, Platform } from '@ionic/angular';
@@ -48,6 +48,7 @@ export class Tab1Page {
   onArticleClick(item: any) {
     const link = item.link;
     if (link.includes('nytimes.com') || link.includes('wsj.com')) {
+      this.addToRead(item.id); //Add the wsj or nyt article to read now because it won't be opening the article page
       const browser = this.iab.create(link, '_blank');
       browser.show();
     }
@@ -447,5 +448,18 @@ export class Tab1Page {
     this.items = [];
     await this.getData();
     event.target.complete();
+  }
+
+  async addToRead(articleId) {
+    if (!this.userService.getLoggedInUser()) return;
+    let user = await getDoc(doc(this.firestore, 'users', this.userService.getLoggedInUser().uid));
+    let readArticles = user.data().readArticles || [];
+    
+    if (!readArticles.includes(articleId)) 
+      readArticles.push(articleId)
+
+    updateDoc(doc(this.firestore, 'users', this.userService.getLoggedInUser().uid), {
+      readArticles
+    })
   }
 }
