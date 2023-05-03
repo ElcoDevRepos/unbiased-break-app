@@ -43,6 +43,25 @@
       <div [innerHTML]="article.content" ></div>
       <!--{{article.textBody}}-->
     </ion-card-content>
+
+    <ng-container *ngIf="checkIfAnyRelatedArticles()">
+      <h2 class="related-article-header">Related Articles</h2>
+      <ion-card-content class="related-article-scroll">
+        <ion-card-content class="related-article-card-container">
+          <ng-container *ngFor="let article of allRelatedArticles">
+            <ion-card class="related-article-card"
+            [routerLink]="['/news-article/' + article.id + '/' + article.articleGroup]" [state]="{ article: article }">
+            <img alt="Related article image" [src]="getRelatedArticleImage(article.image)" class="related-article-image" />
+            <ion-card-title class="related-article-title">{{ article.title }}</ion-card-title>
+            </ion-card>
+          </ng-container>
+        </ion-card-content>
+      </ion-card-content>
+    </ng-container>
+    
+
+    
+
     <hr>
     <ion-card-content>
       <ion-row>

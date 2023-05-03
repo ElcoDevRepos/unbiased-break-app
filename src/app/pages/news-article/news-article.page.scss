@@ -135,3 +135,36 @@ ion-segment {
 .big-font {
     p {font-size: 100px !important;}
 }
+
+.related-article-card {
+    height: 170px; 
+    width: 180px; 
+    flex-shrink: 0; 
+    display: flex;
+}
+
+.related-article-title {
+    font-size: small; 
+    padding: 5px;
+}
+
+.related-article-image {
+    height: 100px; 
+    width: 100%;
+}
+
+.related-article-card-container {
+    display: flex;
+    width: 100%; 
+    padding-top: 5px;
+}
+
+.related-article-scroll {
+    overflow-x: scroll; 
+    padding-top: 0px;
+}
+
+.related-article-header {
+    padding-left: 55px; 
+    padding-bottom: 5px;
+}

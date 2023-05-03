@@ -28,6 +28,9 @@ export class NewsArticlePage implements OnInit {
   playing = false;
   urlsToPlay = [];
   isDesktop;
+
+  allRelatedArticles = [];
+
   constructor(public userService: UserService, public sanitizer: DomSanitizer, private route: ActivatedRoute, private firestore: Firestore,
     private modalCtrl: ModalController, private admobService: AdmobService, private platform: Platform, private auth: Auth) { }
 
@@ -82,6 +85,11 @@ export class NewsArticlePage implements OnInit {
     docs.forEach((d) => {
       this.article = d.data();
 
+      this.allRelatedArticles = [];
+      d.data().related_articles.forEach((relatedArticle) => {
+        this.loadRelatedArticles(relatedArticle); //Gets the related_articles from articles document and calls loadRelatedArticles
+      });
+      
       this.docid = d.id;
       let articleUpdate = doc(this.firestore, type, d.id);
       updateDoc(articleUpdate, {
@@ -180,5 +188,73 @@ export class NewsArticlePage implements OnInit {
       url: window.location.href,
       dialogTitle: 'Share with your friends',
     });
+  }
+
+  async loadRelatedArticles (relatedArticle) {
+
+    const leftDocRef = await getDoc(doc(this.firestore, 'left-articles', `${relatedArticle}`));
+    const middleDocRef = await getDoc(doc(this.firestore, 'middle-articles', `${relatedArticle}`));
+    const rightDocRef = await getDoc(doc(this.firestore, 'right-articles', `${relatedArticle}`));
+    const trendingDocRef = await getDoc(doc(this.firestore, 'trending-articles', `${relatedArticle}`));
+
+    if(leftDocRef.exists) {
+      const data = leftDocRef.data();
+      if(data) {
+        this.allRelatedArticles.push({
+          title: data.title,
+          image: data.image,
+          id: data.id,
+          articleGroup: "left-articles"
+        });
+      }
+    }
+      
+    if(middleDocRef.exists) {
+      const data = middleDocRef.data();
+      if(data) {
+        this.allRelatedArticles.push({
+          title: data.title,
+          image: data.image,
+          id: data.id,
+          articleGroup: "middle-articles"
+        });
+      }
+    }
+
+    if(rightDocRef.exists) {
+      const data = rightDocRef.data();
+      if(data) {
+        this.allRelatedArticles.push({
+          title: data.title,
+          image: data.image,
+          id: data.id,
+          articleGroup: "right-articles"
+        });
+      }
+    }
+
+    if(trendingDocRef.exists) {
+      const data = trendingDocRef.data();
+      if(data) {
+        this.allRelatedArticles.push({
+          title: data.title,
+          image: data.image,
+          id: data.id,
+          articleGroup: "trending-articles"
+        });
+      }
+    }
+  }
+
+  checkIfAnyRelatedArticles () {
+    if(this.allRelatedArticles) {
+      if(this.allRelatedArticles.length > 0) return true;
+      else return false;
+    }
+  }
+
+  getRelatedArticleImage(image) {
+    if(image) return image;
+    else return 'https://assets.digitalocean.com/labs/images/community_bg.png';
   }
 }
