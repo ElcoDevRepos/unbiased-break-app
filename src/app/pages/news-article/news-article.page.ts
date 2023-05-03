@@ -185,7 +185,7 @@ export class NewsArticlePage implements OnInit {
     await Share.share({
       title: this.article.title,
       text: this.article.excerpt,
-      url: window.location.href,
+      url: "https://app.unbiasedbreak.com/news-article/" + this.articleId + "/" + this.artticleType,
       dialogTitle: 'Share with your friends',
     });
   }
