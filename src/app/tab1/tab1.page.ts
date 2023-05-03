@@ -448,5 +448,4 @@ export class Tab1Page {
     await this.getData();
     event.target.complete();
   }
-
 }
