@@ -39,7 +39,7 @@
   </ion-item>
   <div class="news-section" style="margin-left: 12px; margin-right: 12px; border-radius: 12px;">
     <div style="padding-top:6px">
-      <ion-segment value="middle" [(ngModel)]="selectedTab" (ionChange)="segmentChanged()">
+      <ion-segment value="middle" [(ngModel)]="selectedTab" (ionChange)="segmentChanged()" [disabled]="loading">
         <ion-segment-button value="left">
           <ion-label>Left</ion-label>
         </ion-segment-button>
