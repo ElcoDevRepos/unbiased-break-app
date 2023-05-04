@@ -66,7 +66,6 @@ export class Tab1Page {
         const docSnaps = await getDocs(q);
         docSnaps.forEach((d) => {
           this.readArticles = d.data().readArticles || [];
-          console.log(this.readArticles);
         })
       } else console.log("ELSE");
   
@@ -162,6 +161,8 @@ export class Tab1Page {
       modal.onDidDismiss().then((response) => {
         this.items = [];
         this.topicOptions = response.data;
+        this.loading = true;
+        this.lastVisible = null;
         this.getData();
         this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
       })
@@ -334,9 +335,9 @@ export class Tab1Page {
     );
     let q;
     if (this.lastVisible) {
-      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), limit(this.limit), startAfter(this.lastVisible));
+      q = query(responsesRef, orderBy('date', 'desc'), orderBy("__name__", 'desc'), where('deleted', '==', false), limit(this.limit), startAfter(this.lastVisible));
     } else {
-      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), limit(this.limit));
+      q = query(responsesRef, orderBy('date', 'desc'), orderBy("__name__", 'desc'), where('deleted', '==', false), limit(this.limit));
     }
     let docSnaps = await getDocs(q);
     this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
@@ -347,9 +348,9 @@ export class Tab1Page {
     });
 
     this.items.push(...this.getFilteredTopics(items));
-    this.loading = false;
     if (this.hasSearched) this.searchShownArticles();
     if (this.items.length < this.limit && this.canGetMoreData) await this.getData();
+    this.loading = false;
   }
 
   onLeftChanged(ev, i) {
@@ -417,7 +418,6 @@ export class Tab1Page {
     this.lastVisible = null;
     this.items = [];
     await this.getData();
-    await this.getData();
   }
 
   searchShownArticles() {
@@ -438,6 +438,7 @@ export class Tab1Page {
     this.hasSearched = false;
     this.lastVisible = null;
     this.items = [];
+    this.loading = true;
     this.getData();
   }
 
