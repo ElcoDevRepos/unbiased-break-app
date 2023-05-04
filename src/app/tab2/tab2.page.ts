@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, collectionData, collection, query, where, getDocs, orderBy, limit, startAfter } from '@angular/fire/firestore';
+import { Firestore, collectionData, collection, query, where, getDocs, orderBy, limit, startAfter, getDoc, updateDoc, doc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
 import FuzzySearch from 'fuzzy-search';
@@ -8,6 +8,7 @@ import _ from 'lodash-es';
 import { HttpClient } from '@angular/common/http';
 import { Platform } from '@ionic/angular';
 import { UserService } from '../services/user.service';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
@@ -27,7 +28,7 @@ export class Tab2Page {
   hasSearched = false;
   isDesktop: boolean;
   readArticles = [];
-  constructor(private firestore: Firestore, public sanitizer: DomSanitizer, private http: HttpClient, private platform: Platform, private userService: UserService, private auth: Auth) { }
+  constructor(private firestore: Firestore, public sanitizer: DomSanitizer, private http: HttpClient, private platform: Platform, private userService: UserService, private auth: Auth, private iab: InAppBrowser) { }
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
@@ -161,6 +162,28 @@ export class Tab2Page {
     this.items = [];
     await this.getData();
     event.target.complete();
+  }
+
+  onArticleClick(item: any) {
+    const link = item.link;
+    if (link.includes('nytimes.com') || link.includes('wsj.com')) {
+      this.addToRead(item.id); //Add the wsj or nyt article to read now because it won't be opening the article page
+      const browser = this.iab.create(link, '_blank');
+      browser.show();
+    }
+  }
+
+  async addToRead(articleId) {
+    if (!this.userService.getLoggedInUser()) return;
+    let user = await getDoc(doc(this.firestore, 'users', this.userService.getLoggedInUser().uid));
+    let readArticles = user.data().readArticles || [];
+    
+    if (!readArticles.includes(articleId)) 
+      readArticles.push(articleId)
+
+    updateDoc(doc(this.firestore, 'users', this.userService.getLoggedInUser().uid), {
+      readArticles
+    })
   }
 
 }
