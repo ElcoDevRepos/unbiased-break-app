@@ -49,8 +49,10 @@
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-button (click)="modal.dismiss()">Close</ion-button>
+          <ion-buttons slot="start" (click)="modal.dismiss()">
+            <ion-back-button defaultHref="/tabs/tab3" text="">
+              <ion-icon name="arrow-back"></ion-icon>
+            </ion-back-button>
           </ion-buttons>
           <ion-title>User Details</ion-title>
           <ion-buttons slot="end">
@@ -80,10 +82,10 @@
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-button (click)="modalTwo.dismiss()">
-              Close
-            </ion-button>
+          <ion-buttons slot="start" (click)="modalTwo.dismiss()">
+            <ion-back-button defaultHref="/tabs/tab3" text="">
+              <ion-icon name="arrow-back"></ion-icon>
+            </ion-back-button>
           </ion-buttons>
           <ion-title>Bookmarks</ion-title>
         </ion-toolbar>
@@ -103,10 +105,10 @@
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-button (click)="modalThree.dismiss()">
-              Close
-            </ion-button>
+          <ion-buttons slot="start" (click)="modalThree.dismiss()">
+            <ion-back-button defaultHref="/tabs/tab3" text="">
+              <ion-icon name="arrow-back"></ion-icon>
+            </ion-back-button>
           </ion-buttons>
           <ion-title>Settings</ion-title>
         </ion-toolbar>
