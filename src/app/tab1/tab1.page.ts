@@ -17,7 +17,7 @@ export class Tab1Page {
   expanded = false;
   items$: Observable<any>;
   items = [];
-  limit = 10;
+  limit = 20;
   selectedTab = "middle";
   selectedTopic = "all";
   loading = true;

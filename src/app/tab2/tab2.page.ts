@@ -20,7 +20,7 @@ export class Tab2Page {
   };
   items$: Observable<any>;
   items = [];
-  limit = 10;
+  limit = 20;
   sourceImages = [];
   loading = true;
   lastVisible;
