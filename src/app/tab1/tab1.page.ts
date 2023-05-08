@@ -103,8 +103,6 @@ export class Tab1Page {
           if (this.leftFilters.length === 0) {
             promises.push(this.setupFilters());
           }
-        } else {
-          promises.push(this.setupFilters());
         }
 
         if (d.data().topics) {
@@ -250,9 +248,10 @@ export class Tab1Page {
     leftDocs.forEach((d) => this.leftFilters.push({ label: d.data().url, on: true }));
     middleDocs.forEach((d) => this.middleFilters.push({ label: d.data().url, on: true }));
     rightDocs.forEach((d) => this.rightFilters.push({ label: d.data().url, on: true }));
-
-    if (this.currentUserDoc) {
+    
+    if (this.currentUserDoc && this.auth.currentUser) {
       let ref = doc(this.firestore, 'users', this.currentUserDoc.id);
+      
       await updateDoc(ref, {
         filters: [
           JSON.stringify(this.leftFilters),
