@@ -42,6 +42,7 @@ export class Tab1Page {
   topicCheckedList;
   isDesktop: boolean;
   readArticles = [];
+  showReadArticles;
   constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform,
     private auth: Auth, private iab: InAppBrowser) { }
 
@@ -343,8 +344,30 @@ export class Tab1Page {
     this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
     let items = [];
     if (docSnaps.size < this.limit) this.canGetMoreData = false;
+    
+    //Check if user wants to see read articles
+    if(this.currentUserDoc) {
+      let ref = doc(this.firestore, 'users', this.currentUserDoc.id);
+      const docSnap = await getDoc(ref);
+      if (docSnap.exists()) {
+        this.showReadArticles = docSnap.data().showReadArticles;
+      } else {
+        console.log("No user doc found!");
+      }
+    }
     docSnaps.forEach((d) => {
-      items.push(d.data());
+      if(this.userService.getLoggedInUser()) {
+        //Show read articles
+        if(this.showReadArticles) {
+          items.push(d.data());
+        }
+        //Don't show read articles
+        else {
+          if(!this.readArticles.includes(d.data()['id'])) {
+            items.push(d.data());
+          }
+        }
+      } else items.push(d.data());
     });
 
     this.items.push(...this.getFilteredTopics(items));

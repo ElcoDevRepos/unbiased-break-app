@@ -27,6 +27,7 @@ export class Tab3Page {
   expanded = false;
   replies;
   reminders;
+  showReadArticles;
   public favorites = [];
   isDesktop: boolean;
   displayName = this.auth.currentUser.displayName
@@ -46,6 +47,7 @@ export class Tab3Page {
     let userDoc = await getDoc(ref);
     this.replies = userDoc.data().replyNotifications;
     this.reminders = userDoc.data().reminderNotifications;
+    this.showReadArticles = userDoc.data().showReadArticles;
   }
 
   logOut() {
@@ -120,6 +122,16 @@ export class Tab3Page {
       let ref = doc(this.fireStore, "users", this.auth.currentUser.uid);
       updateDoc(ref, {
         replyNotifications: this.replies
+      })
+    }
+  }
+
+  updateShowReadArticles (ev) {
+    if (ev) {
+      this.showReadArticles = ev.detail.checked;
+      let ref = doc(this.fireStore, "users", this.auth.currentUser.uid);
+      updateDoc(ref, {
+        showReadArticles: this.showReadArticles
       })
     }
   }
