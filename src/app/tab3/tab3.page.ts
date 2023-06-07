@@ -47,6 +47,7 @@ export class Tab3Page {
     let userDoc = await getDoc(ref);
     this.replies = userDoc.data().replyNotifications;
     this.reminders = userDoc.data().reminderNotifications;
+    this.showReadArticles = userDoc.data().showReadArticles;
   }
 
   logOut() {
