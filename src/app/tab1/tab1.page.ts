@@ -350,9 +350,7 @@ export class Tab1Page {
       let ref = doc(this.firestore, 'users', this.currentUserDoc.id);
       const docSnap = await getDoc(ref);
       if (docSnap.exists()) {
-        if(docSnap.data().showReadArticles) {
-          this.showReadArticles = docSnap.data().showReadArticles;
-        }
+        this.showReadArticles = docSnap.data().showReadArticles;
       } else {
         console.log("No user doc found!");
       }
