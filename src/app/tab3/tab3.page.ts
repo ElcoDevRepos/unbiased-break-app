@@ -41,7 +41,6 @@ export class Tab3Page {
   async ionViewWillEnter() {
     this.favorites = await this.userService.getFavorites() as any;
     this.readArticles = await this.userService.getReadArticles() as any;
-    console.log(this.readArticles);
     this.checkNotificationSettings();
   }
 
