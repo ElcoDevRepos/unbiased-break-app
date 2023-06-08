@@ -29,6 +29,7 @@ export class Tab3Page {
   reminders;
   showReadArticles;
   public favorites = [];
+  public readArticles = [];
   isDesktop: boolean;
   displayName = this.auth.currentUser.displayName
   constructor(private router: Router, public auth: Auth, private modal: ModalController, private userService: UserService, private actionSheetController: ActionSheetController,
@@ -40,6 +41,10 @@ export class Tab3Page {
   async ionViewWillEnter() {
     this.favorites = await this.userService.getFavorites() as any;
     this.checkNotificationSettings();
+  }
+
+  async getReadArticles() {
+    this.readArticles = await this.userService.getReadArticles() as any;
   }
 
   async checkNotificationSettings() {
