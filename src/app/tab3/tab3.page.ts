@@ -45,6 +45,7 @@ export class Tab3Page {
 
   async getReadArticles() {
     this.readArticles = await this.userService.getReadArticles() as any;
+    console.log(this.readArticles);
   }
 
   async checkNotificationSettings() {

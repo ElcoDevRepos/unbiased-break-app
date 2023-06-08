@@ -94,16 +94,18 @@
         </ion-toolbar>
       </ion-header>
       <ion-content>
-        <ion-item *ngFor="let item of favorites" [routerLink]="['/news-article/' + item.id + '/' + item.type]"
-          (click)="modalTwo.dismiss()">
-          <ion-label>
-            <h3 style="font-weight: bold; white-space: initial;">{{item.title}}</h3>
-            <h6>{{item.siteName}}</h6>
-          </ion-label>
-        </ion-item>
+        <ion-list>
+          <ion-item *ngFor="let item of favorites" [routerLink]="['/news-article/' + item.id + '/' + item.type]"
+            (click)="modalTwo.dismiss()">
+            <ion-label>
+              <h3 style="font-weight: bold; white-space: initial;">{{item.title}}</h3>
+              <h6>{{item.siteName}}</h6>
+            </ion-label>
+          </ion-item>
+        </ion-list>
       </ion-content>
     </ng-template>
-  </ion-modal>
+  </ion-modal>    
   <!--READ ARTICLES MODAL-->
   <ion-modal #modalFour trigger="open-read-articles-modal">
     <ng-template>

@@ -100,9 +100,9 @@ export class UserService {
     const q = query(ref, where('email', '==', this.auth.currentUser.email));
     let docs = await getDocs(q);
     docs.forEach((d) => {
-      let readArticlesIDs = d.data().readArticles
-      readArticlesIDs.reverse();
-      readArticlesIDs = readArticles.slice(0, 50);
+      let readArticlesIDs = d.data().readArticles;
+      readArticlesIDs = readArticlesIDs.reverse();
+      readArticles.slice(0, 50);
       let found = false;
 
       readArticlesIDs.forEach(async id => {
