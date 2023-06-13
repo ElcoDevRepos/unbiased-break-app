@@ -53,6 +53,7 @@
             [routerLink]="['/news-article/' + article.id + '/' + article.articleGroup]" [state]="{ article: article }">
             <img alt="Related article image" [src]="getRelatedArticleImage(article.image)" class="related-article-image" />
             <ion-card-title class="related-article-title">{{ article.title }}</ion-card-title>
+            <ion-card-subtitle class="related-article-subtitle">{{ article.source }}</ion-card-subtitle>
             </ion-card>
           </ng-container>
         </ion-card-content>

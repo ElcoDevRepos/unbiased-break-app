@@ -137,7 +137,7 @@ ion-segment {
 }
 
 .related-article-card {
-    height: 170px; 
+    height: fit-content;
     width: 180px; 
     flex-shrink: 0; 
     display: flex;
@@ -145,6 +145,10 @@ ion-segment {
 
 .related-article-title {
     font-size: small; 
+    padding: 5px;
+}
+
+.related-article-subtitle { 
     padding: 5px;
 }
 

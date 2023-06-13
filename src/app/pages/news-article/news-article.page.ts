@@ -206,6 +206,7 @@ export class NewsArticlePage implements OnInit {
           title: data.title,
           image: data.image,
           id: data.id,
+          source: data.siteName,
           articleGroup: "left-articles"
         });
       }
@@ -218,6 +219,7 @@ export class NewsArticlePage implements OnInit {
           title: data.title,
           image: data.image,
           id: data.id,
+          source: data.siteName,
           articleGroup: "middle-articles"
         });
       }
@@ -230,6 +232,7 @@ export class NewsArticlePage implements OnInit {
           title: data.title,
           image: data.image,
           id: data.id,
+          source: data.siteName,
           articleGroup: "right-articles"
         });
       }
@@ -242,6 +245,7 @@ export class NewsArticlePage implements OnInit {
           title: data.title,
           image: data.image,
           id: data.id,
+          source: data.siteName,
           articleGroup: "trending-articles"
         });
       }
