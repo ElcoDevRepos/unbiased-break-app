@@ -50,7 +50,8 @@
         <ion-card-content class="related-article-card-container">
           <ng-container *ngFor="let article of allRelatedArticles">
             <ion-card class="related-article-card"
-            [routerLink]="['/news-article/' + article.id + '/' + article.articleGroup]" [state]="{ article: article }">
+            [routerLink]="(article.link.includes('nytimes.com') || article.link.includes('wsj.com')) ? [] : ['/news-article/' + article.id + '/' + article.articleGroup]" [state]="{ article: article }"
+            (click)="relatedArticleClick(article)">
             <img alt="Related article image" [src]="getRelatedArticleImage(article.image)" class="related-article-image" />
             <ion-card-title class="related-article-title">{{ article.title }}</ion-card-title>
             </ion-card>
