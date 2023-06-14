@@ -298,25 +298,36 @@ export class Tab1Page {
     }
   }
 
+  //Only allows article through if it is on the filters (e.g. allow Washington Post article to show if Washington Post filter is on)
   getFilteredArticles(articles) {
     let allowedArticles = [];
+
     for (let i = 0; i < articles.length; i++) {
-      for (let j = 0; j < this.leftFilters.length; j++) {
-        if (articles[i].link.includes(this.leftFilters[j].label) && this.leftFilters[j].on) {
-          allowedArticles.push(articles[i]);
-          break;
+      
+      if(this.selectedTab === 'left'){
+        for (let j = 0; j < this.leftFilters.length; j++) {
+          if (articles[i].link.includes(this.leftFilters[j].label) && this.leftFilters[j].on) {
+            allowedArticles.push(articles[i]);
+            break;
+          }
         }
       }
-      for (let j = 0; j < this.middleFilters.length; j++) {
-        if (articles[i].link.includes(this.middleFilters[j].label) && this.middleFilters[j].on) {
-          allowedArticles.push(articles[i]);
-          break;
+
+      else if(this.selectedTab === 'middle'){
+        for (let j = 0; j < this.middleFilters.length; j++) {
+          if (articles[i].link.includes(this.middleFilters[j].label) && this.middleFilters[j].on) {
+            allowedArticles.push(articles[i]);
+            break;
+          }
         }
       }
-      for (let j = 0; j < this.rightFilters.length; j++) {
-        if (articles[i].link.includes(this.rightFilters[j].label) && this.rightFilters[j].on) {
-          allowedArticles.push(articles[i]);
-          break;
+
+      else if(this.selectedTab === 'right'){
+        for (let j = 0; j < this.rightFilters.length; j++) {
+          if (articles[i].link.includes(this.rightFilters[j].label) && this.rightFilters[j].on) {
+            allowedArticles.push(articles[i]);
+            break;
+          }
         }
       }
     }
