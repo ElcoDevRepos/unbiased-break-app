@@ -10,6 +10,7 @@ import { AdmobService } from 'src/app/services/admob.service';
 import { HttpClient } from '@angular/common/http';
 import { Share } from '@capacitor/share';
 import { Auth } from '@angular/fire/auth';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 @Component({
   selector: 'app-news-article',
@@ -32,7 +33,7 @@ export class NewsArticlePage implements OnInit {
   allRelatedArticles = [];
 
   constructor(public userService: UserService, public sanitizer: DomSanitizer, private route: ActivatedRoute, private firestore: Firestore,
-    private modalCtrl: ModalController, private admobService: AdmobService, private platform: Platform, private auth: Auth) { }
+    private modalCtrl: ModalController, private admobService: AdmobService, private platform: Platform, private auth: Auth, private iab: InAppBrowser) { }
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
@@ -207,6 +208,7 @@ export class NewsArticlePage implements OnInit {
           image: data.image,
           id: data.id,
           source: data.siteName,
+          link: data.link,
           articleGroup: "left-articles"
         });
       }
@@ -220,6 +222,7 @@ export class NewsArticlePage implements OnInit {
           image: data.image,
           id: data.id,
           source: data.siteName,
+          link: data.link,
           articleGroup: "middle-articles"
         });
       }
@@ -233,6 +236,7 @@ export class NewsArticlePage implements OnInit {
           image: data.image,
           id: data.id,
           source: data.siteName,
+          link: data.link,
           articleGroup: "right-articles"
         });
       }
@@ -246,6 +250,7 @@ export class NewsArticlePage implements OnInit {
           image: data.image,
           id: data.id,
           source: data.siteName,
+          link: data.link,
           articleGroup: "trending-articles"
         });
       }
@@ -262,5 +267,13 @@ export class NewsArticlePage implements OnInit {
   getRelatedArticleImage(image) {
     if(image) return image;
     else return 'https://assets.digitalocean.com/labs/images/community_bg.png';
+  }
+
+  relatedArticleClick(article : any) {
+    const link = article.link;
+    if (link.includes('nytimes.com') || link.includes('wsj.com')) {
+      const browser = this.iab.create(link, '_blank');
+      browser.show();
+    }
   }
 }
