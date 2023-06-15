@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc } from '@angular/fire/firestore';
+import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { ModalController, Platform } from '@ionic/angular';
@@ -163,8 +163,8 @@ export class Tab1Page {
         this.topicOptions = response.data;
         this.loading = true;
         this.lastVisible = null;
-        this.getData();
         this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
+        this.getData();
       })
       modal.present();
     } else {
@@ -280,43 +280,36 @@ export class Tab1Page {
     }
   }
 
-  getFilteredTopics(value) {
-    if (this.topicOptions.length === 0) {
-      let a = this.getFilteredArticles(value);
-      return a;
-    } else {
-      let allowedArticles = [];
-      for (let i = 0; i < value.length; i++) {
-        for (let j = 0; j < this.topicOptions.length; j++) {
-          if (value[i].topic === this.topicOptions[j].id && this.topicOptions[j].checked) {
-            allowedArticles.push(value[i]);
+  //Only allows article through if it is on the filters (e.g. allow Washington Post article to show if Washington Post filter is on)
+  getFilteredArticles(articles) {
+    let allowedArticles = [];
+
+    for (let i = 0; i < articles.length; i++) {
+      
+      if(this.selectedTab === 'left'){
+        for (let j = 0; j < this.leftFilters.length; j++) {
+          if (articles[i].link.includes(this.leftFilters[j].label) && this.leftFilters[j].on) {
+            allowedArticles.push(articles[i]);
             break;
           }
         }
       }
-      return this.getFilteredArticles(allowedArticles);
-    }
-  }
 
-  getFilteredArticles(articles) {
-    let allowedArticles = [];
-    for (let i = 0; i < articles.length; i++) {
-      for (let j = 0; j < this.leftFilters.length; j++) {
-        if (articles[i].link.includes(this.leftFilters[j].label) && this.leftFilters[j].on) {
-          allowedArticles.push(articles[i]);
-          break;
+      else if(this.selectedTab === 'middle'){
+        for (let j = 0; j < this.middleFilters.length; j++) {
+          if (articles[i].link.includes(this.middleFilters[j].label) && this.middleFilters[j].on) {
+            allowedArticles.push(articles[i]);
+            break;
+          }
         }
       }
-      for (let j = 0; j < this.middleFilters.length; j++) {
-        if (articles[i].link.includes(this.middleFilters[j].label) && this.middleFilters[j].on) {
-          allowedArticles.push(articles[i]);
-          break;
-        }
-      }
-      for (let j = 0; j < this.rightFilters.length; j++) {
-        if (articles[i].link.includes(this.rightFilters[j].label) && this.rightFilters[j].on) {
-          allowedArticles.push(articles[i]);
-          break;
+
+      else if(this.selectedTab === 'right'){
+        for (let j = 0; j < this.rightFilters.length; j++) {
+          if (articles[i].link.includes(this.rightFilters[j].label) && this.rightFilters[j].on) {
+            allowedArticles.push(articles[i]);
+            break;
+          }
         }
       }
     }
@@ -335,15 +328,36 @@ export class Tab1Page {
       this.selectedTab.toLocaleLowerCase() + '-articles'
     );
     let q;
-    if (this.lastVisible) {
-      q = query(responsesRef, orderBy('date', 'desc'), orderBy("__name__", 'desc'), where('deleted', '==', false), limit(this.limit), startAfter(this.lastVisible));
-    } else {
-      q = query(responsesRef, orderBy('date', 'desc'), orderBy("__name__", 'desc'), where('deleted', '==', false), limit(this.limit));
-    }
-    let docSnaps = await getDocs(q);
-    this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
+    let topicIds = [];
+    this.topicCheckedList.forEach((t) => {topicIds.push(t.id)});
+    let docSnaps: QuerySnapshot<unknown>;
     let items = [];
-    if (docSnaps.size < this.limit) this.canGetMoreData = false;
+    
+      for(let i = 0; i < this.topicCheckedList.length; i++){
+        if (this.lastVisible) {
+          q = query(responsesRef, 
+            orderBy('date', 'desc'), 
+            orderBy("__name__", 'desc'), 
+            where('topic', 'in', topicIds), 
+            where('deleted', '==', false), 
+            limit(this.limit),
+            startAfter(this.lastVisible));
+
+        } else {
+          q = query(responsesRef, 
+            orderBy('date', 'desc'), 
+            orderBy("__name__", 'desc'), 
+            where('topic', 'in', topicIds), 
+            where('deleted', '==', false), 
+            limit(this.limit));
+        }
+        docSnaps = await getDocs(q);
+
+        this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
+        if (docSnaps.size < this.limit) {
+          this.canGetMoreData = false;
+        }
+      }
     
     //Check if user wants to see read articles
     if(this.currentUserDoc) {
@@ -355,22 +369,26 @@ export class Tab1Page {
         console.log("No user doc found!");
       }
     }
+
+    //Push articles to items
     docSnaps.forEach((d) => {
-      if(this.userService.getLoggedInUser()) {
-        //Show read articles
-        if(this.showReadArticles) {
-          items.push(d.data());
-        }
-        //Don't show read articles
-        else {
-          if(!this.readArticles.includes(d.data()['id'])) {
+      if(d.data()['deleted'] == false) {
+        if(this.userService.getLoggedInUser()) {
+          //Show read articles
+          if(this.showReadArticles) {
             items.push(d.data());
           }
-        }
-      } else items.push(d.data());
+          //Don't show read articles
+          else {
+            if(!this.readArticles.includes(d.data()['id'])) {
+              items.push(d.data());
+            }
+          }
+        } else items.push(d.data());
+      }
     });
 
-    this.items.push(...this.getFilteredTopics(items));
+    this.items.push(...this.getFilteredArticles(items));
     if (this.hasSearched) this.searchShownArticles();
     if (this.items.length < this.limit && this.canGetMoreData) await this.getData();
     this.loading = false;
