@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc } from '@angular/fire/firestore';
+import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { ModalController, Platform } from '@ionic/angular';
@@ -163,8 +163,8 @@ export class Tab1Page {
         this.topicOptions = response.data;
         this.loading = true;
         this.lastVisible = null;
-        this.getData();
         this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
+        this.getData();
       })
       modal.present();
     } else {
@@ -280,24 +280,6 @@ export class Tab1Page {
     }
   }
 
-  getFilteredTopics(value) {
-    if (this.topicOptions.length === 0) {
-      let a = this.getFilteredArticles(value);
-      return a;
-    } else {
-      let allowedArticles = [];
-      for (let i = 0; i < value.length; i++) {
-        for (let j = 0; j < this.topicOptions.length; j++) {
-          if (value[i].topic === this.topicOptions[j].id && this.topicOptions[j].checked) {
-            allowedArticles.push(value[i]);
-            break;
-          }
-        }
-      }
-      return this.getFilteredArticles(allowedArticles);
-    }
-  }
-
   //Only allows article through if it is on the filters (e.g. allow Washington Post article to show if Washington Post filter is on)
   getFilteredArticles(articles) {
     let allowedArticles = [];
@@ -346,15 +328,37 @@ export class Tab1Page {
       this.selectedTab.toLocaleLowerCase() + '-articles'
     );
     let q;
-    if (this.lastVisible) {
-      q = query(responsesRef, orderBy('date', 'desc'), orderBy("__name__", 'desc'), where('deleted', '==', false), limit(this.limit), startAfter(this.lastVisible));
-    } else {
-      q = query(responsesRef, orderBy('date', 'desc'), orderBy("__name__", 'desc'), where('deleted', '==', false), limit(this.limit));
-    }
-    let docSnaps = await getDocs(q);
-    this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
+    console.log(this.topicCheckedList);
+    let topicIds = [];
+    this.topicCheckedList.forEach((t) => {topicIds.push(t.id)});
+    let docSnaps: QuerySnapshot<unknown>;
     let items = [];
-    if (docSnaps.size < this.limit) this.canGetMoreData = false;
+    
+      for(let i = 0; i < this.topicCheckedList.length; i++){
+        if (this.lastVisible) {
+          q = query(responsesRef, 
+            orderBy('date', 'desc'), 
+            orderBy("__name__", 'desc'), 
+            where('topic', 'in', topicIds), 
+            where('deleted', '==', false), 
+            limit(this.limit),
+            startAfter(this.lastVisible));
+
+        } else {
+          q = query(responsesRef, 
+            orderBy('date', 'desc'), 
+            orderBy("__name__", 'desc'), 
+            where('topic', 'in', topicIds), 
+            where('deleted', '==', false), 
+            limit(this.limit));
+        }
+        docSnaps = await getDocs(q);
+
+        this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
+        if (docSnaps.size < this.limit) {
+          this.canGetMoreData = false;
+        }
+      }
     
     //Check if user wants to see read articles
     if(this.currentUserDoc) {
@@ -366,6 +370,8 @@ export class Tab1Page {
         console.log("No user doc found!");
       }
     }
+
+    
     docSnaps.forEach((d) => {
       if(this.userService.getLoggedInUser()) {
         //Show read articles
@@ -381,7 +387,7 @@ export class Tab1Page {
       } else items.push(d.data());
     });
 
-    this.items.push(...this.getFilteredTopics(items));
+    this.items.push(...this.getFilteredArticles(items));
     if (this.hasSearched) this.searchShownArticles();
     if (this.items.length < this.limit && this.canGetMoreData) await this.getData();
     this.loading = false;
