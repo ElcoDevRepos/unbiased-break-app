@@ -371,20 +371,22 @@ export class Tab1Page {
       }
     }
 
-    
+    //Push articles to items
     docSnaps.forEach((d) => {
-      if(this.userService.getLoggedInUser()) {
-        //Show read articles
-        if(this.showReadArticles) {
-          items.push(d.data());
-        }
-        //Don't show read articles
-        else {
-          if(!this.readArticles.includes(d.data()['id'])) {
+      if(d.data()['deleted'] == false) {
+        if(this.userService.getLoggedInUser()) {
+          //Show read articles
+          if(this.showReadArticles) {
             items.push(d.data());
           }
-        }
-      } else items.push(d.data());
+          //Don't show read articles
+          else {
+            if(!this.readArticles.includes(d.data()['id'])) {
+              items.push(d.data());
+            }
+          }
+        } else items.push(d.data());
+      }
     });
 
     this.items.push(...this.getFilteredArticles(items));
