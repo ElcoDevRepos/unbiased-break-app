@@ -328,7 +328,6 @@ export class Tab1Page {
       this.selectedTab.toLocaleLowerCase() + '-articles'
     );
     let q;
-    console.log(this.topicCheckedList);
     let topicIds = [];
     this.topicCheckedList.forEach((t) => {topicIds.push(t.id)});
     let docSnaps: QuerySnapshot<unknown>;
