@@ -22,7 +22,7 @@ export class Tab1Page {
   selectedTopic = "all";
   loading = true;
   spinning = false;
-  lastVisible;
+  lastVisible = [];
   leftFilters = [];
   middleFilters = [];
   rightFilters = [];
@@ -162,7 +162,7 @@ export class Tab1Page {
         this.items = [];
         this.topicOptions = response.data;
         this.loading = true;
-        this.lastVisible = null;
+        this.lastVisible = [];
         this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
         this.getData();
       })
@@ -274,7 +274,7 @@ export class Tab1Page {
       );
       updateDoc(userRef, { topics: this.topicSelectList })
       this.items = [];
-      this.lastVisible = null;
+      this.lastVisible = [];
       this.loading = true;
       this.getData();
     }
@@ -327,34 +327,49 @@ export class Tab1Page {
       this.firestore,
       this.selectedTab.toLocaleLowerCase() + '-articles'
     );
-    let q;
+
+    let q : any[] = [];
+    const totalBatches = Math.ceil(this.topicCheckedList.length / 10);
     let topicIds = [];
-    this.topicCheckedList.forEach((t) => {topicIds.push(t.id)});
-    let docSnaps: QuerySnapshot<unknown>;
-    let items = [];
-    
-    if (this.lastVisible) {
-      q = query(responsesRef, 
-          orderBy('date', 'desc'), 
-          orderBy("__name__", 'desc'), 
-          where('topic', 'in', topicIds), 
-          where('deleted', '==', false), 
-          limit(this.limit),
-          startAfter(this.lastVisible));
 
-    } else {
-      q = query(responsesRef, 
-          orderBy('date', 'desc'), 
-          orderBy("__name__", 'desc'), 
-          where('topic', 'in', topicIds), 
-          where('deleted', '==', false), 
-          limit(this.limit));
+    for (let i = 0; i < totalBatches; i++) {
+      topicIds.push([]);
     }
-      docSnaps = await getDocs(q);
 
-    this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
-    if (docSnaps.size < this.limit) {
-      this.canGetMoreData = false;
+    this.topicCheckedList.forEach((t, index) => {
+      const batchIndex = Math.floor(index / 10);
+      topicIds[batchIndex].push(t.id);
+    });
+
+
+    let docSnaps: QuerySnapshot<unknown>[] = [];
+    let items = [];
+
+    for(let i = 0; i < topicIds.length; i++){
+      if (this.lastVisible[i]) {
+        q[i] = query(responsesRef, 
+            orderBy('date', 'desc'), 
+            orderBy("__name__", 'desc'), 
+            where('topic', 'in', topicIds[i]), 
+            where('deleted', '==', false), 
+            limit(this.limit),
+            startAfter(this.lastVisible[i]));
+
+      } else {
+        q[i] = query(responsesRef, 
+            orderBy('date', 'desc'), 
+            orderBy("__name__", 'desc'), 
+            where('topic', 'in', topicIds[i]), 
+            where('deleted', '==', false), 
+            limit(this.limit));
+      }
+
+      docSnaps[i] = await getDocs(q[i]);
+
+      this.lastVisible[i] = docSnaps[i].docs[docSnaps[i].docs.length - 1];
+      if (docSnaps[i].size < this.limit) {
+        this.canGetMoreData = false;
+      }
     }
     
     //Check if user wants to see read articles
@@ -369,22 +384,24 @@ export class Tab1Page {
     }
 
     //Push articles to items
-    docSnaps.forEach((d) => {
-      if(d.data()['deleted'] == false) {
-        if(this.userService.getLoggedInUser()) {
-          //Show read articles
-          if(this.showReadArticles) {
-            items.push(d.data());
-          }
-          //Don't show read articles
-          else {
-            if(!this.readArticles.includes(d.data()['id'])) {
+    for(let i = 0; i < docSnaps.length; i++){
+      docSnaps[i].forEach((d) => {
+        if(d.data()['deleted'] == false) {
+          if(this.userService.getLoggedInUser()) {
+            //Show read articles
+            if(this.showReadArticles) {
               items.push(d.data());
             }
-          }
-        } else items.push(d.data());
-      }
-    });
+            //Don't show read articles
+            else {
+              if(!this.readArticles.includes(d.data()['id'])) {
+                items.push(d.data());
+              }
+            }
+          } else items.push(d.data());
+        }
+      });
+    }
 
     this.items.push(...this.getFilteredArticles(items));
     if (this.hasSearched) this.searchShownArticles();
@@ -431,7 +448,7 @@ export class Tab1Page {
 
   segmentChanged() {
     this.items = [];
-    this.lastVisible = null;
+    this.lastVisible = [];
     this.loading = true;
     this.getData();
   }
@@ -454,7 +471,7 @@ export class Tab1Page {
       ]
     })
     this.hasSearched = false;
-    this.lastVisible = null;
+    this.lastVisible = [];
     this.items = [];
     await this.getData();
   }
@@ -475,7 +492,7 @@ export class Tab1Page {
 
   clearSearch() {
     this.hasSearched = false;
-    this.lastVisible = null;
+    this.lastVisible = [];
     this.items = [];
     this.loading = true;
     this.getData();
@@ -483,7 +500,7 @@ export class Tab1Page {
 
   async doRefresh(event) {
     this.hasSearched = false;
-    this.lastVisible = null;
+    this.lastVisible = [];
     this.items = [];
     await this.getData();
     event.target.complete();
