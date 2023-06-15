@@ -333,31 +333,29 @@ export class Tab1Page {
     let docSnaps: QuerySnapshot<unknown>;
     let items = [];
     
-      for(let i = 0; i < this.topicCheckedList.length; i++){
-        if (this.lastVisible) {
-          q = query(responsesRef, 
-            orderBy('date', 'desc'), 
-            orderBy("__name__", 'desc'), 
-            where('topic', 'in', topicIds), 
-            where('deleted', '==', false), 
-            limit(this.limit),
-            startAfter(this.lastVisible));
+    if (this.lastVisible) {
+      q = query(responsesRef, 
+          orderBy('date', 'desc'), 
+          orderBy("__name__", 'desc'), 
+          where('topic', 'in', topicIds), 
+          where('deleted', '==', false), 
+          limit(this.limit),
+          startAfter(this.lastVisible));
 
-        } else {
-          q = query(responsesRef, 
-            orderBy('date', 'desc'), 
-            orderBy("__name__", 'desc'), 
-            where('topic', 'in', topicIds), 
-            where('deleted', '==', false), 
-            limit(this.limit));
-        }
-        docSnaps = await getDocs(q);
+    } else {
+      q = query(responsesRef, 
+          orderBy('date', 'desc'), 
+          orderBy("__name__", 'desc'), 
+          where('topic', 'in', topicIds), 
+          where('deleted', '==', false), 
+          limit(this.limit));
+    }
+      docSnaps = await getDocs(q);
 
-        this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
-        if (docSnaps.size < this.limit) {
-          this.canGetMoreData = false;
-        }
-      }
+    this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
+    if (docSnaps.size < this.limit) {
+      this.canGetMoreData = false;
+    }
     
     //Check if user wants to see read articles
     if(this.currentUserDoc) {
