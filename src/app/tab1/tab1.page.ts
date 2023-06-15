@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot } from '@angular/fire/firestore';
+import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot, endBefore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { ModalController, Platform } from '@ionic/angular';
@@ -22,7 +22,7 @@ export class Tab1Page {
   selectedTopic = "all";
   loading = true;
   spinning = false;
-  lastVisible = [];
+  lastVisible;
   leftFilters = [];
   middleFilters = [];
   rightFilters = [];
@@ -162,7 +162,7 @@ export class Tab1Page {
         this.items = [];
         this.topicOptions = response.data;
         this.loading = true;
-        this.lastVisible = [];
+        this.lastVisible = null;
         this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
         this.getData();
       })
@@ -274,7 +274,7 @@ export class Tab1Page {
       );
       updateDoc(userRef, { topics: this.topicSelectList })
       this.items = [];
-      this.lastVisible = [];
+      this.lastVisible = null;
       this.loading = true;
       this.getData();
     }
@@ -344,33 +344,68 @@ export class Tab1Page {
 
     let docSnaps: QuerySnapshot<unknown>[] = [];
     let items = [];
+    let endPoint;
+    let setEndPoint = false;
 
     for(let i = 0; i < topicIds.length; i++){
-      if (this.lastVisible[i]) {
-        q[i] = query(responsesRef, 
-            orderBy('date', 'desc'), 
-            orderBy("__name__", 'desc'), 
-            where('topic', 'in', topicIds[i]), 
-            where('deleted', '==', false), 
-            limit(this.limit),
-            startAfter(this.lastVisible[i]));
 
-      } else {
+      //Get first batch of 10 starting at last visable
+      if(this.lastVisible && i == 0){
+        q[i] = query(responsesRef, 
+          orderBy('date', 'desc'), 
+          orderBy("__name__", 'desc'), 
+          where('topic', 'in', topicIds[i]), 
+          where('deleted', '==', false), 
+          limit(this.limit),
+          startAfter(this.lastVisible));
+
+          setEndPoint = true;
+      } 
+      
+      //Get rest of 10 batches at last visable stopping at end point
+      else if(this.lastVisible && i != 0){
+        q[i] = query(responsesRef, 
+          orderBy('date', 'desc'), 
+          orderBy("__name__", 'desc'), 
+          where('topic', 'in', topicIds[i]), 
+          where('deleted', '==', false), 
+          limit(this.limit),
+          startAfter(this.lastVisible),
+          endBefore(endPoint));
+      }
+
+      //Very first batch of 10 with no start after
+      else if(!this.lastVisible && i == 0){
         q[i] = query(responsesRef, 
             orderBy('date', 'desc'), 
             orderBy("__name__", 'desc'), 
             where('topic', 'in', topicIds[i]), 
             where('deleted', '==', false), 
             limit(this.limit));
+
+            setEndPoint = true;
+      }
+
+      //Other first batches of 10 with no start after
+      else if(!this.lastVisible && i != 0){
+        q[i] = query(responsesRef, 
+            orderBy('date', 'desc'), 
+            orderBy("__name__", 'desc'), 
+            where('topic', 'in', topicIds[i]), 
+            where('deleted', '==', false), 
+            limit(this.limit),
+            endBefore(endPoint));
       }
 
       docSnaps[i] = await getDocs(q[i]);
+      if(setEndPoint) endPoint = docSnaps[0].docs[docSnaps[0].docs.length - 1];
 
-      this.lastVisible[i] = docSnaps[i].docs[docSnaps[i].docs.length - 1];
       if (docSnaps[i].size < this.limit) {
         this.canGetMoreData = false;
       }
     }
+
+    this.lastVisible = docSnaps[0].docs[docSnaps[0].docs.length - 1];
     
     //Check if user wants to see read articles
     if(this.currentUserDoc) {
@@ -402,6 +437,8 @@ export class Tab1Page {
         }
       });
     }
+
+    items.forEach((i) => {console.log(i.date, i.topic)})
 
     this.items.push(...this.getFilteredArticles(items));
     if (this.hasSearched) this.searchShownArticles();
@@ -448,7 +485,7 @@ export class Tab1Page {
 
   segmentChanged() {
     this.items = [];
-    this.lastVisible = [];
+    this.lastVisible = null;
     this.loading = true;
     this.getData();
   }
@@ -471,7 +508,7 @@ export class Tab1Page {
       ]
     })
     this.hasSearched = false;
-    this.lastVisible = [];
+    this.lastVisible = null;
     this.items = [];
     await this.getData();
   }
@@ -492,7 +529,7 @@ export class Tab1Page {
 
   clearSearch() {
     this.hasSearched = false;
-    this.lastVisible = [];
+    this.lastVisible = null;
     this.items = [];
     this.loading = true;
     this.getData();
@@ -500,7 +537,7 @@ export class Tab1Page {
 
   async doRefresh(event) {
     this.hasSearched = false;
-    this.lastVisible = [];
+    this.lastVisible = null;
     this.items = [];
     await this.getData();
     event.target.complete();
