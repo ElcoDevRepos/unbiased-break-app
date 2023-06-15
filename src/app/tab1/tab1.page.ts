@@ -327,7 +327,8 @@ export class Tab1Page {
       this.firestore,
       this.selectedTab.toLocaleLowerCase() + '-articles'
     );
-
+    
+    //Set up for collection queries in batches of 10 topics
     let q : any[] = [];
     const totalBatches = Math.ceil(this.topicCheckedList.length / 10);
     let topicIds = [];
@@ -340,6 +341,10 @@ export class Tab1Page {
       const batchIndex = Math.floor(index / 10);
       topicIds[batchIndex].push(t.id);
     });
+
+    //Set new limit dependent on how many batches are going to be fetched
+    const lim = Math.ceil(this.limit/topicIds.length);
+    console.log(lim);
 
 
     let docSnaps: QuerySnapshot<unknown>[] = [];
@@ -356,7 +361,7 @@ export class Tab1Page {
           orderBy("__name__", 'desc'), 
           where('topic', 'in', topicIds[i]), 
           where('deleted', '==', false), 
-          limit(this.limit),
+          limit(lim),
           startAfter(this.lastVisible));
 
           setEndPoint = true;
@@ -369,7 +374,7 @@ export class Tab1Page {
           orderBy("__name__", 'desc'), 
           where('topic', 'in', topicIds[i]), 
           where('deleted', '==', false), 
-          limit(this.limit),
+          limit(lim),
           startAfter(this.lastVisible),
           endBefore(endPoint));
       }
@@ -381,7 +386,7 @@ export class Tab1Page {
             orderBy("__name__", 'desc'), 
             where('topic', 'in', topicIds[i]), 
             where('deleted', '==', false), 
-            limit(this.limit));
+            limit(lim));
 
             setEndPoint = true;
       }
@@ -393,14 +398,14 @@ export class Tab1Page {
             orderBy("__name__", 'desc'), 
             where('topic', 'in', topicIds[i]), 
             where('deleted', '==', false), 
-            limit(this.limit),
+            limit(lim),
             endBefore(endPoint));
       }
 
       docSnaps[i] = await getDocs(q[i]);
       if(setEndPoint) endPoint = docSnaps[0].docs[docSnaps[0].docs.length - 1];
 
-      if (docSnaps[i].size < this.limit) {
+      if (docSnaps[i].size < lim) {
         this.canGetMoreData = false;
       }
     }
