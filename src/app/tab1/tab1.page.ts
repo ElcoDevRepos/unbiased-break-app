@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot } from '@angular/fire/firestore';
+import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot, endBefore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { ModalController, Platform } from '@ionic/angular';
@@ -327,37 +327,90 @@ export class Tab1Page {
       this.firestore,
       this.selectedTab.toLocaleLowerCase() + '-articles'
     );
-    let q;
-    let topicIds = [];
-    this.topicCheckedList.forEach((t) => {topicIds.push(t.id)});
-    let docSnaps: QuerySnapshot<unknown>;
-    let items = [];
     
-      for(let i = 0; i < this.topicCheckedList.length; i++){
-        if (this.lastVisible) {
-          q = query(responsesRef, 
-            orderBy('date', 'desc'), 
-            orderBy("__name__", 'desc'), 
-            where('topic', 'in', topicIds), 
-            where('deleted', '==', false), 
-            limit(this.limit),
-            startAfter(this.lastVisible));
+    //Set up for collection queries in batches of 10 topics
+    let q : any[] = [];
+    const totalBatches = Math.ceil(this.topicCheckedList.length / 10);
+    let topicIds = [];
 
-        } else {
-          q = query(responsesRef, 
-            orderBy('date', 'desc'), 
-            orderBy("__name__", 'desc'), 
-            where('topic', 'in', topicIds), 
-            where('deleted', '==', false), 
-            limit(this.limit));
-        }
-        docSnaps = await getDocs(q);
+    for (let i = 0; i < totalBatches; i++) {
+      topicIds.push([]);
+    }
 
-        this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
-        if (docSnaps.size < this.limit) {
-          this.canGetMoreData = false;
-        }
+    this.topicCheckedList.forEach((t, index) => {
+      const batchIndex = Math.floor(index / 10);
+      topicIds[batchIndex].push(t.id);
+    });
+
+    //Set new limit dependent on how many batches are going to be fetched
+    const lim = Math.ceil(this.limit/topicIds.length);
+    console.log(lim);
+
+
+    let docSnaps: QuerySnapshot<unknown>[] = [];
+    let items = [];
+    let endPoint;
+    let setEndPoint = false;
+
+    for(let i = 0; i < topicIds.length; i++){
+
+      //Get first batch of 10 starting at last visable
+      if(this.lastVisible && i == 0){
+        q[i] = query(responsesRef, 
+          orderBy('date', 'desc'), 
+          orderBy("__name__", 'desc'), 
+          where('topic', 'in', topicIds[i]), 
+          where('deleted', '==', false), 
+          limit(lim),
+          startAfter(this.lastVisible));
+
+          setEndPoint = true;
+      } 
+      
+      //Get rest of 10 batches at last visable stopping at end point
+      else if(this.lastVisible && i != 0){
+        q[i] = query(responsesRef, 
+          orderBy('date', 'desc'), 
+          orderBy("__name__", 'desc'), 
+          where('topic', 'in', topicIds[i]), 
+          where('deleted', '==', false), 
+          limit(lim),
+          startAfter(this.lastVisible),
+          endBefore(endPoint));
       }
+
+      //Very first batch of 10 with no start after
+      else if(!this.lastVisible && i == 0){
+        q[i] = query(responsesRef, 
+            orderBy('date', 'desc'), 
+            orderBy("__name__", 'desc'), 
+            where('topic', 'in', topicIds[i]), 
+            where('deleted', '==', false), 
+            limit(lim));
+
+            setEndPoint = true;
+      }
+
+      //Other first batches of 10 with no start after
+      else if(!this.lastVisible && i != 0){
+        q[i] = query(responsesRef, 
+            orderBy('date', 'desc'), 
+            orderBy("__name__", 'desc'), 
+            where('topic', 'in', topicIds[i]), 
+            where('deleted', '==', false), 
+            limit(lim),
+            endBefore(endPoint));
+      }
+
+      docSnaps[i] = await getDocs(q[i]);
+      if(setEndPoint) endPoint = docSnaps[0].docs[docSnaps[0].docs.length - 1];
+
+      if (docSnaps[i].size < lim) {
+        this.canGetMoreData = false;
+      }
+    }
+
+    this.lastVisible = docSnaps[0].docs[docSnaps[0].docs.length - 1];
     
     //Check if user wants to see read articles
     if(this.currentUserDoc) {
@@ -371,22 +424,26 @@ export class Tab1Page {
     }
 
     //Push articles to items
-    docSnaps.forEach((d) => {
-      if(d.data()['deleted'] == false) {
-        if(this.userService.getLoggedInUser()) {
-          //Show read articles
-          if(this.showReadArticles) {
-            items.push(d.data());
-          }
-          //Don't show read articles
-          else {
-            if(!this.readArticles.includes(d.data()['id'])) {
+    for(let i = 0; i < docSnaps.length; i++){
+      docSnaps[i].forEach((d) => {
+        if(d.data()['deleted'] == false) {
+          if(this.userService.getLoggedInUser()) {
+            //Show read articles
+            if(this.showReadArticles) {
               items.push(d.data());
             }
-          }
-        } else items.push(d.data());
-      }
-    });
+            //Don't show read articles
+            else {
+              if(!this.readArticles.includes(d.data()['id'])) {
+                items.push(d.data());
+              }
+            }
+          } else items.push(d.data());
+        }
+      });
+    }
+
+    items.forEach((i) => {console.log(i.date, i.topic)})
 
     this.items.push(...this.getFilteredArticles(items));
     if (this.hasSearched) this.searchShownArticles();
