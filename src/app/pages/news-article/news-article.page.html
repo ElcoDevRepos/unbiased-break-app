@@ -38,6 +38,10 @@
       <ion-card-subtitle>{{article.siteName}}</ion-card-subtitle>
       <ion-card-subtitle>{{article.date?.toDate() | date:'mediumDate'}}</ion-card-subtitle>
       <ion-card-subtitle><a [href]="article.link">{{article.link}}</a></ion-card-subtitle>
+      <ion-item class="reader-counter">
+        <ion-label>Current Readers</ion-label>
+        <ion-badge color="primary">23</ion-badge>
+      </ion-item>
     </ion-card-header>
     <ion-card-content class="news-article">
       <div [innerHTML]="article.content" ></div>
