@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { Firestore, collection, where, query, getDocs, doc, addDoc, getDoc, updateDoc, Timestamp } from '@angular/fire/firestore';
+import { Firestore, collection, where, query, getDocs, doc, addDoc, getDoc, updateDoc, Timestamp, collectionData, setDoc, docData, increment } from '@angular/fire/firestore';
 import { UserService } from 'src/app/services/user.service';
 import { ModalController, Platform } from '@ionic/angular';
 import { CommentthreadComponent } from 'src/app/modals/commentthread/commentthread.component';
@@ -12,13 +12,18 @@ import { Share } from '@capacitor/share';
 import { Auth } from '@angular/fire/auth';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { v4 } from 'uuid';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-news-article',
   templateUrl: './news-article.page.html',
   styleUrls: ['./news-article.page.scss'],
 })
+
 export class NewsArticlePage implements OnInit, OnDestroy {
+
+  currentReaders$;
+
   article = {} as any;
   loading = true;
   artticleType;
@@ -33,10 +38,10 @@ export class NewsArticlePage implements OnInit, OnDestroy {
 
   allRelatedArticles = [];
   currentReaderCount : number = 1;
-  tempId : string = '';
+  removeAsReader : boolean  = true;
 
   constructor(public userService: UserService, public sanitizer: DomSanitizer, private route: ActivatedRoute, private firestore: Firestore,
-    private modalCtrl: ModalController, private admobService: AdmobService, private platform: Platform, private auth: Auth, private iab: InAppBrowser) { }
+    private modalCtrl: ModalController, private admobService: AdmobService, private platform: Platform, private auth: Auth, private iab: InAppBrowser) {}
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
@@ -45,25 +50,15 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     this.route.params.subscribe((params) => this.getNewsArticle(params.id, params.type));
     this.addToRead();
   }
-  
+
   async ngOnDestroy() {
-    //Remove this users current reader timestamp when exiting article
-    const q = query(collection(this.firestore, 'current-readers'), where('articleId', '==', this.articleId));
-    let docs = await getDocs(q);
-
-    docs.forEach(async (d) => {
-
-      const readerList = d.data()['readers'];
-      const index = readerList.findIndex(item => item.user === this.tempId);
-      if (index !== -1) {
-        // Remove users timestamp from list
-        readerList.splice(index, 1);
-      }      
-
-      await updateDoc(doc(this.firestore, 'current-readers', d.id), {
-        readers: readerList
-      })
-    });
+    //Remove as current reader on compnent exit
+    if(this.removeAsReader){
+      this.removeAsReader = false;
+      const currentReadersCollection = collection(this.firestore, 'current-readers');
+      const articleDocRef = doc(currentReadersCollection, this.articleId);
+      await updateDoc(articleDocRef, { currentReaders: (this.currentReaderCount-1) });
+    }
   }
 
   ionViewWillEnter() {
@@ -76,43 +71,37 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   }
 
   async setCurrentReaders () {
-    const q = query(collection(this.firestore, 'current-readers'), where('articleId', '==', this.articleId));
-    let docs = await getDocs(q);
 
-    //Set a temp id to identify when removing timestamp
-    this.tempId = v4();
-    
+    const q = query(collection(this.firestore, 'current-readers'), where('__name__', '==', this.articleId));
+    let docsRef = await getDocs(q);
+
     //Create current readers doc
-    if(docs.empty) {
-      const docRef = await addDoc(collection(this.firestore, 'current-readers'), {
-        articleId: this.articleId,
-        readers: [{
-          user: this.tempId,
-          timestamp: Timestamp.now()
-        }]
+    if(docsRef.empty) {
+      await setDoc(doc(this.firestore, 'current-readers', this.articleId), {
+        currentReaders: 0
       });
     }
 
-    //Update already existing doc
-    else {
-      docs.forEach(async (d) => {
-        const readerTimestamps = d.data()['readers'];
+    const currentReadersCollection = collection(this.firestore, 'current-readers');
+    const articleDocRef = doc(currentReadersCollection, this.articleId);
 
-        const currentTime = Date.now();
-        const fiveMinutesAgo = currentTime - 5 * 60 * 1000;
+    let readers = 0;
+    let readersRef = await getDoc(articleDocRef);
+    readers = readersRef.data()['currentReaders']+1;
+    if(readers < 1) readers = 1;
 
+    await updateDoc(articleDocRef, { currentReaders: readers });
 
-        readerTimestamps.forEach((t) => {
+    this.currentReaders$ = docData(articleDocRef) as Observable<any>;
+    const subscription = docData(articleDocRef).subscribe((val) => {
+      this.currentReaderCount = val.currentReaders;
+    });
 
-          if (t.timestamp.seconds*1000 >= fiveMinutesAgo) {
-
-            this.currentReaderCount++;
-          }
-        });
-
-        await updateDoc(doc(this.firestore, 'current-readers', d.id), {
-          readers: [...readerTimestamps, { timestamp: Timestamp.now(), user: this.tempId }]
-        })
+    //Handle component close
+    if(this.removeAsReader){
+      window.addEventListener('beforeunload', async () => {
+        this.removeAsReader = false;
+        await updateDoc(articleDocRef, { currentReaders: (this.currentReaderCount-1) });
       });
     }
   }
