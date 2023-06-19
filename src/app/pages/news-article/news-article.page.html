@@ -41,7 +41,7 @@
     </ion-card-header>
     <ion-item class="reader-counter">
       <ion-label>Current Readers</ion-label>
-      <ion-badge color="primary">23</ion-badge>
+      <ion-badge color="primary">{{ currentReaderCount }}</ion-badge>
     </ion-item>
     <ion-card-content class="news-article">
       <div [innerHTML]="article.content" ></div>

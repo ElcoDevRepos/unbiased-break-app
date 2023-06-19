@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { Firestore, collection, where, query, getDocs, doc, addDoc, getDoc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, collection, where, query, getDocs, doc, addDoc, getDoc, updateDoc, Timestamp } from '@angular/fire/firestore';
 import { UserService } from 'src/app/services/user.service';
 import { ModalController, Platform } from '@ionic/angular';
 import { CommentthreadComponent } from 'src/app/modals/commentthread/commentthread.component';
@@ -11,13 +11,14 @@ import { HttpClient } from '@angular/common/http';
 import { Share } from '@capacitor/share';
 import { Auth } from '@angular/fire/auth';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { v4 } from 'uuid';
 
 @Component({
   selector: 'app-news-article',
   templateUrl: './news-article.page.html',
   styleUrls: ['./news-article.page.scss'],
 })
-export class NewsArticlePage implements OnInit {
+export class NewsArticlePage implements OnInit, OnDestroy {
   article = {} as any;
   loading = true;
   artticleType;
@@ -31,6 +32,8 @@ export class NewsArticlePage implements OnInit {
   isDesktop;
 
   allRelatedArticles = [];
+  currentReaderCount : number = 1;
+  tempId : string = '';
 
   constructor(public userService: UserService, public sanitizer: DomSanitizer, private route: ActivatedRoute, private firestore: Firestore,
     private modalCtrl: ModalController, private admobService: AdmobService, private platform: Platform, private auth: Auth, private iab: InAppBrowser) { }
@@ -42,6 +45,26 @@ export class NewsArticlePage implements OnInit {
     this.route.params.subscribe((params) => this.getNewsArticle(params.id, params.type));
     this.addToRead();
   }
+  
+  async ngOnDestroy() {
+    //Remove this users current reader timestamp when exiting article
+    const q = query(collection(this.firestore, 'current-readers'), where('articleId', '==', this.articleId));
+    let docs = await getDocs(q);
+
+    docs.forEach(async (d) => {
+
+      const readerList = d.data()['readers'];
+      const index = readerList.findIndex(item => item.user === this.tempId);
+      if (index !== -1) {
+        // Remove users timestamp from list
+        readerList.splice(index, 1);
+      }      
+
+      await updateDoc(doc(this.firestore, 'current-readers', d.id), {
+        readers: readerList
+      })
+    });
+  }
 
   ionViewWillEnter() {
     this.admobService.articleClicked();
@@ -50,6 +73,48 @@ export class NewsArticlePage implements OnInit {
 
   ionViewWillLeave() {
     this.admobService.hideBanner();
+  }
+
+  async setCurrentReaders () {
+    const q = query(collection(this.firestore, 'current-readers'), where('articleId', '==', this.articleId));
+    let docs = await getDocs(q);
+
+    //Set a temp id to identify when removing timestamp
+    this.tempId = v4();
+    
+    //Create current readers doc
+    if(docs.empty) {
+      const docRef = await addDoc(collection(this.firestore, 'current-readers'), {
+        articleId: this.articleId,
+        readers: [{
+          user: this.tempId,
+          timestamp: Timestamp.now()
+        }]
+      });
+    }
+
+    //Update already existing doc
+    else {
+      docs.forEach(async (d) => {
+        const readerTimestamps = d.data()['readers'];
+
+        const currentTime = Date.now();
+        const fiveMinutesAgo = currentTime - 5 * 60 * 1000;
+
+
+        readerTimestamps.forEach((t) => {
+
+          if (t.timestamp.seconds*1000 >= fiveMinutesAgo) {
+
+            this.currentReaderCount++;
+          }
+        });
+
+        await updateDoc(doc(this.firestore, 'current-readers', d.id), {
+          readers: [...readerTimestamps, { timestamp: Timestamp.now(), user: this.tempId }]
+        })
+      });
+    }
   }
 
   async addToRead() {
@@ -116,6 +181,7 @@ export class NewsArticlePage implements OnInit {
     }).toPromise() as Array<any>;
     this.urlsToPlay = [...urls];*/
     await this.getComments();
+    await this.setCurrentReaders();
     this.loading = false;
   }
 
