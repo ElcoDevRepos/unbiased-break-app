@@ -38,7 +38,10 @@ export class Tab3Page implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
+    this.createFakeHistory();
+  }
 
+  createFakeHistory() {
     const modalState = {
       modal : true,
       desc : 'fake state for our modal'
