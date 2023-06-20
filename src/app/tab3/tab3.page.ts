@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   Auth,
@@ -23,7 +23,8 @@ import { async } from '@angular/core/testing';
   templateUrl: 'tab3.page.html',
   styleUrls: ['tab3.page.scss']
 })
-export class Tab3Page {
+
+export class Tab3Page implements OnInit, OnDestroy {
   expanded = false;
   replies;
   reminders;
@@ -33,14 +34,35 @@ export class Tab3Page {
   isDesktop: boolean;
   displayName = this.auth.currentUser.displayName
   constructor(private router: Router, public auth: Auth, private modal: ModalController, private userService: UserService, private actionSheetController: ActionSheetController,
-   private storage: Storage, private loadingCtrl: LoadingController, private fireStore: Firestore, private platform: Platform, private alertCtrl: AlertController) { }
+  private storage: Storage, private loadingCtrl: LoadingController, private fireStore: Firestore, private platform: Platform, private alertCtrl: AlertController) { }
 
-   ngOnInit() {
+  ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
-   }
+    this.createFakeHistory();
+  }
+
+  createFakeHistory() {
+    const modalState = {
+      modal : true,
+      desc : 'fake state for our modal'
+    };
+    history.pushState(modalState, null);
+  }
+
+  ngOnDestroy() {
+    if (window.history.state.modal) {
+      history.back();
+    }
+  }
+
   async ionViewWillEnter() {
     this.favorites = await this.userService.getFavorites() as any;
     this.checkNotificationSettings();
+  }
+
+  @HostListener('window:popstate', ['$event'])
+  dismissModal () {
+    this.modal.dismiss();
   }
 
   async getReadArticles() {
