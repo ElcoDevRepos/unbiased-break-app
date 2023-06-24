@@ -35,6 +35,9 @@
       <ion-card class="topic-card" *ngFor="let topic of topicOptions" [class.topic-checked]="topic.checked" [class.topic-not-checked]="!topic.checked" (click)="topicClick(topic)">
         {{ topic.display | titlecase}}
       </ion-card>
+      <ion-card class="topic-card" (click)="openTopicModal()">
+        Edit Topics
+      </ion-card>
     </div>
   </div>
 

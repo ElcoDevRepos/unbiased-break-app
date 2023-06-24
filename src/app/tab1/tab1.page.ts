@@ -558,12 +558,19 @@ export class Tab1Page {
     })
   }
 
-  topicClick(topic : any) {
+  async topicClick(topic : any) {
     const index = this.topicOptions.findIndex((t: any) => t.display === topic.display);
       if (index !== -1) {
         this.topicOptions[index].checked = !topic.checked;
       }
     this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
+    //Update user firestore doc
+    if(this.currentUserDoc){
+      await updateDoc(doc(this.firestore, "users", this.currentUserDoc.id), {
+        topics: this.topicOptions
+      });
+    }
+
     this.items = [];
     this.loading = true;
     this.lastVisible = null;
