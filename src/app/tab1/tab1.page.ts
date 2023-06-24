@@ -344,7 +344,6 @@ export class Tab1Page {
 
     //Set new limit dependent on how many batches are going to be fetched
     const lim = Math.ceil(this.limit/topicIds.length);
-    console.log(lim);
 
 
     let docSnaps: QuerySnapshot<unknown>[] = [];
@@ -442,8 +441,6 @@ export class Tab1Page {
         }
       });
     }
-
-    items.forEach((i) => {console.log(i.date, i.topic)})
 
     this.items.push(...this.getFilteredArticles(items));
     if (this.hasSearched) this.searchShownArticles();
