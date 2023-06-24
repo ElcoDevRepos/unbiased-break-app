@@ -29,14 +29,15 @@
   <ion-item class="show-gradient no-border">
     <ion-label class="topic-label">Subscribed Topics</ion-label>
   </ion-item>
-  <ion-item class="show-gradient no-border" lines="none" detail button (click)="openTopicModal()">
-    <div class="topic-card-container">
-      <ion-card class="topic-card" color="primary" *ngFor="let topic of topicCheckedList">{{ topic.display | titlecase}}</ion-card>
+
+  <div class="scroll-container">
+    <div class="scroll-content">
+      <ion-card class="topic-card" *ngFor="let topic of topicOptions" [class.topic-checked]="topic.checked" [class.topic-not-checked]="!topic.checked" (click)="topicClick(topic)">
+        {{ topic.display | titlecase}}
+      </ion-card>
     </div>
-    <!--<ion-select placeholder="Filter by Topics" [multiple]="true" (ionChange)="toggleCard()" [(ngModel)]="topicSelectList" [interfaceOptions]="customAlertOptions">
-      <ion-select-option *ngFor="let topic of topicOptions" [value]="topic.id">{{topic.display}}</ion-select-option>
-    </ion-select>-->
-  </ion-item>
+  </div>
+
   <div class="news-section" style="margin-left: 12px; margin-right: 12px; border-radius: 12px;">
     <div style="padding-top:6px">
       <ion-segment value="middle" [(ngModel)]="selectedTab" (ionChange)="segmentChanged()" [disabled]="loading">

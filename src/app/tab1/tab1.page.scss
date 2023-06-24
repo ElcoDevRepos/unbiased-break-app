@@ -279,16 +279,32 @@ ion-label p {
     margin-bottom: 5px;
 }
 
-.topic-card-container {
-    text-overflow: ellipsis;
-    white-space: nowrap; 
-    display: flex; 
-    flex-direction: row;
-    gap: 5px;
-}
-
 .topic-card {
     margin: 0px;
     padding: 3px 7px 3px 7px;
     font-size: medium;
+}
+
+.scroll-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px;
+}
+  
+.scroll-content {
+    display: inline-flex;
+}
+
+.scroll-content ion-card {
+    margin-left: 4px;
+}
+
+.topic-not-checked {
+    background-color: red;
+    color: #fff;
+}
+
+.topic-checked {
+    background-color: #3171e0;
+    color: #fff;
 }

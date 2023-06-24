@@ -557,4 +557,16 @@ export class Tab1Page {
       readArticles
     })
   }
+
+  topicClick(topic : any) {
+    const index = this.topicOptions.findIndex((t: any) => t.display === topic.display);
+      if (index !== -1) {
+        this.topicOptions[index].checked = !topic.checked;
+      }
+    this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
+    this.items = [];
+    this.loading = true;
+    this.lastVisible = null;
+    this.getData();
+  }
 }
