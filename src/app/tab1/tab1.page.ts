@@ -43,6 +43,8 @@ export class Tab1Page {
   isDesktop: boolean;
   readArticles = [];
   showReadArticles;
+  gettingData : boolean = false;
+
   constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform,
     private auth: Auth, private iab: InAppBrowser) { }
 
@@ -323,6 +325,8 @@ export class Tab1Page {
   }
 
   async getData() {
+    if(this.gettingData) return;
+    this.gettingData = true;
     const responsesRef = collection(
       this.firestore,
       this.selectedTab.toLocaleLowerCase() + '-articles'
@@ -447,6 +451,7 @@ export class Tab1Page {
 
     this.items.push(...this.getFilteredArticles(items));
     if (this.hasSearched) this.searchShownArticles();
+    this.gettingData = false;
     if (this.items.length < this.limit && this.canGetMoreData) await this.getData();
     this.loading = false;
   }
