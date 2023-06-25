@@ -348,7 +348,6 @@ export class Tab1Page {
 
     //Set new limit dependent on how many batches are going to be fetched
     const lim = Math.ceil(this.limit/topicIds.length);
-    console.log(lim);
 
 
     let docSnaps: QuerySnapshot<unknown>[] = [];
@@ -446,8 +445,6 @@ export class Tab1Page {
         }
       });
     }
-
-    items.forEach((i) => {console.log(i.date, i.topic)})
 
     this.items.push(...this.getFilteredArticles(items));
     if (this.hasSearched) this.searchShownArticles();
@@ -564,5 +561,24 @@ export class Tab1Page {
     updateDoc(doc(this.firestore, 'users', this.userService.getLoggedInUser().uid), {
       readArticles
     })
+  }
+
+  async topicClick(topic : any) {
+    const index = this.topicOptions.findIndex((t: any) => t.display === topic.display);
+      if (index !== -1) {
+        this.topicOptions[index].checked = !topic.checked;
+      }
+    this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
+    //Update user firestore doc
+    if(this.currentUserDoc){
+      await updateDoc(doc(this.firestore, "users", this.currentUserDoc.id), {
+        topics: this.topicOptions
+      });
+    }
+
+    this.items = [];
+    this.loading = true;
+    this.lastVisible = null;
+    this.getData();
   }
 }
