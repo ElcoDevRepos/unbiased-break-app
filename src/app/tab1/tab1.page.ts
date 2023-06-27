@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot, endBefore } from '@angular/fire/firestore';
+import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot, endBefore, addDoc, Timestamp } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { ModalController, Platform } from '@ionic/angular';
@@ -44,6 +44,7 @@ export class Tab1Page {
   readArticles = [];
   showReadArticles;
   gettingData : boolean = false;
+  requestedNewsSource : string = '';
 
   constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform,
     private auth: Auth, private iab: InAppBrowser) { }
@@ -580,5 +581,16 @@ export class Tab1Page {
     this.loading = true;
     this.lastVisible = null;
     this.getData();
+  }
+
+  async requestNewsSource () {
+    let ref = collection(this.firestore, 'requested-news-sources');
+    await addDoc(ref, {
+      user: this.auth.currentUser.email,
+      url: this.requestedNewsSource,
+      timestamp: Timestamp.now(),
+    }).then(() => {
+      console.log('success!');
+    }).catch((err) => console.error('Error', err));
   }
 }

@@ -113,6 +113,15 @@
         <ion-list>
           <ion-item-divider>
             <ion-label>
+              Request News Source
+            </ion-label>
+          </ion-item-divider>
+          <ion-item>
+            <ion-input [(ngModel)]="requestedNewsSource" label="Source" placeholder="Enter a news source"></ion-input>
+            <ion-button (click)="requestNewsSource()">Request</ion-button>
+          </ion-item>
+          <ion-item-divider>
+            <ion-label>
               Left Filters
             </ion-label>
           </ion-item-divider>
