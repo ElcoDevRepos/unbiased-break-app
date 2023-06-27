@@ -8,6 +8,8 @@ import FuzzySearch from 'fuzzy-search';
 import _ from 'lodash-es';
 import { TopicComponent } from '../modals/topic/topic.component';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { ToastController } from '@ionic/angular';
+
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -47,7 +49,7 @@ export class Tab1Page {
   requestedNewsSource : string = '';
 
   constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform,
-    private auth: Auth, private iab: InAppBrowser) { }
+    private auth: Auth, private iab: InAppBrowser, private toastController : ToastController) { }
 
   onArticleClick(item: any) {
     const link = item.link;
@@ -583,14 +585,55 @@ export class Tab1Page {
     this.getData();
   }
 
+  //Send request news source doc to firestore
   async requestNewsSource () {
-    let ref = collection(this.firestore, 'requested-news-sources');
-    await addDoc(ref, {
-      user: this.auth.currentUser.email,
-      url: this.requestedNewsSource,
-      timestamp: Timestamp.now(),
-    }).then(() => {
-      console.log('success!');
-    }).catch((err) => console.error('Error', err));
+
+    const urlPattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
+
+    // Test the URL against the pattern
+    if(this.requestedNewsSource.trim() != '' ){
+      if(urlPattern.test(this.requestedNewsSource)) {
+        let ref = collection(this.firestore, 'requested-news-sources');
+        await addDoc(ref, {
+          user: this.auth.currentUser.email,
+          url: this.requestedNewsSource,
+          timestamp: Timestamp.now(),
+        }).then( async () => {
+          console.log('success!');
+            const successToast = await this.toastController.create({
+              message: 'Successfully requested news source!',
+              duration: 2000,
+              position: 'top',
+            });
+            await successToast.present();
+        }).catch(async (err) => {
+          console.error('Error', err);
+          const errorToast = await this.toastController.create({
+            message: 'Error requesting news source!',
+            duration: 2000,
+            position: 'top',
+          });
+          await errorToast.present();
+        });
+      }
+      else {
+        console.error("Input is not in http format");
+        const formatToast = await this.toastController.create({
+        message: "Input is not in http format",
+        duration: 2000,
+        position: 'top',
+      });
+      await formatToast.present();
+      }
+    }
+    else {
+      console.error("Input can't be empty");
+      const emptyToast = await this.toastController.create({
+        message: "Input can't be empty",
+        duration: 1500,
+        position: 'top',
+      });
+      await emptyToast.present();
+    }
   }
 }
