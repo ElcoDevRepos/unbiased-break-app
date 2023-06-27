@@ -102,6 +102,7 @@
       <ion-header>
         <ion-toolbar>
           <ion-title>Filters</ion-title>
+          <ion-progress-bar *ngIf="requestNewsSourceLoading" type="indeterminate"></ion-progress-bar>
           <ion-buttons slot="start">
             <ion-back-button defaultHref="/tabs/tab1" (click)="closeAndSave()" text="">
               <ion-icon name="arrow-back"></ion-icon>

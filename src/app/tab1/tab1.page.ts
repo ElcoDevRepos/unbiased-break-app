@@ -47,6 +47,7 @@ export class Tab1Page {
   showReadArticles;
   gettingData : boolean = false;
   requestedNewsSource : string = '';
+  requestNewsSourceLoading : boolean = false;
 
   constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform,
     private auth: Auth, private iab: InAppBrowser, private toastController : ToastController) { }
@@ -587,6 +588,7 @@ export class Tab1Page {
 
   //Send request news source doc to firestore
   async requestNewsSource () {
+    this.requestNewsSourceLoading = true;
 
     const urlPattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
 
@@ -600,12 +602,14 @@ export class Tab1Page {
           timestamp: Timestamp.now(),
         }).then( async () => {
           console.log('success!');
-            const successToast = await this.toastController.create({
-              message: 'Successfully requested news source!',
-              duration: 2000,
-              position: 'top',
-            });
-            await successToast.present();
+          const successToast = await this.toastController.create({
+            message: 'Successfully requested news source!',
+            duration: 2000,
+            position: 'top',
+          });
+          await successToast.present();
+          this.requestedNewsSource = '';
+          this.requestNewsSourceLoading = false;
         }).catch(async (err) => {
           console.error('Error', err);
           const errorToast = await this.toastController.create({
@@ -614,6 +618,7 @@ export class Tab1Page {
             position: 'top',
           });
           await errorToast.present();
+          this.requestNewsSourceLoading = false;
         });
       }
       else {
@@ -624,6 +629,7 @@ export class Tab1Page {
         position: 'top',
       });
       await formatToast.present();
+      this.requestNewsSourceLoading = false;
       }
     }
     else {
@@ -634,6 +640,7 @@ export class Tab1Page {
         position: 'top',
       });
       await emptyToast.present();
+      this.requestNewsSourceLoading = false;
     }
   }
 }
