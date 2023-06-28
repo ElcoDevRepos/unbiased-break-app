@@ -6,7 +6,7 @@ import {
   deleteUser,
   updateProfile
 } from '@angular/fire/auth';
-import { Firestore, doc, updateDoc, query, where, getDoc, orderBy, limit, startAfter } from '@angular/fire/firestore';
+import { Firestore, doc, updateDoc, query, where, getDoc, orderBy, limit, startAfter, collection, getDocs } from '@angular/fire/firestore';
 import { ActionSheetController, AlertController, LoadingController, ModalController, Platform } from '@ionic/angular';
 import { UserService } from '../services/user.service';
 import {
@@ -33,6 +33,8 @@ export class Tab3Page implements OnInit, OnDestroy {
   public readArticles = [];
   isDesktop: boolean;
   displayName = this.auth.currentUser.displayName
+  requestedNewsSources : any = [];
+
   constructor(private router: Router, public auth: Auth, private modal: ModalController, private userService: UserService, private actionSheetController: ActionSheetController,
   private storage: Storage, private loadingCtrl: LoadingController, private fireStore: Firestore, private platform: Platform, private alertCtrl: AlertController) { }
 
@@ -68,6 +70,19 @@ export class Tab3Page implements OnInit, OnDestroy {
   async getReadArticles() {
     this.readArticles = await this.userService.getReadArticles() as any;
     console.log(this.readArticles);
+  }
+
+  async getRequestedNewsSources() {
+    this.requestedNewsSources = [];
+    const q = query(collection(this.fireStore, 'requested-news-sources'), orderBy('timestamp', 'desc'));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      this.requestedNewsSources.push({
+        url: doc.data()['url'],
+        user: doc.data()['user'],
+        timestamp: doc.data()['timestamp']
+      });
+    });
   }
 
   async checkNotificationSettings() {
