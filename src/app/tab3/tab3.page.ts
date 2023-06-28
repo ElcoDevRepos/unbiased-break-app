@@ -17,6 +17,7 @@ import {
 } from '@angular/fire/storage';
 import { Camera, CameraResultType,CameraSource } from '@capacitor/camera';
 import { async } from '@angular/core/testing';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 @Component({
   selector: 'app-tab3',
@@ -36,7 +37,7 @@ export class Tab3Page implements OnInit, OnDestroy {
   requestedNewsSources : any = [];
 
   constructor(private router: Router, public auth: Auth, private modal: ModalController, private userService: UserService, private actionSheetController: ActionSheetController,
-  private storage: Storage, private loadingCtrl: LoadingController, private fireStore: Firestore, private platform: Platform, private alertCtrl: AlertController) { }
+  private storage: Storage, private loadingCtrl: LoadingController, private fireStore: Firestore, private platform: Platform, private alertCtrl: AlertController, private inAppBrowser : InAppBrowser) { }
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
@@ -80,13 +81,20 @@ export class Tab3Page implements OnInit, OnDestroy {
       this.requestedNewsSources.push({
         url: doc.data()['url'],
         user: doc.data()['user'],
-        timestamp: doc.data()['timestamp']
+        timestamp: doc.data()['timestamp'],
+        bias: ''
       });
     });
   }
 
   approveNewsSource (source : any) {
     const url = source.url;
+    const bias = source.bias;
+    console.log(source);
+  }
+
+  openURL(url: string) {
+    const browser = this.inAppBrowser.create(`https://www.${url}`, '_blank');
   }
 
   async checkNotificationSettings() {

@@ -151,11 +151,19 @@
       </ion-header>
       <ion-content>
         <ion-list>
-          <ion-item *ngFor="let item of requestedNewsSources" (click)="approveNewsSource(item);">
+          <ion-item *ngFor="let item of requestedNewsSources">
             <ion-label>
-              <h3 style="white-space: initial;"><b>URL:</b> {{item.url}}</h3>
+              <h3 style="white-space: initial;"><b>URL: </b><span style="text-decoration: underline;" (click)="openURL(item.url)">{{item.url}}</span></h3>
               <h6><b>User requesting:</b> {{item.user}}</h6>
               <h6>{{ (item.timestamp.seconds * 1000) | date:'yyyy-MM-dd' }}</h6>
+              <ion-item>
+                <ion-select label="sourceBias" placeholder="Left/Middle/Right" [(ngModel)]="item.bias">
+                  <ion-select-option value="left">Left</ion-select-option>
+                  <ion-select-option value="middle">Middle</ion-select-option>
+                  <ion-select-option value="right">Right</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-button (click)="approveNewsSource(item)">Approve</ion-button>
             </ion-label>
           </ion-item>
         </ion-list>
