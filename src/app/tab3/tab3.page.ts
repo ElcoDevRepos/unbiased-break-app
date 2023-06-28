@@ -6,8 +6,8 @@ import {
   deleteUser,
   updateProfile
 } from '@angular/fire/auth';
-import { Firestore, doc, updateDoc, query, where, getDoc, orderBy, limit, startAfter, collection, getDocs, deleteDoc } from '@angular/fire/firestore';
-import { ActionSheetController, AlertController, LoadingController, ModalController, Platform } from '@ionic/angular';
+import { Firestore, doc, updateDoc, query, where, getDoc, orderBy, limit, startAfter, collection, getDocs, deleteDoc, addDoc } from '@angular/fire/firestore';
+import { ActionSheetController, AlertController, LoadingController, ModalController, Platform, ToastController } from '@ionic/angular';
 import { UserService } from '../services/user.service';
 import {
   Storage,
@@ -37,7 +37,7 @@ export class Tab3Page implements OnInit, OnDestroy {
   requestedNewsSources : any = [];
 
   constructor(private router: Router, public auth: Auth, private modal: ModalController, private userService: UserService, private actionSheetController: ActionSheetController,
-  private storage: Storage, private loadingCtrl: LoadingController, private fireStore: Firestore, private platform: Platform, private alertCtrl: AlertController, private inAppBrowser : InAppBrowser) { }
+  private storage: Storage, private loadingCtrl: LoadingController, private fireStore: Firestore, private platform: Platform, private alertCtrl: AlertController, private inAppBrowser : InAppBrowser, private toastController : ToastController) { }
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
@@ -83,24 +83,99 @@ export class Tab3Page implements OnInit, OnDestroy {
         url: doc.data()['url'],
         user: doc.data()['user'],
         timestamp: doc.data()['timestamp'],
-        bias: ''
+        bias: '',
+        imageUrl: ''
       });
     });
   }
 
-  approveNewsSource (source : any) {
+  async approveNewsSource (source : any) {
     const url = source.url;
+    const imageUrl = source.imageUrl;
     const bias = source.bias;
-    console.log(source);
+    
+    //Toasts
+    const successToast = await this.toastController.create({
+      message: 'Success approving news source!',
+      duration: 2000,
+      position: 'top',
+    });
+    const errorToast = await this.toastController.create({
+      message: 'Error approving news source!',
+      duration: 2000,
+      position: 'top',
+    });
+    const formatToast = await this.toastController.create({
+      message: 'Select bias and add image URL to approve',
+      duration: 3000,
+      position: 'top',
+    });
+
+    if(bias.trim() == '' || imageUrl.trim() == '') {
+      await formatToast.present();
+    }
+
+    else if(bias == 'left') {
+      await addDoc(collection(this.fireStore, 'left-sources'), {
+        url: url,
+        image: imageUrl
+      }).then(async () => {
+        this.deleteNewsSource(source);
+        await successToast.present();
+      }).catch(async (err) => {
+        console.error(err);
+        await errorToast.present();
+      });
+    }
+
+    else if(bias == 'middle') {
+      await addDoc(collection(this.fireStore, 'middle-sources'), {
+        url: url,
+        image: imageUrl
+      }).then(async () => {
+        this.deleteNewsSource(source);
+        await successToast.present();
+      }).catch(async (err) => {
+        console.error(err);
+        await errorToast.present();
+      });
+    }
+
+    else if(bias == 'right') {
+      await addDoc(collection(this.fireStore, 'right-sources'), {
+        url: url,
+        image: imageUrl
+      }).then(async () => {
+        this.deleteNewsSource(source);
+        await successToast.present();
+      }).catch(async (err) => {
+        console.error(err);
+        await errorToast.present();
+      });
+    }
   }
 
   async deleteNewsSource (source : any) {
+
+    const successToast = await this.toastController.create({
+      message: 'Success deleting news source!',
+      duration: 2000,
+      position: 'top',
+    });
+    const errorToast = await this.toastController.create({
+      message: 'Error approving news source!',
+      duration: 2000,
+      position: 'top',
+    });
+
     await deleteDoc(doc(this.fireStore, 'requested-news-sources', source.id))
       .then(() => {
         console.log('Success deleting requested news source!')
+        successToast.present();
         this.getRequestedNewsSources();
       }).catch((err) => {
         console.error('Error deleting rquested news source', err);
+        errorToast.present();
       })
   }
 
