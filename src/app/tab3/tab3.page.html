@@ -151,10 +151,10 @@
       </ion-header>
       <ion-content>
         <ion-list>
-          <ion-item *ngFor="let item of requestedNewsSources">
+          <ion-item *ngFor="let item of requestedNewsSources" (click)="modalFive.dismiss()">
             <ion-label>
-              <h3 style="font-weight: bold; white-space: initial;">{{item.url}}</h3>
-              <h6>User requesting: {{item.user}}</h6>
+              <h3 style="white-space: initial;"><b>URL:</b> {{item.url}}</h3>
+              <h6><b>User requesting:</b> {{item.user}}</h6>
               <h6>{{ (item.timestamp.seconds * 1000) | date:'yyyy-MM-dd' }}</h6>
             </ion-label>
           </ion-item>
