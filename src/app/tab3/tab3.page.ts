@@ -85,6 +85,10 @@ export class Tab3Page implements OnInit, OnDestroy {
     });
   }
 
+  approveNewsSource (source : any) {
+    const url = source.url;
+  }
+
   async checkNotificationSettings() {
     let ref = doc(this.fireStore, "users", this.auth.currentUser.uid);
     let userDoc = await getDoc(ref);

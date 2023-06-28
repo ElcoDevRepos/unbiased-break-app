@@ -590,7 +590,7 @@ export class Tab1Page {
   async requestNewsSource () {
     this.requestNewsSourceLoading = true;
 
-    const urlPattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
+    const urlPattern = /^(?!https:\/\/|www\.).*$/i;
 
     // Test the URL against the pattern
     if(this.requestedNewsSource.trim() != '' ){
@@ -622,10 +622,10 @@ export class Tab1Page {
         });
       }
       else {
-        console.error("Input is not in http format");
+        console.error("Input needs to be in example.com format");
         const formatToast = await this.toastController.create({
-        message: "Input is not in http format",
-        duration: 2000,
+        message: "Input needs to be in example.com format (do not include https:// or www)",
+        duration: 5000,
         position: 'top',
       });
       await formatToast.present();
