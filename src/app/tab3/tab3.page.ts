@@ -6,7 +6,7 @@ import {
   deleteUser,
   updateProfile
 } from '@angular/fire/auth';
-import { Firestore, doc, updateDoc, query, where, getDoc, orderBy, limit, startAfter, collection, getDocs } from '@angular/fire/firestore';
+import { Firestore, doc, updateDoc, query, where, getDoc, orderBy, limit, startAfter, collection, getDocs, deleteDoc } from '@angular/fire/firestore';
 import { ActionSheetController, AlertController, LoadingController, ModalController, Platform } from '@ionic/angular';
 import { UserService } from '../services/user.service';
 import {
@@ -79,6 +79,7 @@ export class Tab3Page implements OnInit, OnDestroy {
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       this.requestedNewsSources.push({
+        id: doc.id,
         url: doc.data()['url'],
         user: doc.data()['user'],
         timestamp: doc.data()['timestamp'],
@@ -91,6 +92,16 @@ export class Tab3Page implements OnInit, OnDestroy {
     const url = source.url;
     const bias = source.bias;
     console.log(source);
+  }
+
+  async deleteNewsSource (source : any) {
+    await deleteDoc(doc(this.fireStore, 'requested-news-sources', source.id))
+      .then(() => {
+        console.log('Success deleting requested news source!')
+        this.getRequestedNewsSources();
+      }).catch((err) => {
+        console.error('Error deleting rquested news source', err);
+      })
   }
 
   openURL(url: string) {
