@@ -109,6 +109,9 @@ export class Tab1Page {
 
           if (this.leftFilters.length === 0) {
             promises.push(this.setupFilters());
+          } else {
+            //Check for any new approved news sources
+            this.checkForNewNewsSources();
           }
         }
 
@@ -234,6 +237,62 @@ export class Tab1Page {
     this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
 
     this.toggleCard();
+  }
+
+  async checkForNewNewsSources () {
+    // Query Firestore collections for left, middle, and right sources
+  let leftRef = collection(this.firestore, 'left-sources');
+  let leftDocs = await getDocs(leftRef);
+  let middleRef = collection(this.firestore, 'middle-sources');
+  let middleDocs = await getDocs(middleRef);
+  let rightRef = collection(this.firestore, 'right-sources');
+  let rightDocs = await getDocs(rightRef);
+
+  // Extract the source values from the queried documents
+  let leftSourcesFromFirestore = leftDocs.docs.map((doc) => doc.data()['url']);
+  let middleSourcesFromFirestore = middleDocs.docs.map((doc) => doc.data()['url']);
+  let rightSourcesFromFirestore = rightDocs.docs.map((doc) => doc.data()['url']);
+  console.log(leftSourcesFromFirestore)
+  console.log(rightSourcesFromFirestore)
+  console.log(middleSourcesFromFirestore)
+
+  // Check for new sources in leftFilters
+  leftSourcesFromFirestore.forEach(async (url) => {
+    let filterMatch = this.leftFilters.find((filter) => filter.label === url);
+    if (!filterMatch) {
+      // Update the leftFilters array with the new filter
+      this.leftFilters.push({ label: url, on: true });
+    }
+  });
+
+  // Check for new sources in middleFilters
+  middleSourcesFromFirestore.forEach(async (url) => {
+    let filterMatch = this.middleFilters.find((filter) => filter.label === url);
+    if (!filterMatch) {
+      // Update the middleFilters array with the new filter
+      this.middleFilters.push({ label: url, on: true });
+    }
+  });
+
+  // Check for new sources in rightFilters
+  rightSourcesFromFirestore.forEach(async (url) => {
+    let filterMatch = this.rightFilters.find((filter) => filter.label === url);
+    if (!filterMatch) {
+      // Update the rightFilters array with the new filter
+      this.rightFilters.push({ label: url, on: true });
+    }
+  });
+
+  let ref = doc(this.firestore, 'users', this.currentUserDoc.id);
+      
+  await updateDoc(ref, {
+    filters: [
+      JSON.stringify(this.leftFilters),
+      JSON.stringify(this.middleFilters),
+      JSON.stringify(this.rightFilters)
+    ]
+  });
+
   }
 
   async setupFilters() {
