@@ -35,11 +35,12 @@ export class Tab3Page implements OnInit, OnDestroy {
   isDesktop: boolean;
   displayName = this.auth.currentUser.displayName
   requestedNewsSources : any = [];
+  isAdmin : boolean = false;
 
   constructor(private router: Router, public auth: Auth, private modal: ModalController, private userService: UserService, private actionSheetController: ActionSheetController,
   private storage: Storage, private loadingCtrl: LoadingController, private fireStore: Firestore, private platform: Platform, private alertCtrl: AlertController, private inAppBrowser : InAppBrowser, private toastController : ToastController) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
     this.createFakeHistory();
   }
@@ -60,12 +61,30 @@ export class Tab3Page implements OnInit, OnDestroy {
 
   async ionViewWillEnter() {
     this.favorites = await this.userService.getFavorites() as any;
+    await this.checkIfAdmin();
     this.checkNotificationSettings();
   }
 
   @HostListener('window:popstate', ['$event'])
   dismissModal () {
     this.modal.dismiss();
+  }
+
+  //Check if the users admin field is true in firestore
+  async checkIfAdmin () {
+    if(!this.auth.currentUser) this.isAdmin = false;
+
+    let ref = collection(this.fireStore, 'users');
+    const q = query(ref, where('email', '==', this.auth.currentUser.email));
+
+    let docs = await getDocs(q);
+    docs.forEach((d) => {
+      const admin = d.data()['admin'];
+      if(admin == undefined || !admin) {
+        this.isAdmin = false;
+      }
+      else if (admin) this.isAdmin = true;
+    });
   }
 
   async getReadArticles() {
