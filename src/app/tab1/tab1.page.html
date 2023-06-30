@@ -102,6 +102,7 @@
       <ion-header>
         <ion-toolbar>
           <ion-title>Filters</ion-title>
+          <ion-progress-bar *ngIf="requestNewsSourceLoading" type="indeterminate"></ion-progress-bar>
           <ion-buttons slot="start">
             <ion-back-button defaultHref="/tabs/tab1" (click)="closeAndSave()" text="">
               <ion-icon name="arrow-back"></ion-icon>
@@ -111,6 +112,15 @@
       </ion-header>
       <ion-content>
         <ion-list>
+          <ion-item-divider>
+            <ion-label>
+              Request News Source
+            </ion-label>
+          </ion-item-divider>
+          <ion-item>
+            <ion-input [(ngModel)]="requestedNewsSource" label="Source" placeholder="Enter a news source"></ion-input>
+            <ion-button (click)="requestNewsSource()">Request</ion-button>
+          </ion-item>
           <ion-item-divider>
             <ion-label>
               Left Filters

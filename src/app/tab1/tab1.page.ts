@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot, endBefore } from '@angular/fire/firestore';
+import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot, endBefore, addDoc, Timestamp } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { UserService } from '../services/user.service';
 import { ModalController, Platform } from '@ionic/angular';
@@ -8,6 +8,8 @@ import FuzzySearch from 'fuzzy-search';
 import _ from 'lodash-es';
 import { TopicComponent } from '../modals/topic/topic.component';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { ToastController } from '@ionic/angular';
+
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -44,9 +46,11 @@ export class Tab1Page {
   readArticles = [];
   showReadArticles;
   gettingData : boolean = false;
+  requestedNewsSource : string = '';
+  requestNewsSourceLoading : boolean = false;
 
   constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform,
-    private auth: Auth, private iab: InAppBrowser) { }
+    private auth: Auth, private iab: InAppBrowser, private toastController : ToastController) { }
 
   onArticleClick(item: any) {
     const link = item.link;
@@ -105,6 +109,9 @@ export class Tab1Page {
 
           if (this.leftFilters.length === 0) {
             promises.push(this.setupFilters());
+          } else {
+            //Check for any new approved news sources
+            this.checkForNewNewsSources();
           }
         }
 
@@ -230,6 +237,62 @@ export class Tab1Page {
     this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
 
     this.toggleCard();
+  }
+
+  async checkForNewNewsSources () {
+    // Query Firestore collections for left, middle, and right sources
+  let leftRef = collection(this.firestore, 'left-sources');
+  let leftDocs = await getDocs(leftRef);
+  let middleRef = collection(this.firestore, 'middle-sources');
+  let middleDocs = await getDocs(middleRef);
+  let rightRef = collection(this.firestore, 'right-sources');
+  let rightDocs = await getDocs(rightRef);
+
+  // Extract the source values from the queried documents
+  let leftSourcesFromFirestore = leftDocs.docs.map((doc) => doc.data()['url']);
+  let middleSourcesFromFirestore = middleDocs.docs.map((doc) => doc.data()['url']);
+  let rightSourcesFromFirestore = rightDocs.docs.map((doc) => doc.data()['url']);
+  console.log(leftSourcesFromFirestore)
+  console.log(rightSourcesFromFirestore)
+  console.log(middleSourcesFromFirestore)
+
+  // Check for new sources in leftFilters
+  leftSourcesFromFirestore.forEach(async (url) => {
+    let filterMatch = this.leftFilters.find((filter) => filter.label === url);
+    if (!filterMatch) {
+      // Update the leftFilters array with the new filter
+      this.leftFilters.push({ label: url, on: true });
+    }
+  });
+
+  // Check for new sources in middleFilters
+  middleSourcesFromFirestore.forEach(async (url) => {
+    let filterMatch = this.middleFilters.find((filter) => filter.label === url);
+    if (!filterMatch) {
+      // Update the middleFilters array with the new filter
+      this.middleFilters.push({ label: url, on: true });
+    }
+  });
+
+  // Check for new sources in rightFilters
+  rightSourcesFromFirestore.forEach(async (url) => {
+    let filterMatch = this.rightFilters.find((filter) => filter.label === url);
+    if (!filterMatch) {
+      // Update the rightFilters array with the new filter
+      this.rightFilters.push({ label: url, on: true });
+    }
+  });
+
+  let ref = doc(this.firestore, 'users', this.currentUserDoc.id);
+      
+  await updateDoc(ref, {
+    filters: [
+      JSON.stringify(this.leftFilters),
+      JSON.stringify(this.middleFilters),
+      JSON.stringify(this.rightFilters)
+    ]
+  });
+
   }
 
   async setupFilters() {
@@ -580,5 +643,63 @@ export class Tab1Page {
     this.loading = true;
     this.lastVisible = null;
     this.getData();
+  }
+
+  //Send request news source doc to firestore
+  async requestNewsSource () {
+    this.requestNewsSourceLoading = true;
+
+    const urlPattern = /^(?!https:\/\/|www\.).*$/i;
+
+    // Test the URL against the pattern
+    if(this.requestedNewsSource.trim() != '' ){
+      if(urlPattern.test(this.requestedNewsSource)) {
+        let ref = collection(this.firestore, 'requested-news-sources');
+        await addDoc(ref, {
+          user: this.auth.currentUser.email,
+          url: this.requestedNewsSource,
+          timestamp: Timestamp.now(),
+        }).then( async () => {
+          console.log('success!');
+          const successToast = await this.toastController.create({
+            message: 'Successfully requested news source!',
+            duration: 2000,
+            position: 'top',
+          });
+          await successToast.present();
+          this.requestedNewsSource = '';
+          this.requestNewsSourceLoading = false;
+        }).catch(async (err) => {
+          console.error('Error', err);
+          const errorToast = await this.toastController.create({
+            message: 'Error requesting news source!',
+            duration: 2000,
+            position: 'top',
+          });
+          await errorToast.present();
+          this.requestNewsSourceLoading = false;
+        });
+      }
+      else {
+        console.error("Input needs to be in example.com format");
+        const formatToast = await this.toastController.create({
+        message: "Input needs to be in example.com format (do not include https:// or www)",
+        duration: 5000,
+        position: 'top',
+      });
+      await formatToast.present();
+      this.requestNewsSourceLoading = false;
+      }
+    }
+    else {
+      console.error("Input can't be empty");
+      const emptyToast = await this.toastController.create({
+        message: "Input can't be empty",
+        duration: 1500,
+        position: 'top',
+      });
+      await emptyToast.present();
+      this.requestNewsSourceLoading = false;
+    }
   }
 }
