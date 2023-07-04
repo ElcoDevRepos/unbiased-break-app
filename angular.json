@@ -32,8 +32,8 @@
               "src/manifest.webmanifest",
               "src/manifest.webmanifest"
             ],
-            "styles": ["src/theme/variables.scss", "src/global.scss"],
-            "scripts": [],
+            "styles": ["src/theme/variables.scss", "src/global.scss", "node_modules/intro.js/introjs.css"],
+            "scripts": ["node_modules/intro.js/intro.js"],
             "aot": false,
             "vendorChunk": true,
             "extractLicenses": false,
@@ -154,7 +154,8 @@
   "cli": {
     "schematicCollections": [
       "@ionic/angular-toolkit"
-    ]
+    ],
+    "analytics": false
   },
   "schematics": {
     "@ionic/angular-toolkit:component": {

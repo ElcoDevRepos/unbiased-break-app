@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
 import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot, endBefore, addDoc, Timestamp } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
@@ -9,13 +9,14 @@ import _ from 'lodash-es';
 import { TopicComponent } from '../modals/topic/topic.component';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { ToastController } from '@ionic/angular';
+import { IntrojsService } from '../introjs.service';
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss']
 })
-export class Tab1Page {
+export class Tab1Page implements OnInit{
   expanded = false;
   items$: Observable<any>;
   items = [];
@@ -50,7 +51,7 @@ export class Tab1Page {
   requestNewsSourceLoading : boolean = false;
 
   constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform,
-    private auth: Auth, private iab: InAppBrowser, private toastController : ToastController) { }
+    private auth: Auth, private iab: InAppBrowser, private toastController : ToastController, private introService : IntrojsService) { }
 
   onArticleClick(item: any) {
     const link = item.link;
@@ -514,6 +515,7 @@ export class Tab1Page {
     this.gettingData = false;
     if (this.items.length < this.limit && this.canGetMoreData) await this.getData();
     this.loading = false;
+    this.introService.featureOne();
   }
 
   onLeftChanged(ev, i) {

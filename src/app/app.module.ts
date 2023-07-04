@@ -24,7 +24,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 @NgModule({
   declarations: [AppComponent, PressDirective],
-  imports: [BrowserModule, IonicModule.forRoot({ mode: 'ios' }),  HttpClientModule, AppRoutingModule, FontAwesomeModule, ServiceWorkerModule.register('ngsw-worker.js', {
+  imports: [BrowserModule, IonicModule.forRoot({ mode: 'ios' }),  HttpClientModule ,AppRoutingModule, FontAwesomeModule, ServiceWorkerModule.register('ngsw-worker.js', {
     enabled: environment.production,
     // Register the ServiceWorker as soon as the application is stable
     // or after 30 seconds (whichever comes first).
