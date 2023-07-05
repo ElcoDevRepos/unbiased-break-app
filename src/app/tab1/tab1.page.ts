@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2 } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
 import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot, endBefore, addDoc, Timestamp } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
@@ -51,7 +51,7 @@ export class Tab1Page implements OnInit{
   requestNewsSourceLoading : boolean = false;
 
   constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform,
-    private auth: Auth, private iab: InAppBrowser, private toastController : ToastController, private introService : IntrojsService) { }
+    private auth: Auth, private iab: InAppBrowser, private toastController : ToastController, private introService : IntrojsService, private elementRef: ElementRef, private renderer: Renderer2) { }
 
   onArticleClick(item: any) {
     const link = item.link;
@@ -515,7 +515,13 @@ export class Tab1Page implements OnInit{
     this.gettingData = false;
     if (this.items.length < this.limit && this.canGetMoreData) await this.getData();
     this.loading = false;
-    this.introService.featureOne();
+
+    //Intro.js stuff
+    const container = this.elementRef.nativeElement.querySelector('.scroll-container');
+    this.renderer.setProperty(container, 'scrollLeft', container.scrollWidth);
+    setTimeout(() => {
+      this.introService.featureOne();
+    }, 400);
   }
 
   onLeftChanged(ev, i) {
@@ -704,4 +710,10 @@ export class Tab1Page implements OnInit{
       this.requestNewsSourceLoading = false;
     }
   }
+
+  filterIntroJS() {
+    setTimeout(() => {
+      this.introService.filtersFeature();
+    }, 500);
+  }  
 }

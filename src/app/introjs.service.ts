@@ -12,7 +12,6 @@ export class IntrojsService {
 
   featureOne() {
     this.introJS = introJs();
-    this.introJS.start();
 
     this.introJS
         .setOptions({
@@ -22,14 +21,87 @@ export class IntrojsService {
                         'Introduction: (expand on this later)',
                 },
                 {
-                    element: '#introjs-step2',
-                    intro:
-                        'Topics',
+                  element: '#introjs-step2',
+                  intro:
+                      'Click on a topic to toggle it on/off',
+                  position: 'right',
                 },
                 {
                     element: '#introjs-step3',
                     intro:
-                        'Add Topic',
+                        'Click on "Edit Topics" to add/remove topics',
+                },
+                {
+                  element: '#introjs-step4',
+                  intro:
+                      'Click on "Filters" to edit your news sources',
+                },
+                {
+                  element: '#introjs-step5',
+                  intro:
+                      'Click on an article to open it',
+                },
+                {
+                  element: '#introjs-step6',
+                  intro:
+                      'Click on "My Profile" to see saved bookmarks and read articles',
+                },
+            ]
+        })
+        .start();
+  }
+
+  topicsFeature() {
+    this.introJS = introJs();
+
+    this.introJS
+        .setOptions({
+            steps: [
+                {
+                    intro:
+                        'Explanation on how topics works',
+                },
+                {
+                    element: '#introjs-topics2',
+                    intro:
+                        'Add a new topic by clicking here',
+                },
+                {
+                  element: '#introjs-topics3',
+                  intro:
+                      'Try to toggle the topic Off',
+              },
+            ]
+        })
+        .start();
+  }
+
+  topicsDeleteFeature() {
+    this.introJS = introJs();
+
+    this.introJS
+        .setOptions({
+            steps: [
+                {
+                  element: '#introjs-topics4',
+                  intro:
+                      'This button removes the topic',
+              },
+            ]
+        })
+        .start();
+  }
+
+  filtersFeature() {
+    this.introJS = introJs();
+
+    this.introJS
+        .setOptions({
+            steps: [
+                {
+                  element: '#introjs-filters2',
+                  intro:
+                      'This is where you can request new news sources',
                 },
             ]
         })
