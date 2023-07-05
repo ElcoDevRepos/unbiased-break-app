@@ -42,7 +42,7 @@ export class IntrojsService {
                       'Click on an article to open it',
                 },
                 {
-                  element: '#introjs-step6',
+                  element: '#tab-button-tab3',
                   intro:
                       'Click on "My Profile" to see saved bookmarks and read articles',
                 },
@@ -102,6 +102,27 @@ export class IntrojsService {
                   element: '#introjs-filters2',
                   intro:
                       'This is where you can request new news sources',
+                },
+            ]
+        })
+        .start();
+  }
+
+  profileFeature() {
+    this.introJS = introJs();
+
+    this.introJS
+        .setOptions({
+            steps: [
+                {
+                  element: '#open-bookmark-modal',
+                  intro:
+                      'This is where you find your saved bookmarks.',
+                },
+                {
+                  element: '#open-read-articles-modal',
+                  intro:
+                      'This is where you find all of your read articles.',
                 },
             ]
         })
