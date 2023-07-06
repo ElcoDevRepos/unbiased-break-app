@@ -65,7 +65,13 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   ionViewWillEnter() {
     this.admobService.articleClicked();
     this.admobService.showBanner();
-    this.introService.articleFeature();
+
+    //Check if intro.js is going to be shown
+    const showIntroJS = localStorage.getItem('showArticleIntro');
+    if(showIntroJS != 'false') {
+      localStorage.setItem('showArticleIntro', 'false');
+      this.introService.articleFeature();
+    }
   }
 
   ionViewWillLeave() {

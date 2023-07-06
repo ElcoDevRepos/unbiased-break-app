@@ -44,7 +44,7 @@ export class IntrojsService {
                 {
                   element: '#tab-button-tab3',
                   intro:
-                      'Click on "My Profile" to see saved bookmarks and read articles',
+                      'Click on "Settings" to see saved bookmarks and read articles',
                 },
             ]
         })
@@ -59,12 +59,12 @@ export class IntrojsService {
             steps: [
                 {
                     intro:
-                        'Explanation on how topics works',
+                        'These are your topics, they determine the types of articles in your feed.',
                 },
                 {
                     element: '#introjs-topics2',
                     intro:
-                        'Add a new topic by clicking here',
+                        'Add a new topic by clicking here. You can add a existing topic or request a new one (new topics can take up to 24h to populate).',
                 },
                 {
                   element: '#introjs-topics3',
@@ -85,7 +85,7 @@ export class IntrojsService {
                 {
                   element: '#introjs-topics4',
                   intro:
-                      'This button removes the topic',
+                      'This button deletes the topic',
               },
             ]
         })
@@ -101,7 +101,7 @@ export class IntrojsService {
                 {
                   element: '#introjs-filters2',
                   intro:
-                      'This is where you can request new news sources',
+                      'This is where you can request new news sources.',
                 },
             ]
         })
@@ -138,7 +138,7 @@ export class IntrojsService {
                 {
                   element: '#introjs-article1',
                   intro:
-                      'Use these buttons to share or bookmark the open article.',
+                      'Use these buttons to share and bookmark the open article.',
                 },
             ]
         })

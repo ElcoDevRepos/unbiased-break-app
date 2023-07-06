@@ -64,7 +64,13 @@ export class Tab3Page implements OnInit, OnDestroy {
     this.favorites = await this.userService.getFavorites() as any;
     await this.checkIfAdmin();
     this.checkNotificationSettings();
-    this.introService.profileFeature();
+    
+    //Check if intro.js is going to be shown
+    const showIntroJS = localStorage.getItem('showProfileIntro');
+    if(showIntroJS != 'false') {
+      localStorage.setItem('showProfileIntro', 'false');
+      this.introService.profileFeature();
+    }
   }
 
   @HostListener('window:popstate', ['$event'])

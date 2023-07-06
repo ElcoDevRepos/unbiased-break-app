@@ -516,12 +516,16 @@ export class Tab1Page implements OnInit{
     if (this.items.length < this.limit && this.canGetMoreData) await this.getData();
     this.loading = false;
 
-    //Intro.js stuff
-    const container = this.elementRef.nativeElement.querySelector('.scroll-container');
-    this.renderer.setProperty(container, 'scrollLeft', container.scrollWidth);
-    setTimeout(() => {
-      this.introService.featureOne();
-    }, 400);
+    //Check if intro.js is going to be shown
+    const showIntroJS = localStorage.getItem('showHomeIntro');
+    if(showIntroJS != 'false') {
+      setTimeout(() => {
+        const container = this.elementRef.nativeElement.querySelector('.scroll-container');
+        this.renderer.setProperty(container, 'scrollLeft', container.scrollWidth);
+        localStorage.setItem('showHomeIntro', 'false');
+        this.introService.featureOne();
+      }, 400);          
+    }
   }
 
   onLeftChanged(ev, i) {
@@ -712,8 +716,13 @@ export class Tab1Page implements OnInit{
   }
 
   filterIntroJS() {
-    setTimeout(() => {
-      this.introService.filtersFeature();
-    }, 500);
+    //Check if intro.js is going to be shown
+    const showIntroJS = localStorage.getItem('showFilterIntro');
+    if(showIntroJS != 'false') {
+      setTimeout(() => {
+        localStorage.setItem('showFilterIntro', 'false');
+        this.introService.filtersFeature();
+      }, 400);          
+    }
   }  
 }

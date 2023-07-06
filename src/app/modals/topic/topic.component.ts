@@ -29,7 +29,12 @@ export class TopicComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.introService.topicsFeature();
+    //Check if intro.js is going to be shown
+    const showIntroJS = localStorage.getItem('showTopicsIntro');
+    if(showIntroJS != 'false') {
+      localStorage.setItem('showTopicsIntro', 'false');
+      this.introService.topicsFeature();
+    }
   }
 
   async toggleChanged(i, ev) {
@@ -39,7 +44,12 @@ export class TopicComponent implements OnInit, AfterViewInit {
     });
 
     if(i === 0 && this.topics[i].checked == false) {
-      this.introService.topicsDeleteFeature();
+      //Check if intro.js is going to be shown
+      const showIntroJS = localStorage.getItem('showTopicsDeleteIntro');
+      if(showIntroJS != 'false') {
+        localStorage.setItem('showTopicsDeleteIntro', 'false');
+        this.introService.topicsDeleteFeature();
+      }
     }
   }
 
