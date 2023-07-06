@@ -13,6 +13,7 @@ import { Auth } from '@angular/fire/auth';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { v4 } from 'uuid';
 import { Observable } from 'rxjs';
+import { IntrojsService } from 'src/app/introjs.service';
 
 @Component({
   selector: 'app-news-article',
@@ -41,7 +42,7 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   removeAsReader : boolean  = true;
 
   constructor(public userService: UserService, public sanitizer: DomSanitizer, private route: ActivatedRoute, private firestore: Firestore,
-    private modalCtrl: ModalController, private admobService: AdmobService, private platform: Platform, private auth: Auth, private iab: InAppBrowser) {}
+    private modalCtrl: ModalController, private admobService: AdmobService, private platform: Platform, private auth: Auth, private iab: InAppBrowser, private introService : IntrojsService) {}
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
@@ -64,6 +65,7 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   ionViewWillEnter() {
     this.admobService.articleClicked();
     this.admobService.showBanner();
+    this.introService.articleFeature();
   }
 
   ionViewWillLeave() {

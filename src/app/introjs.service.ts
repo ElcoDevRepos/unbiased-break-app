@@ -128,4 +128,20 @@ export class IntrojsService {
         })
         .start();
   }
+
+  articleFeature() {
+    this.introJS = introJs();
+
+    this.introJS
+        .setOptions({
+            steps: [
+                {
+                  element: '#introjs-article1',
+                  intro:
+                      'Use these buttons to share or bookmark the open article.',
+                },
+            ]
+        })
+        .start();
+  }
 }
