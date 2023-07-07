@@ -4,13 +4,13 @@
       <ion-button routerLink="../tab2">
         Trending
       </ion-button>
-      <ion-button routerLink="../tab3">
+      <ion-button routerLink="../tab3" id="introjs-step6">
         Settings
       </ion-button>
     </ion-buttons>
     <ion-title mode="ios">My Feed</ion-title>
-    <ion-buttons slot="end">
-      <ion-button id="open-modal" [disabled]="!currentUserDoc">
+    <ion-buttons id="introjs-step4" slot="end">
+      <ion-button id="open-modal" [disabled]="!currentUserDoc" (click)="filterIntroJS()">
         <ion-icon name="filter"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -32,10 +32,10 @@
 
   <div class="scroll-container">
     <div class="scroll-content">
-      <ion-card class="topic-card" *ngFor="let topic of topicOptions" [class.topic-checked]="topic.checked" [class.topic-not-checked]="!topic.checked" (click)="topicClick(topic)">
+      <ion-card class="topic-card" *ngFor="let topic of topicOptions; let last = last" [class.topic-checked]="topic.checked" [class.topic-not-checked]="!topic.checked" (click)="topicClick(topic)" [id]="last ? 'introjs-step2' : ''">
         {{ topic.display | titlecase}}
-      </ion-card>
-      <ion-card class="topic-card" (click)="openTopicModal()">
+      </ion-card>      
+      <ion-card id="introjs-step3" class="topic-card" (click)="openTopicModal()">
         Edit Topics
       </ion-card>
     </div>
@@ -72,7 +72,7 @@
       </div>-->
      <ion-list lines="none" *ngIf="!loading">
         <ion-item class="news-link"
-          *ngFor="let item of items"
+          *ngFor="let item of items; let i = index;" [id]="i === 0 ? 'introjs-step5' : ''"
           (click)="readArticles.push(item.id); onArticleClick(item)"
           [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/' + selectedTab + '-articles']" [state]="{ article: item }">
           <ion-thumbnail slot="start">
@@ -117,7 +117,7 @@
               Request News Source
             </ion-label>
           </ion-item-divider>
-          <ion-item>
+          <ion-item id="introjs-filters2">
             <ion-input [(ngModel)]="requestedNewsSource" label="Source" placeholder="Enter a news source"></ion-input>
             <ion-button (click)="requestNewsSource()">Request</ion-button>
           </ion-item>

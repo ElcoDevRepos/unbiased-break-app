@@ -1,21 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { AlertController, ModalController, NavParams, PopoverController } from '@ionic/angular';
 import { v4 as uuidv4 } from 'uuid';
 import { Firestore, addDoc, collection, updateDoc, doc } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { TopiclistComponent } from 'src/app/components/topiclist/topiclist.component';
+import { IntrojsService } from 'src/app/introjs.service';
 
 @Component({
   selector: 'app-topic',
   templateUrl: './topic.component.html',
   styleUrls: ['./topic.component.scss'],
 })
-export class TopicComponent implements OnInit {
+export class TopicComponent implements OnInit, AfterViewInit {
   topics = [] as any;
   isAdding = false;
   newTopic = "";
   currentUser;
-  constructor(private navParams: NavParams,private alertController: AlertController, private modalCtrl: ModalController, private firestore: Firestore, private auth: Auth, public popoverController: PopoverController) { }
+  constructor(private navParams: NavParams,private alertController: AlertController, private modalCtrl: ModalController, private firestore: Firestore, private auth: Auth, public popoverController: PopoverController, private introService : IntrojsService) { }
 
   ngOnInit() {
     this.currentUser = this.navParams.data.currentUser;
@@ -27,11 +28,29 @@ export class TopicComponent implements OnInit {
     console.log(this.topics);
   }
 
+  ngAfterViewInit(): void {
+    //Check if intro.js is going to be shown
+    const showIntroJS = localStorage.getItem('showTopicsIntro');
+    if(showIntroJS != 'false') {
+      localStorage.setItem('showTopicsIntro', 'false');
+      this.introService.topicsFeature();
+    }
+  }
+
   async toggleChanged(i, ev) {
     this.topics[i].checked = ev.detail.checked;
     await updateDoc(doc(this.firestore, "users", this.currentUser), {
       topics: this.topics
     });
+
+    if(i === 0 && this.topics[i].checked == false) {
+      //Check if intro.js is going to be shown
+      const showIntroJS = localStorage.getItem('showTopicsDeleteIntro');
+      if(showIntroJS != 'false') {
+        localStorage.setItem('showTopicsDeleteIntro', 'false');
+        this.introService.topicsDeleteFeature();
+      }
+    }
   }
 
   async removeTopic(topic) {

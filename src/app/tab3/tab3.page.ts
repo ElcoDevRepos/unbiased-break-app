@@ -18,6 +18,7 @@ import {
 import { Camera, CameraResultType,CameraSource } from '@capacitor/camera';
 import { async } from '@angular/core/testing';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { IntrojsService } from '../introjs.service';
 
 @Component({
   selector: 'app-tab3',
@@ -38,7 +39,7 @@ export class Tab3Page implements OnInit, OnDestroy {
   isAdmin : boolean = false;
 
   constructor(private router: Router, public auth: Auth, private modal: ModalController, private userService: UserService, private actionSheetController: ActionSheetController,
-  private storage: Storage, private loadingCtrl: LoadingController, private fireStore: Firestore, private platform: Platform, private alertCtrl: AlertController, private inAppBrowser : InAppBrowser, private toastController : ToastController) { }
+  private storage: Storage, private loadingCtrl: LoadingController, private fireStore: Firestore, private platform: Platform, private alertCtrl: AlertController, private inAppBrowser : InAppBrowser, private toastController : ToastController, private introService : IntrojsService) { }
 
   async ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
@@ -63,6 +64,13 @@ export class Tab3Page implements OnInit, OnDestroy {
     this.favorites = await this.userService.getFavorites() as any;
     await this.checkIfAdmin();
     this.checkNotificationSettings();
+    
+    //Check if intro.js is going to be shown
+    const showIntroJS = localStorage.getItem('showProfileIntro');
+    if(showIntroJS != 'false') {
+      localStorage.setItem('showProfileIntro', 'false');
+      this.introService.profileFeature();
+    }
   }
 
   @HostListener('window:popstate', ['$event'])
