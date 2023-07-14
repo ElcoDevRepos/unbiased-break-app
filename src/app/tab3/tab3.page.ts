@@ -147,7 +147,7 @@ export class Tab3Page implements OnInit, OnDestroy {
         url: url,
         image: imageUrl
       }).then(async () => {
-        this.deleteNewsSource(source);
+        this.deleteNewsSource(source, false);
         await successToast.present();
       }).catch(async (err) => {
         console.error(err);
@@ -160,7 +160,7 @@ export class Tab3Page implements OnInit, OnDestroy {
         url: url,
         image: imageUrl
       }).then(async () => {
-        this.deleteNewsSource(source);
+        this.deleteNewsSource(source, false);
         await successToast.present();
       }).catch(async (err) => {
         console.error(err);
@@ -173,7 +173,7 @@ export class Tab3Page implements OnInit, OnDestroy {
         url: url,
         image: imageUrl
       }).then(async () => {
-        this.deleteNewsSource(source);
+        this.deleteNewsSource(source, false);
         await successToast.present();
       }).catch(async (err) => {
         console.error(err);
@@ -182,7 +182,7 @@ export class Tab3Page implements OnInit, OnDestroy {
     }
   }
 
-  async deleteNewsSource (source : any) {
+  async deleteNewsSource (source : any, showToast : boolean) {
 
     const successToast = await this.toastController.create({
       message: 'Success deleting news source!',
@@ -190,7 +190,7 @@ export class Tab3Page implements OnInit, OnDestroy {
       position: 'top',
     });
     const errorToast = await this.toastController.create({
-      message: 'Error approving news source!',
+      message: 'Error deleting news source!',
       duration: 2000,
       position: 'top',
     });
@@ -198,11 +198,11 @@ export class Tab3Page implements OnInit, OnDestroy {
     await deleteDoc(doc(this.fireStore, 'requested-news-sources', source.id))
       .then(() => {
         console.log('Success deleting requested news source!')
-        successToast.present();
+        if(showToast) successToast.present();
         this.getRequestedNewsSources();
       }).catch((err) => {
-        console.error('Error deleting rquested news source', err);
-        errorToast.present();
+        console.error('Error deleting requested news source', err);
+        if(showToast) errorToast.present();
       })
   }
 
