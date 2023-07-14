@@ -724,5 +724,16 @@ export class Tab1Page implements OnInit{
         this.introService.filtersFeature();
       }, 400);          
     }
-  }  
+  }
+  
+  //Reset IntoJS
+  introJSReplay() {
+    const container = this.elementRef.nativeElement.querySelector('.scroll-container');
+    this.renderer.setProperty(container, 'scrollLeft', container.scrollWidth);
+    this.introService.featureOne();
+    localStorage.setItem('showFilterIntro', 'true');
+    localStorage.setItem('showTopicsDeleteIntro', 'true');
+    localStorage.setItem('showProfileIntro', 'true');
+    localStorage.setItem('showTopicsIntro', 'true');
+  }
 }
