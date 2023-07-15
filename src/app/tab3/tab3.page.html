@@ -154,7 +154,7 @@
           <ion-item *ngFor="let item of requestedNewsSources">
             <ion-list>
               <ion-item>
-                <h6 style="white-space: initial;"><b>URL: </b><span style="text-decoration: underline;" (click)="openURL(item.url)">{{item.url}}</span></h6>
+                <Label>URL:&nbsp;</Label><input type="text" [(ngModel)]="item.url">
               </ion-item>
               <ion-item>
                 <h6><b>User requesting: </b>{{item.user}}</h6>
@@ -176,7 +176,7 @@
               </ion-item>
 
               <ion-button (click)="approveNewsSource(item)">Approve</ion-button>
-              <ion-button (click)="deleteNewsSource(item)">Delete</ion-button>
+              <ion-button (click)="deleteNewsSource(item, true)">Delete</ion-button>
             </ion-list>
           </ion-item>
         </ion-list>
