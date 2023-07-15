@@ -9,6 +9,9 @@
       </ion-button>
     </ion-buttons>
     <ion-title mode="ios">My Feed</ion-title>
+    <ion-button fill="clear" slot="end" (click)="introJSReplay()">
+      <ion-icon name="help-outline"></ion-icon>
+    </ion-button>
     <ion-buttons id="introjs-step4" slot="end">
       <ion-button id="open-modal" [disabled]="!currentUserDoc" (click)="filterIntroJS()">
         <ion-icon name="filter"></ion-icon>
