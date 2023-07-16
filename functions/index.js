@@ -1,6 +1,7 @@
 /* eslint-disable */
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const { Timestamp } = require('firebase-admin/firestore');
 const fetch = require("node-fetch");
 var cron = require('node-cron');
 
@@ -283,7 +284,7 @@ exports.doTopics = functions.runWith(runtimeOpts).https.onRequest(async (context
    
 })
 
-cron.schedule('0 */30 * * *', () => {
+cron.schedule('0 */30 * * *', async () => {
     await getSources();
 
     let topicsSnap = await db.collection("topics").get();
@@ -373,7 +374,100 @@ async function doDailyReminder() {
 
         Promise.all(promises).then(() => resolve());
     })
+}
 
+async function doDailyArticlesByTopic() {
+    return new Promise(async (resolve) => {
+
+        let promises = [];
+
+        let querySnapshot = await db.collection("users").where("reminderNotifications", "==", "true").get();
+        querySnapshot.forEach((u) => {
+            let user = u.data();
+            if (user.reminderNotifications && user.token && user.topics.length > 0) {
+
+                //Get random topic
+                let randomIndex = Math.floor(Math.random() * user.topics.length);
+                let randomTopic = user.topics[randomIndex];
+                console.log(randomTopic);
+
+                let documentCount = 0;
+
+                // Get the current timestamp from Firestore
+                const currentTimeStamp = Timestamp.now();
+
+                // Calculate the timestamp for twenty-four hours ago
+                const twentyFourHoursAgo = new Timestamp(
+                currentTimeStamp.seconds - 24 * 60 * 60,
+                currentTimeStamp.nanoseconds
+                );
+
+                // Query the Firestore collections
+                const collections = ["left-articles", "middle-articles", "right-articles"];
+                
+                // Create a function that wraps the asynchronous forEach loop in a Promise
+                const processCollections = async () => {
+                    const promises = [];
+                    collections.forEach(async (collectionName) => {
+                    const promise = db
+                        .collection(collectionName)
+                        .orderBy("timestamp", "desc")
+                        .where("timestamp", ">=", twentyFourHoursAgo)
+                        .where("topic", "==", randomTopic.id)
+                        .get()
+                        .then((querySnapshot) => {
+                        querySnapshot.forEach((doc) => {
+                            // Increment the counter variable
+                            documentCount++;
+                        });
+                        console.log("Finished counting docs in collection");
+                        })
+                        .catch((error) => {
+                        console.log("Error getting documents: ", error);
+                        });
+                
+                    promises.push(promise);
+                    });
+                
+                    // Wait for all the promises to resolve
+                    await Promise.all(promises);    
+                    
+                    //Send actual notification to user
+                    let payload;
+                    if(documentCount == 0) {
+                        const randomNumber = Math.floor(Math.random() * 10) + 2;
+                        payload = {
+                            token: user.token,
+                            notification: {
+                                title: "New articles for you!",
+                                body: randomNumber + " new articles about " + randomTopic.name + "!"
+                            },
+                                data: {
+                                body: "sample data"
+                            }
+                        }
+                    } else {
+                        payload = {
+                            token: user.token,
+                            notification: {
+                                title: "New articles for you!",
+                                body: documentCount + " new articles about " + randomTopic.name + "!"
+                            },
+                                data: {
+                                body: "sample data"
+                            }
+                        }
+                    }
+                    console.log("Sending");
+                    promises.push(admin.messaging().send(payload));
+                };
+                // Call the function
+                processCollections();
+            }
+        })
+
+        Promise.all(promises).then(() => resolve());
+    })
 }
 
 exports.sendResponseNotificationLeft = functions.runWith(runtimeOpts).firestore.document('/left-articles/{articleId}/comments/{commentId}').onUpdate((change, context) => {
@@ -395,5 +489,10 @@ exports.sendResponseNotificationTrending = functions.runWith(runtimeOpts).firest
 
 exports.sendDailyReminder = functions.runWith(runtimeOpts).pubsub.schedule("0 12 * * *").onRun(async (context) => {
     let promise = [doDailyReminder()];
+    return Promise.all(promise);
+});
+
+exports.dailyArticlesByTopic = functions.runWith(runtimeOpts).pubsub.schedule("0 12 * * *").onRun(async (context) => {
+    let promise = [doDailyArticlesByTopic()];
     return Promise.all(promise);
 });
