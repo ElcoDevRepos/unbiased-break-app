@@ -120,6 +120,7 @@ export class Tab3Page implements OnInit, OnDestroy {
     const url = source.url;
     const imageUrl = source.imageUrl;
     const bias = source.bias;
+    const urlPattern = /^(?!https:\/\/|www\.).*$/i;
     
     //Toasts
     const successToast = await this.toastController.create({
@@ -137,9 +138,18 @@ export class Tab3Page implements OnInit, OnDestroy {
       duration: 3000,
       position: 'top',
     });
+    const wrongUrlToast = await this.toastController.create({
+      message: 'Input needs to be in example.com format (do not include https:// or www)',
+      duration: 5000,
+      position: 'top',
+    });
 
     if(bias.trim() == '' || imageUrl.trim() == '') {
       await formatToast.present();
+    }
+
+    else if(!urlPattern.test(url)) {
+      await wrongUrlToast.present();
     }
 
     else if(bias == 'left') {
