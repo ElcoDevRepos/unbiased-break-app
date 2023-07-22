@@ -253,9 +253,6 @@ export class Tab1Page implements OnInit{
   let leftSourcesFromFirestore = leftDocs.docs.map((doc) => doc.data()['url']);
   let middleSourcesFromFirestore = middleDocs.docs.map((doc) => doc.data()['url']);
   let rightSourcesFromFirestore = rightDocs.docs.map((doc) => doc.data()['url']);
-  console.log(leftSourcesFromFirestore)
-  console.log(rightSourcesFromFirestore)
-  console.log(middleSourcesFromFirestore)
 
   // Check for new sources in leftFilters
   leftSourcesFromFirestore.forEach(async (url) => {
@@ -266,6 +263,14 @@ export class Tab1Page implements OnInit{
     }
   });
 
+  //Check for sources removed from firestore
+  //Remove no longer in-use sources from users list
+  this.leftFilters = this.leftFilters.filter((source) => {
+    let filterMatch = leftSourcesFromFirestore.find((filter) => filter === source.label);
+    return filterMatch; // Keep the element in the array if filterMatch is true
+  });
+  
+
   // Check for new sources in middleFilters
   middleSourcesFromFirestore.forEach(async (url) => {
     let filterMatch = this.middleFilters.find((filter) => filter.label === url);
@@ -275,6 +280,13 @@ export class Tab1Page implements OnInit{
     }
   });
 
+  //Check for sources removed from firestore
+  //Remove no longer in-use sources from users list
+  this.middleFilters = this.middleFilters.filter((source) => {
+    let filterMatch = middleSourcesFromFirestore.find((filter) => filter === source.label);
+    return filterMatch; // Keep the element in the array if filterMatch is true
+  });
+
   // Check for new sources in rightFilters
   rightSourcesFromFirestore.forEach(async (url) => {
     let filterMatch = this.rightFilters.find((filter) => filter.label === url);
@@ -282,6 +294,13 @@ export class Tab1Page implements OnInit{
       // Update the rightFilters array with the new filter
       this.rightFilters.push({ label: url, on: true });
     }
+  });
+
+  //Check for sources removed from firestore
+  //Remove no longer in-use sources from users list
+  this.rightFilters = this.rightFilters.filter((source) => {
+    let filterMatch = rightSourcesFromFirestore.find((filter) => filter === source.label);
+    return filterMatch; // Keep the element in the array if filterMatch is true
   });
 
   let ref = doc(this.firestore, 'users', this.currentUserDoc.id);
