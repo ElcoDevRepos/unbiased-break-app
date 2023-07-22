@@ -253,9 +253,6 @@ export class Tab1Page implements OnInit{
   let leftSourcesFromFirestore = leftDocs.docs.map((doc) => doc.data()['url']);
   let middleSourcesFromFirestore = middleDocs.docs.map((doc) => doc.data()['url']);
   let rightSourcesFromFirestore = rightDocs.docs.map((doc) => doc.data()['url']);
-  console.log(leftSourcesFromFirestore)
-  console.log(rightSourcesFromFirestore)
-  console.log(middleSourcesFromFirestore)
 
   // Check for new sources in leftFilters
   leftSourcesFromFirestore.forEach(async (url) => {
