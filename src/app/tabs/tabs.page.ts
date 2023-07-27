@@ -12,8 +12,8 @@ export class TabsPage {
   constructor(private router: Router, private platform: Platform) {}
 
   ngOnInit() {
-    this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
-
+    //this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
+    this.isDesktop = true;
   }
 
 }
