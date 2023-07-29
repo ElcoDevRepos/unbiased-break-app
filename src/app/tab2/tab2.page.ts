@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
 import { Firestore, collectionData, collection, query, where, getDocs, orderBy, limit, startAfter, getDoc, updateDoc, doc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
@@ -15,11 +15,14 @@ import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
   styleUrls: ['tab2.page.scss']
 })
 export class Tab2Page {
+  @ViewChild('searchBar') searchBar : any;
+
   slideOpts = {
     initialSlide: 0
   };
-  items$: Observable<any>;
+  categoryItems$: Observable<any>;
   items = [];
+  categoryItems = [];
   limit = 20;
   sourceImages = [];
   loading = true;
@@ -30,12 +33,16 @@ export class Tab2Page {
   currentUserDoc;
   showReadArticles;
   readArticles = [];
+  showSearchBar : boolean = false;
+  category: string = 'world';
+
   constructor(private firestore: Firestore, public sanitizer: DomSanitizer, private http: HttpClient, private platform: Platform, private userService: UserService, private auth: Auth, private iab: InAppBrowser) { }
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
 
     this.getData();
+    this.getCategoryData();
   }
 
   ionViewWillEnter() {
@@ -59,7 +66,8 @@ export class Tab2Page {
   isRead(id) {
     return this.readArticles.includes(id);
   }
-
+  
+  //Get trending articles from firestore
   async getData() {
     await this.getSources();
     // Get data
@@ -67,14 +75,8 @@ export class Tab2Page {
       this.firestore,
       'trending-articles'
     );
-    let q;
-    if (this.lastVisible) {
-      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), limit(this.limit), startAfter(this.lastVisible));
-    } else {
-      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), limit(this.limit));
-    }
+    let q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), limit(this.limit));
     let docSnaps = await getDocs(q);
-    this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
     let items = [];
     
     //Check if user wants to see read articles
@@ -103,6 +105,52 @@ export class Tab2Page {
     });
 
     this.items.push(...items);
+    if (this.hasSearched) this.searchShownArticles();
+  }
+
+  //Get category articles from firestore
+  async getCategoryData() {
+    const responsesRef = collection(
+      this.firestore,
+      'category-articles'
+    );
+    let q;
+    if (this.lastVisible) {
+      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), where('topic', '==', this.category), limit(this.limit), startAfter(this.lastVisible));
+    } else {
+      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), where('topic', '==', this.category), limit(this.limit));
+    }
+
+    let docSnaps = await getDocs(q);
+    this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
+    let categoryItems = [];
+
+    //Check if user wants to see read articles
+    if(this.currentUserDoc) {
+      let ref = doc(this.firestore, 'users', this.currentUserDoc.id);
+      const docSnap = await getDoc(ref);
+      if (docSnap.exists()) {
+        this.showReadArticles = docSnap.data().showReadArticles;
+      } else {
+        console.log("No user doc found!");
+      }
+    }
+    docSnaps.forEach((d) => {
+      if(this.userService.getLoggedInUser()) {
+        //Show read articles
+        if(this.showReadArticles) {
+          categoryItems.push(d.data());
+        }
+        //Don't show read articles
+        else {
+          if(!this.readArticles.includes(d.data()['id'])) {
+            categoryItems.push(d.data());
+          }
+        }
+      } else categoryItems.push(d.data());
+    });
+
+    this.categoryItems.push(...categoryItems);
     this.loading = false;
     if (this.hasSearched) this.searchShownArticles();
   }
@@ -135,7 +183,16 @@ export class Tab2Page {
     event.target.src = "../../assets/icons/newspaper.svg";
   }
 
+  //This will return the referenced image link in the "img" container inside item
+  //If there is no value, tthis will return a placeholder image
   getImage(item) {
+    if (item.image) return item.image;
+    else return 'https://assets.digitalocean.com/labs/images/community_bg.png';
+  }
+
+  //This will return the source img/logo based on the item
+  //i.e a item from CNN will return the CNN img/logo
+  getSourceImage (item) {
     let newUrl = new URL(item.link);
     let url = "";
     if (newUrl.host.includes("www.")) {
@@ -149,14 +206,13 @@ export class Tab2Page {
       if (index != -1) {
         return this.sourceImages[index].image;
       }
-      if (item.image) return item.image;
     }
-    
+
     return newUrl.origin + "/favicon.ico";
   }
 
   loadData(ev) {
-    this.getData();
+    this.getCategoryData();
     ev.target.complete();
   }
 
@@ -166,27 +222,29 @@ export class Tab2Page {
       return;
     }
     this.hasSearched = true;
-    const searcher = new FuzzySearch(this.items, ['title'], {
+    const searcher = new FuzzySearch(this.categoryItems, ['title'], {
       caseSensitive: false,
       sort: true
     });
     const result = searcher.search(this.search);
-    this.items = result;
+    this.categoryItems = result;
     
   }
 
   clearSearch() {
     this.hasSearched = false;
     this.lastVisible = null;
-    this.items = [];
+    this.categoryItems = [];
     this.getData();
   }
 
   async doRefresh(event) {
     this.hasSearched = false;
     this.lastVisible = null;
+    this.categoryItems = [];
     this.items = [];
     await this.getData();
+    await this.getCategoryData();
     event.target.complete();
   }
 
@@ -210,6 +268,23 @@ export class Tab2Page {
     updateDoc(doc(this.firestore, 'users', this.userService.getLoggedInUser().uid), {
       readArticles
     })
+  }
+
+  //Toggle search bar when clicking on search glass
+  toggleSearchBar () {
+    this.showSearchBar = !this.showSearchBar;
+    setTimeout(() => {
+      this.searchBar.setFocus();
+    }, 100);
+  }
+
+  //Updates the category string
+  async setCategory (cat : string) {
+    this.category = cat;
+    this.lastVisible = null;
+    this.categoryItems = [];
+    await this.getCategoryData();
+    console.log(this.categoryItems);
   }
 
 }

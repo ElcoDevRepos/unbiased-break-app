@@ -1,9 +1,24 @@
-<ion-header [translucent]="false" id="main-content"> 
+<ion-header [translucent]="true" id="main-content"> 
   <ion-toolbar>
-    <ion-buttons slot="start">
+    <ion-buttons slot="start" style="align-self: center;">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title mode="ios">Trending</ion-title>
+
+    <ion-searchbar #searchBar *ngIf="showSearchBar" class="search" [(ngModel)]="search" debounce="500" (ionChange)="searchShownArticles()" (ionClear)="clearSearch()"></ion-searchbar>
+
+    <ion-buttons slot="end" style="align-self: center;">
+      <ion-button class="toolbar-btns" (click)="toggleSearchBar()">
+        <ion-icon name="search-outline"></ion-icon>
+      </ion-button>
+      <ion-button class="toolbar-btns">
+        <ion-icon name="notifications-outline"></ion-icon>
+      </ion-button>
+      <ion-button class="toolbar-btns">
+        <ion-img src="assets/icon/favicon.png">
+        </ion-img>
+      </ion-button>
+    </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
@@ -15,8 +30,8 @@
     </ion-toolbar>
   </ion-header>
   <ion-content class="ion-padding">
-    <ion-button routerLink="../tab2">
-      Trending
+    <ion-button routerLink="../tab1">
+      Topics
     </ion-button>
     <br>
     <ion-button routerLink="../tab3" id="introjs-step6">
@@ -33,43 +48,87 @@
     refreshingSpinner="circles"
     refreshingText="Refreshing..."></ion-refresher-content>
   </ion-refresher>
-  <ion-searchbar class="search" [(ngModel)]="search" debounce="500" (ionChange)="searchShownArticles()" (ionClear)="clearSearch()"></ion-searchbar>
-  <div class="news-section">
+
+  <!--HORIZONTAL TRENDING ARTICLE SECTION-->
+  <ion-item class="show-gradient no-border">
+    <ion-label class="trending-label">Trending</ion-label>
+  </ion-item>
+
+  <div class="scroll-container trending-article-container">
+    <div class="scroll-content">
+      <ion-card class="trending-articles" *ngFor="let item of items">
+        <div>
+          <img class="trending-article-img" [src]="getImage(item)" (error)="onImgError($event)" alt="trending article image">
+          <div class="trending-article-topic-pill">Politics</div>
+        </div>
+        <div class="trending-article-trending-and-time-container">
+          <span>🔥Trending no. 1</span>
+          <span>2 Days ago</span>
+        </div>
+        <p class="trending-article-title">{{item.title}}</p>
+        <div class="trending-article-source-container">
+          <img [src]="getSourceImage(item)" alt="trending article source image">
+          <p>{{item.siteName}}</p>
+        </div>
+      </ion-card>
+    </div>
+  </div>
+  <!--END OF SECTION-->
+
+  <!--CATEGORIES SECTION-->
+
+  <ion-item class="show-gradient no-border">
+    <ion-label class="trending-label">Explore</ion-label>
+  </ion-item>
+
+  <div class="scroll-container">
+    <div class="scroll-content category-container">
+      <button (click)="setCategory('world')">World</button>
+      <button (click)="setCategory('united-states')">U.S.</button>
+      <button (click)="setCategory('politics')">Politics</button>
+      <button (click)="setCategory('economy')">Economy</button>
+      <button (click)="setCategory('business')">Business</button>
+      <button (click)="setCategory('tech')">Tech</button>
+      <button (click)="setCategory('markets')">Markets</button>
+      <button (click)="setCategory('opinion')">Opinion</button>
+      <button (click)="setCategory('sports')">Sports</button>
+    </div>
+  </div>
+
+  <div class="category-section">
     <div style="margin-top:15px">
-      <ion-item class="news-bg-label no-border" style="border-radius: 12px;" lines="none">
-        <ion-label style="font-weight: bold;">Trending Topics</ion-label>
-      </ion-item>
-      <!--<div class="card-container">
-        <ion-card *ngFor="let item of items" class="content-card" (click)="readArticles.push(item.id)" [routerLink]="['/news-article/' + item.id + '/trending-articles']" [state]="{ article: item }">
-          <img [src]="getImage(item)" (error)="onImgError(item, $event)">
-          <ion-card-content>
-            <ion-label class="article-data-thumb">
-              <h3 style="white-space: initial;" [ngStyle]="{'font-weight': !isRead(item.id) ? 'bold': 'normal'}">{{item.title}}</h3>
-              <p>{{item.siteName}}</p>
-              <p>{{item.date?.toDate() | date:'mediumDate'}}</p>
-            </ion-label>
-          </ion-card-content>
-        </ion-card>
-      </div>-->
+
       <ion-list lines="none" *ngIf="!loading">
-        <ion-item class="news-link" *ngFor="let item of items"
+        <ion-card class="category-article" *ngFor="let item of categoryItems"
           (click)="readArticles.push(item.id); onArticleClick(item);"
           [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/trending-articles']" [state]="{ article: item }">
-          <ion-thumbnail slot="start">
+          
+          <div class="category-card-content-container">
+            <div>
+              <div class="category-and-time">
+                <p>{{item.topic}}</p>
+                <p>{{item.date?.toDate() | date:'mediumDate'}}</p>
+              </div>
+
+              <p class="title" style="white-space: initial;" [ngStyle]="{'font-weight': !isRead(item.id) ? 'bold': 'normal'}">{{item.title}}</p>
+
+              <div class="source-container">
+                <img [src]="getSourceImage(item)" alt="trending article source image">
+                <p>{{item.siteName}}</p>
+              </div>
+            </div>
+
             <img [src]="getImage(item)" (error)="onImgError($event)">
-          </ion-thumbnail>
-          <ion-label class="article-data-thumb">
-            <h3 style="white-space: initial;" [ngStyle]="{'font-weight': !isRead(item.id) ? 'bold': 'normal'}">{{item.title}}</h3>
-            <p>{{item.siteName}}</p>
-            <p>{{item.date?.toDate() | date:'mediumDate'}}</p>
-          </ion-label>
-        </ion-item>
+          </div>
+        </ion-card>
       </ion-list>
+
         <div *ngIf="loading">
           <ion-spinner name="dots"></ion-spinner>
         </div>
     </div>
   </div>
+  <!--END OF SECTION-->
 
   <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
