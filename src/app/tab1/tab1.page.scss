@@ -4,7 +4,8 @@
     --background: white;
     --placeholder-opacity: 1;
     --icon-color: #d3d3d3;
-    border-radius: 25px;
+    padding: 0px;
+    height: 38px;
 }
 
 ion-content {
@@ -307,4 +308,9 @@ ion-label p {
 .topic-checked {
     background-color: rgb(25,48,82);
     color: #fff;
+}
+
+.toolbar-btns {
+    height: 32px;
+    width: 32px;
 }

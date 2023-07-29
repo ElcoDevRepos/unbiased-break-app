@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, Renderer2 } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild} from '@angular/core';
 import { Auth } from '@angular/fire/auth';
 import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot, endBefore, addDoc, Timestamp } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
@@ -17,6 +17,8 @@ import { IntrojsService } from '../introjs.service';
   styleUrls: ['tab1.page.scss']
 })
 export class Tab1Page implements OnInit{
+  @ViewChild('searchBar') searchBar : any;
+
   expanded = false;
   items$: Observable<any>;
   items = [];
@@ -49,6 +51,7 @@ export class Tab1Page implements OnInit{
   gettingData : boolean = false;
   requestedNewsSource : string = '';
   requestNewsSourceLoading : boolean = false;
+  showSearchBar : boolean = false;
 
   constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform,
     private auth: Auth, private iab: InAppBrowser, private toastController : ToastController, private introService : IntrojsService, private elementRef: ElementRef, private renderer: Renderer2) { }
@@ -754,5 +757,13 @@ export class Tab1Page implements OnInit{
     localStorage.setItem('showTopicsDeleteIntro', 'true');
     localStorage.setItem('showProfileIntro', 'true');
     localStorage.setItem('showTopicsIntro', 'true');
+  }
+
+  //Toggle search bar when clicking on search glass
+  toggleSearchBar () {
+    this.showSearchBar = !this.showSearchBar;
+    setTimeout(() => {
+      this.searchBar.setFocus();
+    }, 100);
   }
 }
