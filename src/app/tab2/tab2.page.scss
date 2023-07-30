@@ -2,6 +2,7 @@
     display: none;
   }
 
+//Toolbar UI
 .search {
     --color: black;
     --placeholder-color: #d3d3d3;
@@ -10,6 +11,19 @@
     --icon-color: #d3d3d3;
     padding: 0px;
     height: 38px;
+}
+
+.menu-btn {
+    background-color: #f3f3f3;
+    border-radius: 20px;
+}
+
+.toolbar-btns {
+    background-color: #f3f3f3;
+    border-radius: 20px;
+    height: 32px;
+    width: 32px;
+    margin: 0px;
 }
 
 ion-content {
@@ -151,11 +165,6 @@ ion-segment {
 
 .scroll-content ion-card {
     margin-left: 4px;
-}
-
-.toolbar-btns {
-    height: 32px;
-    width: 32px;
 }
 
 //TRENDING ARTICLE SECTION

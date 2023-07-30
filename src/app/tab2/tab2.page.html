@@ -1,18 +1,20 @@
 <ion-header [translucent]="true" id="main-content"> 
   <ion-toolbar>
     <ion-buttons slot="start" style="align-self: center;">
-      <ion-menu-button></ion-menu-button>
+      <ion-menu-button>
+        <ion-icon class="menu-btn" src="assets/icons/color-menu.svg"></ion-icon>
+      </ion-menu-button>
     </ion-buttons>
 
     <ion-searchbar #searchBar *ngIf="showSearchBar" class="search" [(ngModel)]="search" debounce="500" (ionChange)="searchShownArticles()" (ionClear)="clearSearch()"></ion-searchbar>
 
-    <ion-buttons slot="end" style="align-self: center;">
-      <ion-button class="toolbar-btns" (click)="toggleSearchBar()">
-        <ion-icon name="search-outline"></ion-icon>
-      </ion-button>
-      <ion-button class="toolbar-btns">
-        <ion-icon name="notifications-outline"></ion-icon>
-      </ion-button>
+    <ion-buttons slot="end" style="align-self: center; gap: 5px;">
+        <ion-button class="toolbar-btns" (click)="toggleSearchBar()">
+          <img src="assets/icons/color-search.svg" alt="bell">
+        </ion-button>
+        <ion-button class="toolbar-btns">
+          <img src="assets/icons/color-notification.svg" alt="bell">
+        </ion-button>
       <ion-button class="toolbar-btns">
         <ion-img src="assets/icon/favicon.png">
         </ion-img>
