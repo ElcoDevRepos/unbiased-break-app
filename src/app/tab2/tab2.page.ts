@@ -35,6 +35,7 @@ export class Tab2Page {
   readArticles = [];
   showSearchBar : boolean = false;
   category: string = 'world';
+  stopCategoryArticleQuery : boolean = false;
 
   constructor(private firestore: Firestore, public sanitizer: DomSanitizer, private http: HttpClient, private platform: Platform, private userService: UserService, private auth: Auth, private iab: InAppBrowser) { }
 
@@ -110,6 +111,8 @@ export class Tab2Page {
 
   //Get category articles from firestore
   async getCategoryData() {
+    if(this.stopCategoryArticleQuery) return;
+
     const responsesRef = collection(
       this.firestore,
       'category-articles'
@@ -136,6 +139,16 @@ export class Tab2Page {
       }
     }
     docSnaps.forEach((d) => {
+      //check if the articles date is newer than the last article
+      //this prevents the query from looping
+      if(this.categoryItems.length > 0) {
+        if(this.categoryItems[this.categoryItems.length-1].date <= d.data()['date']) {
+          this.stopCategoryArticleQuery = true;
+          console.log('No more articles to be found');
+          return;
+        }
+      }
+
       if(this.userService.getLoggedInUser()) {
         //Show read articles
         if(this.showReadArticles) {
@@ -231,11 +244,13 @@ export class Tab2Page {
     
   }
 
-  clearSearch() {
+  async clearSearch() {
     this.hasSearched = false;
     this.lastVisible = null;
     this.categoryItems = [];
-    this.getData();
+    this.stopCategoryArticleQuery = false;
+    await this.getCategoryData();
+    await this.getData();
   }
 
   async doRefresh(event) {
@@ -243,6 +258,7 @@ export class Tab2Page {
     this.lastVisible = null;
     this.categoryItems = [];
     this.items = [];
+    this.stopCategoryArticleQuery = false;
     await this.getData();
     await this.getCategoryData();
     event.target.complete();
@@ -283,6 +299,7 @@ export class Tab2Page {
     this.category = cat;
     this.lastVisible = null;
     this.categoryItems = [];
+    this.stopCategoryArticleQuery = false;
     await this.getCategoryData();
     console.log(this.categoryItems);
   }

@@ -56,7 +56,9 @@
 
   <div class="scroll-container trending-article-container">
     <div class="scroll-content">
-      <ion-card class="trending-articles" *ngFor="let item of items">
+      <ion-card class="trending-articles" *ngFor="let item of items"
+      (click)="readArticles.push(item.id); onArticleClick(item);"
+          [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/trending-articles']" [state]="{ article: item }">
         <div>
           <img class="trending-article-img" [src]="getImage(item)" (error)="onImgError($event)" alt="trending article image">
           <div class="trending-article-topic-pill">Politics</div>
@@ -101,7 +103,7 @@
       <ion-list lines="none" *ngIf="!loading">
         <ion-card class="category-article" *ngFor="let item of categoryItems"
           (click)="readArticles.push(item.id); onArticleClick(item);"
-          [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/trending-articles']" [state]="{ article: item }">
+          [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/category-articles']" [state]="{ article: item }">
           
           <div class="category-card-content-container">
             <div>
