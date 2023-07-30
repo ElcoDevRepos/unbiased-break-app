@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, collectionData, collection, query, where, getDocs, orderBy, limit, startAfter, getDoc, updateDoc, doc } from '@angular/fire/firestore';
+import { Firestore, collectionData, collection, query, where, getDocs, orderBy, limit, startAfter, getDoc, updateDoc, doc, Timestamp } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
 import FuzzySearch from 'fuzzy-search';
@@ -37,7 +37,7 @@ export class Tab2Page {
   category: string = 'world';
   stopCategoryArticleQuery : boolean = false;
 
-  constructor(private firestore: Firestore, public sanitizer: DomSanitizer, private http: HttpClient, private platform: Platform, private userService: UserService, private auth: Auth, private iab: InAppBrowser) { }
+  constructor(private firestore: Firestore, public sanitizer: DomSanitizer, private platform: Platform, private userService: UserService, private auth: Auth, private iab: InAppBrowser) { }
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
@@ -302,6 +302,14 @@ export class Tab2Page {
     this.stopCategoryArticleQuery = false;
     await this.getCategoryData();
     console.log(this.categoryItems);
+  }
+
+  getHoursAgo(timestamp: Timestamp): number {
+    const currentDate = new Date();
+    const publishedDate = timestamp.toDate();
+    const timeDifference = currentDate.getTime() - publishedDate.getTime();
+    const hoursDifference = Math.floor(timeDifference / (1000 * 3600));
+    return hoursDifference;
   }
 
 }

@@ -56,7 +56,7 @@
 
   <div class="scroll-container trending-article-container">
     <div class="scroll-content">
-      <ion-card class="trending-articles" *ngFor="let item of items"
+      <ion-card class="trending-articles" *ngFor="let item of items let i = index;"
       (click)="readArticles.push(item.id); onArticleClick(item);"
           [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/trending-articles']" [state]="{ article: item }">
         <div>
@@ -64,8 +64,8 @@
           <div class="trending-article-topic-pill">Politics</div>
         </div>
         <div class="trending-article-trending-and-time-container">
-          <span>🔥Trending no. 1</span>
-          <span>2 Days ago</span>
+          <span>🔥Trending no. {{ i + 1 }}</span>
+          <span>{{ getHoursAgo(item.date) }} hours ago</span>
         </div>
         <p class="trending-article-title">{{item.title}}</p>
         <div class="trending-article-source-container">
@@ -85,15 +85,15 @@
 
   <div class="scroll-container">
     <div class="scroll-content category-container">
-      <button (click)="setCategory('world')">World</button>
-      <button (click)="setCategory('united-states')">U.S.</button>
-      <button (click)="setCategory('politics')">Politics</button>
-      <button (click)="setCategory('economy')">Economy</button>
-      <button (click)="setCategory('business')">Business</button>
-      <button (click)="setCategory('tech')">Tech</button>
-      <button (click)="setCategory('markets')">Markets</button>
-      <button (click)="setCategory('opinion')">Opinion</button>
-      <button (click)="setCategory('sports')">Sports</button>
+      <button (click)="setCategory('world')" style="background-image: url('assets/category-imgs/world.jpg')" [class.active-button]="category === 'world'">World</button>
+      <button (click)="setCategory('united-states')" style="background-image: url('assets/category-imgs/us.jpg')" [class.active-button]="category === 'united-states'">U.S.</button>
+      <button (click)="setCategory('politics')" style="background-image: url('assets/category-imgs/politics.jpg')" [class.active-button]="category === 'politics'">Politics</button>
+      <button (click)="setCategory('economy')" style="background-image: url('assets/category-imgs/economy.jpg')" [class.active-button]="category === 'economy'">Economy</button>
+      <button (click)="setCategory('business')" style="background-image: url('assets/category-imgs/business.jpg')" [class.active-button]="category === 'business'">Business</button>
+      <button (click)="setCategory('tech')" style="background-image: url('assets/category-imgs/tech.jpg')" [class.active-button]="category === 'tech'">Tech</button>
+      <button (click)="setCategory('markets')" style="background-image: url('assets/category-imgs/markets.jpg')" [class.active-button]="category === 'markets'">Markets</button>
+      <button (click)="setCategory('opinion')" style="background-image: url('assets/category-imgs/opinion.jpg')" [class.active-button]="category === 'opinion'">Opinion</button>
+      <button (click)="setCategory('sports')" style="background-image: url('assets/category-imgs/sports.jpg')" [class.active-button]="category === 'sports'">Sports</button>
     </div>
   </div>
 

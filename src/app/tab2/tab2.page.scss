@@ -252,12 +252,21 @@ ion-list {
     button {
         height: 100px;
         width: 100px;
-        background-color: lightgray;
         border-radius: 50px;
         color: white;
         font-size: 18px;
         font-weight: bold;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-blend-mode: overlay;
+        background-color: rgba(30, 30, 30, 0.822);
     }
+
+    .active-button {
+        background-color: rgba(107, 107, 107, 0.74);
+        transition: background-color 0.25s ease;
+    } 
 }
 
 .category-article {
