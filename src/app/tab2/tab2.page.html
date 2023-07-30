@@ -63,7 +63,7 @@
           [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/trending-articles']" [state]="{ article: item }">
         <div>
           <img class="trending-article-img" [src]="getImage(item)" (error)="onImgError($event)" alt="trending article image">
-          <div class="trending-article-topic-pill">Politics</div>
+          <!--<div class="trending-article-topic-pill">Politics</div>-->
         </div>
         <div class="trending-article-trending-and-time-container">
           <span>🔥Trending no. {{ i + 1 }}</span>

@@ -197,10 +197,14 @@ export class Tab2Page {
   }
 
   //This will return the referenced image link in the "img" container inside item
-  //If there is no value, tthis will return a placeholder image
+  //If there is no value, this will return a placeholder image
   getImage(item) {
     if (item.image) return item.image;
-    else return 'https://assets.digitalocean.com/labs/images/community_bg.png';
+    
+    //Get random placeholder image
+    else {
+      return this.getSourceImage(item);
+    }
   }
 
   //This will return the source img/logo based on the item
