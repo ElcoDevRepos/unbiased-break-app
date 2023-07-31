@@ -163,7 +163,7 @@ export class NewsArticlePage implements OnInit, OnDestroy {
       let content = d.data().content;
       content = content.replaceAll('<p>', '<p style="font-size: 18px">');
       content = content.replaceAll('</p>', '</p><br>');
-      content = content.replaceAll('<img', '<img style="max-width: 100%; max-height: 250px" ');
+      content = content.replaceAll('<img', '<img style="max-width: 100%; height: fit-content" ');
       this.article.content = this.sanitizer.bypassSecurityTrustHtml(content);
       let image = new Image();
       image.src = this.article.image;
