@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-tabs',
@@ -9,11 +10,15 @@ import { Platform } from '@ionic/angular';
 })
 export class TabsPage {
   isDesktop: boolean;
-  constructor(private router: Router, private platform: Platform) {}
+  public selectedTab : string = "";
+  constructor(private router: Router, private platform: Platform, private route: ActivatedRoute) {}
 
   ngOnInit() {
     //this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
-    this.isDesktop = true;
+    this.isDesktop = false;
   }
 
+  onTabButtonClick(tabName: string) {
+    this.selectedTab = tabName;
+  }
 }

@@ -9,6 +9,10 @@ import { HttpClient } from '@angular/common/http';
 import { Platform } from '@ionic/angular';
 import { UserService } from '../services/user.service';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { Router } from '@angular/router';
+import { MenuController } from '@ionic/angular';
+import { TabsPage } from '../tabs/tabs.page';
+
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
@@ -37,9 +41,11 @@ export class Tab2Page {
   category: string = 'world';
   stopCategoryArticleQuery : boolean = false;
 
-  constructor(private firestore: Firestore, public sanitizer: DomSanitizer, private platform: Platform, private userService: UserService, private auth: Auth, private iab: InAppBrowser) { }
+  constructor(private firestore: Firestore, public sanitizer: DomSanitizer, private platform: Platform, private userService: UserService,
+     private auth: Auth, private iab: InAppBrowser, private router : Router, private menuController : MenuController, private tabsPage : TabsPage) { }
 
   ngOnInit() {
+    this.tabsPage.selectedTab = "tab2";
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
 
     this.getData();
@@ -47,6 +53,7 @@ export class Tab2Page {
   }
 
   ionViewWillEnter() {
+
     this.auth.onAuthStateChanged(async () => {
       let ref = collection(
         this.firestore,
@@ -144,7 +151,6 @@ export class Tab2Page {
       if(this.categoryItems.length > 0) {
         if(this.categoryItems[this.categoryItems.length-1].date <= d.data()['date']) {
           this.stopCategoryArticleQuery = true;
-          console.log('No more articles to be found');
           return;
         }
       }
@@ -316,4 +322,7 @@ export class Tab2Page {
     return hoursDifference;
   }
 
+  closeMenu() {
+    this.menuController.close('tab2-menu');
+  }
 }

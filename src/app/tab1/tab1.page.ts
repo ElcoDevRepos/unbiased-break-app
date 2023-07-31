@@ -10,6 +10,8 @@ import { TopicComponent } from '../modals/topic/topic.component';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { ToastController } from '@ionic/angular';
 import { IntrojsService } from '../introjs.service';
+import { MenuController } from '@ionic/angular';
+import { TabsPage } from '../tabs/tabs.page';
 
 @Component({
   selector: 'app-tab1',
@@ -54,7 +56,8 @@ export class Tab1Page implements OnInit{
   showSearchBar : boolean = false;
 
   constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform,
-    private auth: Auth, private iab: InAppBrowser, private toastController : ToastController, private introService : IntrojsService, private elementRef: ElementRef, private renderer: Renderer2) { }
+    private auth: Auth, private iab: InAppBrowser, private toastController : ToastController, private introService : IntrojsService, private elementRef: ElementRef, private renderer: Renderer2,
+    private menuController : MenuController, private tabsPage : TabsPage) { }
 
   onArticleClick(item: any) {
     const link = item.link;
@@ -67,6 +70,7 @@ export class Tab1Page implements OnInit{
     
 
   ngOnInit() {
+    this.tabsPage.selectedTab = "tab1";
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
     this.auth.onAuthStateChanged(async () => {
       let ref = collection(
@@ -571,20 +575,22 @@ export class Tab1Page implements OnInit{
   }
 
   getImage(item) {
-    let newUrl = new URL(item.link);
-    let url = "";
-    if (newUrl.host.includes("www.")) {
-      url = newUrl.host.split("www.")[1];
-    } else {
-      url = newUrl.host;
-    }
-    let index = _.findIndex(this.sourceImages, (s) => s.url === url);
-
-    if (index != -1) {
-      return this.sourceImages[index].image;
-    }
     if (item.image) return item.image;
-    return newUrl.origin + "/favicon.ico";
+    else  {
+      let newUrl = new URL(item.link);
+      let url = "";
+      if (newUrl.host.includes("www.")) {
+        url = newUrl.host.split("www.")[1];
+      } else {
+        url = newUrl.host;
+      }
+      let index = _.findIndex(this.sourceImages, (s) => s.url === url);
+
+      if (index != -1) {
+        return this.sourceImages[index].image;
+      }
+      return newUrl.origin + "/favicon.ico";
+    }
   }
 
   segmentChanged() {
@@ -765,5 +771,9 @@ export class Tab1Page implements OnInit{
     setTimeout(() => {
       this.searchBar.setFocus();
     }, 100);
+  }
+
+  closeMenu() {
+    this.menuController.close('tab2-menu');
   }
 }
