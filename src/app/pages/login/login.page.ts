@@ -30,7 +30,7 @@ export class LoginPage implements OnInit {
       const user = await signInWithEmailAndPassword(this.auth, this.email, this.password);
       this.router.navigate([""]);
     } catch (error) {
-      alert(error);
+      alert("Wrong username/password");
     }
 
   }

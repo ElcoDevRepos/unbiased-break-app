@@ -29,7 +29,7 @@ export class FormPage implements OnInit {
       const user = await signInWithEmailAndPassword(this.auth, this.email, this.password);
       this.router.navigate([""]);
     } catch (error) {
-      alert(error);
+      alert("Wrong email/password");
     }
 
   }
@@ -49,7 +49,7 @@ export class FormPage implements OnInit {
       })
       this.router.navigate([""]);
     } catch (error) {
-      alert(error);
+      alert("Something went wrong");
     }
   }
 
