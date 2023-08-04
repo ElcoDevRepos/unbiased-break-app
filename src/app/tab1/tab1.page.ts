@@ -416,6 +416,10 @@ export class Tab1Page implements OnInit{
   }
 
   async getData() {
+    if(this.topicCheckedList.length == 0) {
+      this.loading = false;
+      return;
+    }
     if(this.gettingData) return;
     this.gettingData = true;
     const responsesRef = collection(
@@ -585,7 +589,7 @@ export class Tab1Page implements OnInit{
       } else {
         url = newUrl.host;
       }
-      console.log(item.link, url);
+
       let index = _.findIndex(this.sourceImages, (s) => s.url === url );
 
       if (index != -1) {
@@ -668,22 +672,24 @@ export class Tab1Page implements OnInit{
   }
 
   async topicClick(topic : any) {
-    const index = this.topicOptions.findIndex((t: any) => t.display === topic.display);
-      if (index !== -1) {
-        this.topicOptions[index].checked = !topic.checked;
+    if(!this.loading){
+      const index = this.topicOptions.findIndex((t: any) => t.display === topic.display);
+        if (index !== -1) {
+          this.topicOptions[index].checked = !topic.checked;
+        }
+      this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
+      //Update user firestore doc
+      if(this.currentUserDoc){
+        await updateDoc(doc(this.firestore, "users", this.currentUserDoc.id), {
+          topics: this.topicOptions
+        });
       }
-    this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
-    //Update user firestore doc
-    if(this.currentUserDoc){
-      await updateDoc(doc(this.firestore, "users", this.currentUserDoc.id), {
-        topics: this.topicOptions
-      });
-    }
 
-    this.items = [];
-    this.loading = true;
-    this.lastVisible = null;
-    this.getData();
+      this.items = [];
+      this.loading = true;
+      this.lastVisible = null;
+      await this.getData();
+    }
   }
 
   //Send request news source doc to firestore
