@@ -134,6 +134,7 @@ export class Tab1Page implements OnInit{
       promises.push(this.getSources());
       Promise.all(promises).then(() => this.getData());
     } else {
+      await this.getSources();
       await this.setupFilters();
       await this.setupTopics()
       await this.getData();
@@ -584,12 +585,12 @@ export class Tab1Page implements OnInit{
       } else {
         url = newUrl.host;
       }
-      let index = _.findIndex(this.sourceImages, (s) => s.url === url);
+      console.log(item.link, url);
+      let index = _.findIndex(this.sourceImages, (s) => s.url === url );
 
       if (index != -1) {
         return this.sourceImages[index].image;
       }
-      return newUrl.origin + "/favicon.ico";
     }
   }
 
