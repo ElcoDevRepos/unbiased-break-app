@@ -64,8 +64,9 @@ export class Tab3Page implements OnInit, OnDestroy {
   }
 
   async ionViewWillEnter() {
-    this.favorites = await this.userService.getFavorites() as any;
     await this.checkIfAdmin();
+    this.favorites = await this.userService.getFavorites() as any;
+    this.readArticles = await this.userService.getReadArticles() as any;
     this.checkNotificationSettings();
     
     //Check if intro.js is going to be shown
@@ -96,10 +97,6 @@ export class Tab3Page implements OnInit, OnDestroy {
       }
       else if (admin) this.isAdmin = true;
     });
-  }
-
-  async getReadArticles() {
-    this.readArticles = await this.userService.getReadArticles() as any;
   }
 
   async getRequestedNewsSources() {
