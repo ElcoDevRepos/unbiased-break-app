@@ -100,7 +100,6 @@ export class Tab3Page implements OnInit, OnDestroy {
 
   async getReadArticles() {
     this.readArticles = await this.userService.getReadArticles() as any;
-    console.log(this.readArticles);
   }
 
   async getRequestedNewsSources() {
