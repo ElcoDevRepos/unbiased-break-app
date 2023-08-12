@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, Renderer2 } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild} from '@angular/core';
 import { Auth } from '@angular/fire/auth';
 import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot, endBefore, addDoc, Timestamp } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
@@ -10,6 +10,8 @@ import { TopicComponent } from '../modals/topic/topic.component';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { ToastController } from '@ionic/angular';
 import { IntrojsService } from '../introjs.service';
+import { MenuController } from '@ionic/angular';
+import { TabsPage } from '../tabs/tabs.page';
 
 @Component({
   selector: 'app-tab1',
@@ -17,6 +19,8 @@ import { IntrojsService } from '../introjs.service';
   styleUrls: ['tab1.page.scss']
 })
 export class Tab1Page implements OnInit{
+  @ViewChild('searchBar') searchBar : any;
+
   expanded = false;
   items$: Observable<any>;
   items = [];
@@ -49,9 +53,11 @@ export class Tab1Page implements OnInit{
   gettingData : boolean = false;
   requestedNewsSource : string = '';
   requestNewsSourceLoading : boolean = false;
+  showSearchBar : boolean = false;
 
   constructor(private firestore: Firestore, private userService: UserService, private modal: ModalController, private platform: Platform,
-    private auth: Auth, private iab: InAppBrowser, private toastController : ToastController, private introService : IntrojsService, private elementRef: ElementRef, private renderer: Renderer2) { }
+    private auth: Auth, private iab: InAppBrowser, private toastController : ToastController, private introService : IntrojsService, private elementRef: ElementRef, private renderer: Renderer2,
+    private menuController : MenuController, private tabsPage : TabsPage) { }
 
   onArticleClick(item: any) {
     const link = item.link;
@@ -64,6 +70,7 @@ export class Tab1Page implements OnInit{
     
 
   ngOnInit() {
+    this.tabsPage.selectedTab = "tab1";
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
     this.auth.onAuthStateChanged(async () => {
       let ref = collection(
@@ -127,6 +134,7 @@ export class Tab1Page implements OnInit{
       promises.push(this.getSources());
       Promise.all(promises).then(() => this.getData());
     } else {
+      await this.getSources();
       await this.setupFilters();
       await this.setupTopics()
       await this.getData();
@@ -408,6 +416,10 @@ export class Tab1Page implements OnInit{
   }
 
   async getData() {
+    if(this.topicCheckedList.length == 0) {
+      this.loading = false;
+      return;
+    }
     if(this.gettingData) return;
     this.gettingData = true;
     const responsesRef = collection(
@@ -568,20 +580,22 @@ export class Tab1Page implements OnInit{
   }
 
   getImage(item) {
-    let newUrl = new URL(item.link);
-    let url = "";
-    if (newUrl.host.includes("www.")) {
-      url = newUrl.host.split("www.")[1];
-    } else {
-      url = newUrl.host;
-    }
-    let index = _.findIndex(this.sourceImages, (s) => s.url === url);
-
-    if (index != -1) {
-      return this.sourceImages[index].image;
-    }
     if (item.image) return item.image;
-    return newUrl.origin + "/favicon.ico";
+    else  {
+      let newUrl = new URL(item.link);
+      let url = "";
+      if (newUrl.host.includes("www.")) {
+        url = newUrl.host.split("www.")[1];
+      } else {
+        url = newUrl.host;
+      }
+
+      let index = _.findIndex(this.sourceImages, (s) => s.url === url );
+
+      if (index != -1) {
+        return this.sourceImages[index].image;
+      }
+    }
   }
 
   segmentChanged() {
@@ -658,22 +672,24 @@ export class Tab1Page implements OnInit{
   }
 
   async topicClick(topic : any) {
-    const index = this.topicOptions.findIndex((t: any) => t.display === topic.display);
-      if (index !== -1) {
-        this.topicOptions[index].checked = !topic.checked;
+    if(!this.loading){
+      const index = this.topicOptions.findIndex((t: any) => t.display === topic.display);
+        if (index !== -1) {
+          this.topicOptions[index].checked = !topic.checked;
+        }
+      this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
+      //Update user firestore doc
+      if(this.currentUserDoc){
+        await updateDoc(doc(this.firestore, "users", this.currentUserDoc.id), {
+          topics: this.topicOptions
+        });
       }
-    this.topicCheckedList = this.topicOptions.filter(topic => topic.checked === true);
-    //Update user firestore doc
-    if(this.currentUserDoc){
-      await updateDoc(doc(this.firestore, "users", this.currentUserDoc.id), {
-        topics: this.topicOptions
-      });
-    }
 
-    this.items = [];
-    this.loading = true;
-    this.lastVisible = null;
-    this.getData();
+      this.items = [];
+      this.loading = true;
+      this.lastVisible = null;
+      await this.getData();
+    }
   }
 
   //Send request news source doc to firestore
@@ -754,5 +770,17 @@ export class Tab1Page implements OnInit{
     localStorage.setItem('showTopicsDeleteIntro', 'true');
     localStorage.setItem('showProfileIntro', 'true');
     localStorage.setItem('showTopicsIntro', 'true');
+  }
+
+  //Toggle search bar when clicking on search glass
+  toggleSearchBar () {
+    this.showSearchBar = !this.showSearchBar;
+    setTimeout(() => {
+      this.searchBar.setFocus();
+    }, 100);
+  }
+
+  closeMenu() {
+    this.menuController.close('tab2-menu');
   }
 }

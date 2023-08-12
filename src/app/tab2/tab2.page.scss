@@ -1,10 +1,26 @@
+*::-webkit-scrollbar {
+    display: none;
+  }
+
+//Toolbar UI
 .search {
     --color: black;
     --placeholder-color: #d3d3d3;
     --background: white;
     --placeholder-opacity: 1;
     --icon-color: #d3d3d3;
-    border-radius: 25px;
+    padding: 0px;
+    height: 38px;
+}
+
+.menu-link-btn {
+    color: black;
+}
+
+.toolbar-btns {
+    height: 32px;
+    width: 32px;
+    margin: 0px;
 }
 
 ion-content {
@@ -20,7 +36,8 @@ ion-avatar {
 }
 
 ion-toolbar {
-    --background: #ffffff;
+    --background: #f3f3f3;
+    --border-style: none;
     --min-height: 75px;
 
     ion-title {
@@ -65,13 +82,6 @@ ion-segment {
     }
 }
 
-.news-section {
-    background-color: #ffffff;
-    margin-left: 12px;
-    margin-right: 12px;
-    border-radius: 12px;
-}
-
 .news-articles-label {
     color: black;
     margin: 12px;
@@ -103,115 +113,10 @@ ion-segment {
     margin-bottom: 50px;
 }
 
-.article-data {
-    min-height: 170px;
-    max-height: 170px;
-    padding-top: 85px;
-}
-
 .loading {
     position: absolute;
     left: 50%;
     top: 50%;
-}
-
-.article-data-thumb {
-    p {
-        color: black;
-    }
-}
-
-.news-link {
-    ion-thumbnail {
-        max-width: 65px;
-        max-height: 65px;
-        min-width: 65px;
-        min-height: 65px;
-    }
-}
-
-@media (max-width: 768px) {
-    .action-btn {
-        position: absolute;
-        top: 2%;
-        right: 50%;
-        --background: white;
-        --color: red;
-    }
-
-    .stars-btn {
-        position: absolute;
-        top: 0;
-        right: 1%;
-
-        --background: white;
-        --color: rgb(194, 165, 3);
-
-        ion-icon {
-            color: rgb(194, 165, 3);
-        }
-    }
-}
-
-@media (min-width: 769px) and (max-width: 1200px) {
-    .action-btn {
-        position: absolute;
-        top: 2%;
-        right: 25%;
-        --background: white;
-        --color: red;
-    }
-
-    .stars-btn {
-        position: absolute;
-        top: 0;
-        right: 1%;
-
-        --background: white;
-        --color: rgb(194, 165, 3);
-
-        ion-icon {
-            color: rgb(194, 165, 3);
-        }
-    }
-}
-
-ion-list {
-    border-radius: 12px;
-    background: white;
-}
-
-ion-label p {
-    color: white;
-}
-
-.card {
-    height: 75px;
-    width: 75px;
-}
-
-.gun-card {
-    --background: #26497e;
-}
-
-.med-card {
-    --background: #26497e;
-}
-
-.labor-card {
-    --background: #26497e;
-}
-
-.money-card {
-    --background: #26497e;
-}
-
-.po-card {
-    --background: #26497e;
-}
-
-.hemp-card {
-    --background: #26497e;
 }
 
 .card-icon {
@@ -220,7 +125,6 @@ ion-label p {
     display: flex;
     justify-content: center;
 }
-
 
 .content-card {
     img {
@@ -244,4 +148,188 @@ ion-label p {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+}
+
+.scroll-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px;
+}
+
+.scroll-content {
+    display: inline-flex;
+}
+
+.scroll-content ion-card {
+    margin-left: 4px;
+}
+
+//TRENDING ARTICLE SECTION
+.trending-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.trending-article-container {
+    padding-bottom: 20px;
+}
+
+.trending-articles {
+    height: 220px;
+    width: 220px;
+    margin: 0px;
+}
+
+.trending-article-img {
+    height: 100px;
+    width: 100%;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.trending-article-topic-pill {
+    position: absolute;
+    top: 5px;
+    left: 5px; 
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    color: #000;
+}
+
+.trending-article-trending-and-time-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    height: 25px;
+    padding: 2px;
+    color: gray;
+
+    span {
+        align-self: center;
+        font-size: 12px;
+    }
+}
+
+.trending-article-title {
+    color: black;
+    font-weight: bold;
+    font-size: 14px;
+    white-space: normal;
+    width: 100%;
+    padding: 0px 5px 0px 5px;
+    margin: 0px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limit the content to three lines */
+    -webkit-box-orient: vertical;
+}
+
+.trending-article-source-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    img {
+        height: 20px;
+        width: fit-content;
+        margin: 5px;
+    }
+}
+
+//Category section
+.category-section {
+    margin-left: 12px;
+    margin-right: 12px;
+    border-radius: 12px;
+}
+
+ion-list {
+    background-color: transparent;
+}
+
+.category-container {
+    background-color: #f3f3f3;
+    gap: 10px;
+
+    button {
+        height: 100px;
+        width: 100px;
+        border-radius: 50px;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-blend-mode: overlay;
+        background-color: rgba(30, 30, 30, 0.822);
+    }
+
+    .active-button {
+        background-color: rgba(107, 107, 107, 0.74);
+        transition: background-color 0.25s ease;
+    } 
+}
+
+.category-article {
+    height: 130px;
+    border-radius: 10px;
+    margin: 0px 5px 10px 5px;
+}
+
+.category-card-content-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 130px;
+
+    .category-and-time {
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 5px 0px 5px;
+        p {
+            color: gray;
+            margin: 0px;
+        }
+    }
+
+    .title {
+        margin: 10px 5px 5px 5px;
+        font-size: 14px;
+        color: black;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* Limit the content to three lines */
+        -webkit-box-orient: vertical;
+    }
+
+    .source-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    
+        img {
+            height: 20px;
+            width: fit-content;
+            margin: 5px;
+        }
+
+        P {
+            margin: 0px;
+        }
+    }
+
+    img {
+        align-self: center;
+        width: 150px;
+        height: 90%;
+        object-fit: cover;
+        border-radius: 20px;
+        margin-right: 5px;
+    }
 }

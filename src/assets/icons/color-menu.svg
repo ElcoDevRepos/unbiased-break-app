@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none"><link xmlns="" type="text/css" rel="stylesheet" id="dark-mode-custom-link"/><link xmlns="" type="text/css" rel="stylesheet" id="dark-mode-general-link"/><style xmlns="" lang="en" type="text/css" id="dark-mode-custom-style"/><style xmlns="" lang="en" type="text/css" id="dark-mode-native-style"/><style xmlns="" lang="en" type="text/css" id="dark-mode-native-sheet"/>
+
+<defs>
+            <linearGradient id="myGradient" gradientTransform="rotate(45)">
+              <stop offset="40%" stop-color="#3C1EBF" />
+              <stop offset="100%" stop-color="#DC151C" />
+            </linearGradient>
+          </defs>
+  
+<path d="M4 6H20M4 12H20M4 18H20" stroke="url(#myGradient)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

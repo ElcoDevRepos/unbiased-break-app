@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
-import { Firestore, collectionData, collection, query, where, getDocs, orderBy, limit, startAfter, getDoc, updateDoc, doc } from '@angular/fire/firestore';
+import { Firestore, collectionData, collection, query, where, getDocs, orderBy, limit, startAfter, getDoc, updateDoc, doc, Timestamp } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
 import FuzzySearch from 'fuzzy-search';
@@ -9,17 +9,24 @@ import { HttpClient } from '@angular/common/http';
 import { Platform } from '@ionic/angular';
 import { UserService } from '../services/user.service';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { Router } from '@angular/router';
+import { MenuController } from '@ionic/angular';
+import { TabsPage } from '../tabs/tabs.page';
+
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss']
 })
 export class Tab2Page {
+  @ViewChild('searchBar') searchBar : any;
+
   slideOpts = {
     initialSlide: 0
   };
-  items$: Observable<any>;
+  categoryItems$: Observable<any>;
   items = [];
+  categoryItems = [];
   limit = 20;
   sourceImages = [];
   loading = true;
@@ -30,15 +37,23 @@ export class Tab2Page {
   currentUserDoc;
   showReadArticles;
   readArticles = [];
-  constructor(private firestore: Firestore, public sanitizer: DomSanitizer, private http: HttpClient, private platform: Platform, private userService: UserService, private auth: Auth, private iab: InAppBrowser) { }
+  showSearchBar : boolean = false;
+  category: string = 'world';
+  stopCategoryArticleQuery : boolean = false;
+
+  constructor(private firestore: Firestore, public sanitizer: DomSanitizer, private platform: Platform, private userService: UserService,
+     private auth: Auth, private iab: InAppBrowser, private router : Router, private menuController : MenuController, private tabsPage : TabsPage) { }
 
   ngOnInit() {
+    this.tabsPage.selectedTab = "tab2";
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
 
     this.getData();
+    this.getCategoryData();
   }
 
   ionViewWillEnter() {
+
     this.auth.onAuthStateChanged(async () => {
       let ref = collection(
         this.firestore,
@@ -59,7 +74,8 @@ export class Tab2Page {
   isRead(id) {
     return this.readArticles.includes(id);
   }
-
+  
+  //Get trending articles from firestore
   async getData() {
     await this.getSources();
     // Get data
@@ -67,14 +83,8 @@ export class Tab2Page {
       this.firestore,
       'trending-articles'
     );
-    let q;
-    if (this.lastVisible) {
-      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), limit(this.limit), startAfter(this.lastVisible));
-    } else {
-      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), limit(this.limit));
-    }
+    let q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), limit(this.limit));
     let docSnaps = await getDocs(q);
-    this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
     let items = [];
     
     //Check if user wants to see read articles
@@ -103,6 +113,63 @@ export class Tab2Page {
     });
 
     this.items.push(...items);
+    if (this.hasSearched) this.searchShownArticles();
+  }
+
+  //Get category articles from firestore
+  async getCategoryData() {
+    if(this.stopCategoryArticleQuery) return;
+
+    const responsesRef = collection(
+      this.firestore,
+      'category-articles'
+    );
+    let q;
+    if (this.lastVisible) {
+      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), where('topic', '==', this.category), limit(this.limit), startAfter(this.lastVisible));
+    } else {
+      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), where('topic', '==', this.category), limit(this.limit));
+    }
+
+    let docSnaps = await getDocs(q);
+    this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
+    let categoryItems = [];
+
+    //Check if user wants to see read articles
+    if(this.currentUserDoc) {
+      let ref = doc(this.firestore, 'users', this.currentUserDoc.id);
+      const docSnap = await getDoc(ref);
+      if (docSnap.exists()) {
+        this.showReadArticles = docSnap.data().showReadArticles;
+      } else {
+        console.log("No user doc found!");
+      }
+    }
+    docSnaps.forEach((d) => {
+      //check if the articles date is newer than the last article
+      //this prevents the query from looping
+      if(this.categoryItems.length > 0) {
+        if(this.categoryItems[this.categoryItems.length-1].date <= d.data()['date']) {
+          this.stopCategoryArticleQuery = true;
+          return;
+        }
+      }
+
+      if(this.userService.getLoggedInUser()) {
+        //Show read articles
+        if(this.showReadArticles) {
+          categoryItems.push(d.data());
+        }
+        //Don't show read articles
+        else {
+          if(!this.readArticles.includes(d.data()['id'])) {
+            categoryItems.push(d.data());
+          }
+        }
+      } else categoryItems.push(d.data());
+    });
+
+    this.categoryItems.push(...categoryItems);
     this.loading = false;
     if (this.hasSearched) this.searchShownArticles();
   }
@@ -135,7 +202,20 @@ export class Tab2Page {
     event.target.src = "../../assets/icons/newspaper.svg";
   }
 
+  //This will return the referenced image link in the "img" container inside item
+  //If there is no value, this will return a placeholder image
   getImage(item) {
+    if (item.image) return item.image;
+    
+    //Get random placeholder image
+    else {
+      return this.getSourceImage(item);
+    }
+  }
+
+  //This will return the source img/logo based on the item
+  //i.e a item from CNN will return the CNN img/logo
+  getSourceImage (item) {
     let newUrl = new URL(item.link);
     let url = "";
     if (newUrl.host.includes("www.")) {
@@ -149,14 +229,13 @@ export class Tab2Page {
       if (index != -1) {
         return this.sourceImages[index].image;
       }
-      if (item.image) return item.image;
     }
-    
+
     return newUrl.origin + "/favicon.ico";
   }
 
   loadData(ev) {
-    this.getData();
+    this.getCategoryData();
     ev.target.complete();
   }
 
@@ -166,27 +245,32 @@ export class Tab2Page {
       return;
     }
     this.hasSearched = true;
-    const searcher = new FuzzySearch(this.items, ['title'], {
+    const searcher = new FuzzySearch(this.categoryItems, ['title'], {
       caseSensitive: false,
       sort: true
     });
     const result = searcher.search(this.search);
-    this.items = result;
+    this.categoryItems = result;
     
   }
 
-  clearSearch() {
+  async clearSearch() {
     this.hasSearched = false;
     this.lastVisible = null;
-    this.items = [];
-    this.getData();
+    this.categoryItems = [];
+    this.stopCategoryArticleQuery = false;
+    await this.getCategoryData();
+    await this.getData();
   }
 
   async doRefresh(event) {
     this.hasSearched = false;
     this.lastVisible = null;
+    this.categoryItems = [];
     this.items = [];
+    this.stopCategoryArticleQuery = false;
     await this.getData();
+    await this.getCategoryData();
     event.target.complete();
   }
 
@@ -212,4 +296,33 @@ export class Tab2Page {
     })
   }
 
+  //Toggle search bar when clicking on search glass
+  toggleSearchBar () {
+    this.showSearchBar = !this.showSearchBar;
+    setTimeout(() => {
+      this.searchBar.setFocus();
+    }, 100);
+  }
+
+  //Updates the category string
+  async setCategory (cat : string) {
+    this.category = cat;
+    this.lastVisible = null;
+    this.categoryItems = [];
+    this.stopCategoryArticleQuery = false;
+    await this.getCategoryData();
+    console.log(this.categoryItems);
+  }
+
+  getHoursAgo(timestamp: Timestamp): number {
+    const currentDate = new Date();
+    const publishedDate = timestamp.toDate();
+    const timeDifference = currentDate.getTime() - publishedDate.getTime();
+    const hoursDifference = Math.floor(timeDifference / (1000 * 3600));
+    return hoursDifference;
+  }
+
+  closeMenu() {
+    this.menuController.close('tab2-menu');
+  }
 }

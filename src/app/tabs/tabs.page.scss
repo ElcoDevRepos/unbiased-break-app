@@ -6,7 +6,19 @@
     box-shadow: -1px 3px 20px 0px #404040;
 }
 
-ion-tab-button {
-    --color-selected: #193052;
-    --color: #b3b3b3;
+img {
+    height: 30px;
+    width: 30px;
 }
+
+.grayscale-0 {
+    img {
+        filter: grayscale(0%);
+    }
+  }
+  
+.grayscale-100 {
+    img {
+        filter: grayscale(100%);
+    }
+  }

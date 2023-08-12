@@ -19,6 +19,7 @@ import { Camera, CameraResultType,CameraSource } from '@capacitor/camera';
 import { async } from '@angular/core/testing';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { IntrojsService } from '../introjs.service';
+import { TabsPage } from '../tabs/tabs.page';
 
 @Component({
   selector: 'app-tab3',
@@ -39,9 +40,11 @@ export class Tab3Page implements OnInit, OnDestroy {
   isAdmin : boolean = false;
 
   constructor(private router: Router, public auth: Auth, private modal: ModalController, private userService: UserService, private actionSheetController: ActionSheetController,
-  private storage: Storage, private loadingCtrl: LoadingController, private fireStore: Firestore, private platform: Platform, private alertCtrl: AlertController, private inAppBrowser : InAppBrowser, private toastController : ToastController, private introService : IntrojsService) { }
+  private storage: Storage, private loadingCtrl: LoadingController, private fireStore: Firestore, private platform: Platform, private alertCtrl: AlertController,
+  private inAppBrowser : InAppBrowser, private toastController : ToastController, private introService : IntrojsService, private tabsPage : TabsPage) { }
 
   async ngOnInit() {
+    this.tabsPage.selectedTab = "tab3";
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
     this.createFakeHistory();
   }
@@ -61,8 +64,9 @@ export class Tab3Page implements OnInit, OnDestroy {
   }
 
   async ionViewWillEnter() {
-    this.favorites = await this.userService.getFavorites() as any;
     await this.checkIfAdmin();
+    this.favorites = await this.userService.getFavorites() as any;
+    this.readArticles = await this.userService.getReadArticles() as any;
     this.checkNotificationSettings();
     
     //Check if intro.js is going to be shown
@@ -93,11 +97,6 @@ export class Tab3Page implements OnInit, OnDestroy {
       }
       else if (admin) this.isAdmin = true;
     });
-  }
-
-  async getReadArticles() {
-    this.readArticles = await this.userService.getReadArticles() as any;
-    console.log(this.readArticles);
   }
 
   async getRequestedNewsSources() {

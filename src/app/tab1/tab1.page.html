@@ -1,26 +1,34 @@
-<ion-header [translucent]="false">
+<ion-header [translucent]="false" id="tab1-menu">
   <ion-toolbar>
-    <ion-buttons slot="start" [hidden]="!isDesktop">
-      <ion-button routerLink="../tab2">
-        Trending
+
+    <ion-searchbar #searchBar *ngIf="showSearchBar" class="search" [(ngModel)]="search" debounce="500" (ionChange)="searchShownArticles()" (ionClear)="clearSearch()"></ion-searchbar>
+
+    <ion-buttons slot="end" style="align-self: center; gap: 5px;">
+      <ion-button class="toolbar-btns" (click)="toggleSearchBar()">
+        <img src="assets/icons/color-search.svg" alt="search">
       </ion-button>
-      <ion-button routerLink="../tab3" id="introjs-step6">
-        Settings
+      <ion-button class="toolbar-btns" id="open-modal" [disabled]="!currentUserDoc" (click)="filterIntroJS()">
+        <img src="assets/icons/color-filter.svg" alt="filter">
       </ion-button>
-    </ion-buttons>
-    <ion-title mode="ios">My Feed</ion-title>
+      <ion-button class="toolbar-btns">
+        <img src="assets/icons/color-notification.svg" alt="bell">
+      </ion-button>
+    <ion-button class="toolbar-btns">
+      <ion-img src="assets/icon/favicon.png">
+      </ion-img>
+    </ion-button>
+  </ion-buttons>
+    
+    <!-- INTRO JS REPLAY AND FILTER BUTTON (ADD LATER IN DIFFERENT PLACE)
     <ion-button fill="clear" slot="end" (click)="introJSReplay()">
       <ion-icon name="help-outline"></ion-icon>
     </ion-button>
-    <ion-buttons id="introjs-step4" slot="end">
-      <ion-button id="open-modal" [disabled]="!currentUserDoc" (click)="filterIntroJS()">
-        <ion-icon name="filter"></ion-icon>
-      </ion-button>
-    </ion-buttons>
+    -->
+
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" style="background: #f3f3f3">
+<ion-content [fullscreen]="false" style="background: #f3f3f3">
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" pullFactor="0.8" pullMin="100" pullMax="130" style="background: #f3f3f3">
     <ion-refresher-content 
     pullingIcon="chevron-down-circle-outline"
@@ -28,7 +36,7 @@
     refreshingSpinner="circles"
     refreshingText="Refreshing..."></ion-refresher-content>
   </ion-refresher>
-  <ion-searchbar class="search" [(ngModel)]="search" debounce="500" (ionChange)="searchShownArticles()" (ionClear)="clearSearch()"></ion-searchbar>
+
   <ion-item class="show-gradient no-border">
     <ion-label class="topic-label">Subscribed Topics</ion-label>
   </ion-item>
