@@ -70,7 +70,6 @@ export class Tab1Page implements OnInit{
     
 
   ngOnInit() {
-    this.tabsPage.selectedTab = "tab1";
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
     this.auth.onAuthStateChanged(async () => {
       let ref = collection(
@@ -89,6 +88,10 @@ export class Tab1Page implements OnInit{
         this.getUserData();
       }, 1200);
     })
+  }
+
+  ionViewWillEnter() {
+    this.tabsPage.selectedTab = "tab1";
   }
 
 

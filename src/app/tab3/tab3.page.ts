@@ -44,9 +44,10 @@ export class Tab3Page implements OnInit, OnDestroy {
   private inAppBrowser : InAppBrowser, private toastController : ToastController, private introService : IntrojsService, private tabsPage : TabsPage) { }
 
   async ngOnInit() {
-    this.tabsPage.selectedTab = "tab3";
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
     this.createFakeHistory();
+    this.favorites = await this.userService.getFavorites() as any;
+    this.readArticles = await this.userService.getReadArticles() as any;
   }
 
   createFakeHistory() {
@@ -64,9 +65,8 @@ export class Tab3Page implements OnInit, OnDestroy {
   }
 
   async ionViewWillEnter() {
+    this.tabsPage.selectedTab = "tab3";
     await this.checkIfAdmin();
-    this.favorites = await this.userService.getFavorites() as any;
-    this.readArticles = await this.userService.getReadArticles() as any;
     this.checkNotificationSettings();
     
     //Check if intro.js is going to be shown

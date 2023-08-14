@@ -46,7 +46,6 @@ export class Tab2Page {
      private auth: Auth, private iab: InAppBrowser, private router : Router, private menuController : MenuController, private tabsPage : TabsPage) { }
 
   ngOnInit() {
-    this.tabsPage.selectedTab = "tab2";
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
 
     this.getData();
@@ -54,6 +53,8 @@ export class Tab2Page {
   }
 
   ionViewWillEnter() {
+
+    this.tabsPage.selectedTab = "tab2";
 
     this.auth.onAuthStateChanged(async () => {
       let ref = collection(
