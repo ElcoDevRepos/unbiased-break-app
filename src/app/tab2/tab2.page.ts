@@ -27,7 +27,8 @@ export class Tab2Page {
   categoryItems$: Observable<any>;
   items = [];
   categoryItems = [];
-  limit = 20;
+  trendingLimit = 20;
+  categoryLimit = 10;
   sourceImages = [];
   loading = true;
   lastVisible;
@@ -83,7 +84,7 @@ export class Tab2Page {
       this.firestore,
       'trending-articles'
     );
-    let q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), limit(this.limit));
+    let q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), limit(this.trendingLimit));
     let docSnaps = await getDocs(q);
     let items = [];
     
@@ -126,9 +127,9 @@ export class Tab2Page {
     );
     let q;
     if (this.lastVisible) {
-      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), where('topic', '==', this.category), limit(this.limit), startAfter(this.lastVisible));
+      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), where('topic', '==', this.category), limit(this.categoryLimit), startAfter(this.lastVisible));
     } else {
-      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), where('topic', '==', this.category), limit(this.limit));
+      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), where('topic', '==', this.category), limit(this.categoryLimit));
     }
 
     let docSnaps = await getDocs(q);
