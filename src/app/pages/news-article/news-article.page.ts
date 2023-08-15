@@ -170,7 +170,8 @@ export class NewsArticlePage implements OnInit, OnDestroy {
 
       this.article.content = this.sanitizer.bypassSecurityTrustHtml(content);
       let image = new Image();
-      image.src = this.article.image;
+      if(this.article.image)
+        image.src = this.article.image;
       image.onload = () => {
         if (image.width <= 125) {
           this.article.image = 'https://assets.digitalocean.com/labs/images/community_bg.png';

@@ -46,8 +46,6 @@ export class Tab3Page implements OnInit, OnDestroy {
   async ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
     this.createFakeHistory();
-    this.favorites = await this.userService.getFavorites() as any;
-    this.readArticles = await this.userService.getReadArticles() as any;
   }
 
   createFakeHistory() {
@@ -66,6 +64,10 @@ export class Tab3Page implements OnInit, OnDestroy {
 
   async ionViewWillEnter() {
     this.tabsPage.selectedTab = "tab3";
+    
+    this.favorites = await this.userService.getFavorites() as any;
+    this.readArticles = await this.userService.getReadArticles() as any;
+
     await this.checkIfAdmin();
     this.checkNotificationSettings();
     

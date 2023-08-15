@@ -93,6 +93,7 @@ export class UserService {
   }
 
   async getReadArticles() {
+    console.log("get read")
     if(!this.auth.currentUser) return;
 
     let readArticles = [];
@@ -102,10 +103,11 @@ export class UserService {
     docs.forEach((d) => {
       let readArticlesIDs = d.data().readArticles;
       readArticlesIDs = readArticlesIDs.reverse();
-      readArticles.slice(0, 50);
-      let found = false;
+      readArticles.slice(0, 50); 
 
       readArticlesIDs.forEach(async id => {
+        let found = false;
+
         // Query the middle-articles collection for documents with a matching ID
         let q = query(collection(this.firestore, "middle-articles"), where("id", "==", id));
         let querySnapshot = await getDocs(q);
@@ -138,6 +140,35 @@ export class UserService {
             readArticles.push({
               ...doc.data(),
               type: 'right-articles'
+            });
+            found = true;
+          });
+        }
+
+        console.log(found)
+
+        if(!found){
+          // Query the trending-articles collection for documents with a matching ID
+          q = query(collection(this.firestore, "trending-articles"), where("id", "==", id));
+          querySnapshot = await getDocs(q);
+          console.log(querySnapshot);
+          querySnapshot.forEach((doc) => {
+            readArticles.push({
+              ...doc.data(),
+              type: 'trending-articles'
+            });
+            found = true;
+          });
+        }
+
+        if(!found){
+          // Query the category-articles collection for documents with a matching ID
+          q = query(collection(this.firestore, "category-articles"), where("id", "==", id));
+          querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            readArticles.push({
+              ...doc.data(),
+              type: 'category-articles'
             });
           });
         }
