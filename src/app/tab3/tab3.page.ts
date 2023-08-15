@@ -34,6 +34,9 @@ export class Tab3Page implements OnInit, OnDestroy {
   showReadArticles;
   public favorites = [];
   public readArticles = [];
+  loadingBookmarks : boolean = true;
+  loadingReadArticles : boolean = true;
+
   isDesktop: boolean;
   displayName = this.auth.currentUser.displayName
   requestedNewsSources : any = [];
@@ -66,7 +69,9 @@ export class Tab3Page implements OnInit, OnDestroy {
     this.tabsPage.selectedTab = "tab3";
     
     this.favorites = await this.userService.getFavorites() as any;
+    this.loadingBookmarks = false;
     this.readArticles = await this.userService.getReadArticles() as any;
+    this.loadingReadArticles = false;
 
     await this.checkIfAdmin();
     this.checkNotificationSettings();

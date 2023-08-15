@@ -93,7 +93,6 @@ export class UserService {
   }
 
   async getReadArticles() {
-    console.log("get read")
     if(!this.auth.currentUser) return;
 
     let readArticles = [];
@@ -145,13 +144,10 @@ export class UserService {
           });
         }
 
-        console.log(found)
-
         if(!found){
           // Query the trending-articles collection for documents with a matching ID
           q = query(collection(this.firestore, "trending-articles"), where("id", "==", id));
           querySnapshot = await getDocs(q);
-          console.log(querySnapshot);
           querySnapshot.forEach((doc) => {
             readArticles.push({
               ...doc.data(),
@@ -174,7 +170,7 @@ export class UserService {
         }
       });            
     });
-
+    
     return readArticles;
   }
 
