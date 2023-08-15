@@ -164,6 +164,10 @@ export class NewsArticlePage implements OnInit, OnDestroy {
       content = content.replaceAll('<p>', '<p style="font-size: 18px">');
       content = content.replaceAll('</p>', '</p><br>');
       content = content.replaceAll('<img', '<img style="max-width: 100%; height: fit-content" ');
+
+      // Remove <picture> container to prevent double pictures
+      content = content.replace(/<picture\b[^>]*>.*?<\/picture>/g, '');
+
       this.article.content = this.sanitizer.bypassSecurityTrustHtml(content);
       let image = new Image();
       image.src = this.article.image;
