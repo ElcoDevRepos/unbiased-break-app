@@ -192,3 +192,19 @@ ion-label p {
         padding-top: 60px;
     }
 }
+
+.cta-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    span {
+        font-size: 20px;
+    }
+
+    ion-button {
+        margin: 0px 5px 0px 5px;
+        height: 30px;
+        font-size: 18px;
+    }
+}
