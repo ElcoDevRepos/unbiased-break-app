@@ -30,7 +30,8 @@ export class Tab2Page {
   trendingLimit = 20;
   categoryLimit = 10;
   sourceImages = [];
-  loading = true;
+  trendingLoading = true;
+  categoryLoading = true;
   lastVisible;
   search = '';
   hasSearched = false;
@@ -115,6 +116,7 @@ export class Tab2Page {
     });
 
     this.items.push(...items);
+    this.trendingLoading = false;
     if (this.hasSearched) this.searchShownArticles();
   }
 
@@ -172,7 +174,7 @@ export class Tab2Page {
     });
 
     this.categoryItems.push(...categoryItems);
-    this.loading = false;
+    this.categoryLoading = false;
     if (this.hasSearched) this.searchShownArticles();
   }
 

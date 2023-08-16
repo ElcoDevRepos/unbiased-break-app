@@ -53,6 +53,9 @@
           <p>{{item.siteName}}</p>
         </div>
       </ion-card>
+      <div *ngIf="trendingLoading">
+        <ion-spinner name="dots"></ion-spinner>
+      </div>
     </div>
   </div>
   <!--END OF SECTION-->
@@ -80,7 +83,7 @@
   <div class="category-section">
     <div style="margin-top:15px">
 
-      <ion-list lines="none" *ngIf="!loading">
+      <ion-list lines="none" *ngIf="!categoryLoading">
         <ion-card class="category-article" *ngFor="let item of categoryItems"
           (click)="readArticles.push(item.id); onArticleClick(item);"
           [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/category-articles']" [state]="{ article: item }">
@@ -105,7 +108,7 @@
         </ion-card>
       </ion-list>
 
-        <div *ngIf="loading">
+        <div *ngIf="categoryLoading">
           <ion-spinner name="dots"></ion-spinner>
         </div>
     </div>
