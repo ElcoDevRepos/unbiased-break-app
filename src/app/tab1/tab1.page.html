@@ -10,9 +10,11 @@
       <ion-button class="toolbar-btns" id="open-modal" [disabled]="!currentUserDoc" (click)="filterIntroJS()">
         <img src="assets/icons/color-filter.svg" alt="filter">
       </ion-button>
+      <!-- Bell button (removed until function is built)
       <ion-button class="toolbar-btns">
         <img src="assets/icons/color-notification.svg" alt="bell">
       </ion-button>
+      -->
     <ion-button class="toolbar-btns" routerLink="../tab3">
       <ion-img src="assets/icon/favicon.png">
       </ion-img>
@@ -136,6 +138,12 @@
             <ion-label>
               Left Filters
             </ion-label>
+            <ion-button (click)="allLeftFilterSelect(true)" slot="end">
+              Select all
+            </ion-button>
+            <ion-button (click)="allLeftFilterSelect(false)" slot="end">
+              Deselect all
+            </ion-button>
           </ion-item-divider>
           <ion-item *ngFor="let filter of leftFilters; let i = index">
             <ion-label class="ion-text-wrap">{{filter.label | split}}</ion-label>
@@ -145,6 +153,12 @@
             <ion-label>
               Middle Filters
             </ion-label>
+            <ion-button (click)="allMiddleFilterSelect(true)" slot="end">
+              Select all
+            </ion-button>
+            <ion-button (click)="allMiddleFilterSelect(false)" slot="end">
+              Deselect all
+            </ion-button>
           </ion-item-divider>
           <ion-item *ngFor="let filter of middleFilters; let i = index">
             <ion-label class="ion-text-wrap">{{filter.label | split}}</ion-label>
@@ -154,6 +168,12 @@
             <ion-label>
               Right Filters
             </ion-label>
+            <ion-button (click)="allRightFilterSelect(true)" slot="end">
+              Select all
+            </ion-button>
+            <ion-button (click)="allRightFilterSelect(false)" slot="end">
+              Deselect all
+            </ion-button>
           </ion-item-divider>
           <ion-item *ngFor="let filter of rightFilters; let i = index">
             <ion-label class="ion-text-wrap">{{filter.label | split}}</ion-label>

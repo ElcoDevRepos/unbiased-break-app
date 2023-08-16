@@ -572,6 +572,22 @@ export class Tab1Page implements OnInit{
     this.rightFilters[i].on = ev.detail.checked;
   }
 
+  allLeftFilterSelect(checked : boolean) {
+    this.leftFilters.forEach((f) => {
+      f.on = checked;
+    });
+  }
+  allMiddleFilterSelect(checked : boolean) {
+    this.middleFilters.forEach((f) => {
+      f.on = checked;
+    });
+  }
+  allRightFilterSelect(checked : boolean) {
+    this.rightFilters.forEach((f) => {
+      f.on = checked;
+    });
+  }
+
   onImgError(item, event) {
     let newUrl = new URL(item.link);
     let index = _.findIndex(this.sourceImages, (s) => s.url === newUrl.host);
