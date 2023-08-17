@@ -7,7 +7,7 @@
       <ion-button class="toolbar-btns" (click)="toggleSearchBar()">
         <img src="assets/icons/color-search.svg" alt="search">
       </ion-button>
-      <ion-button class="toolbar-btns" id="open-modal" [disabled]="!currentUserDoc" (click)="filterIntroJS()">
+      <ion-button class="toolbar-btns" id="open-modal" [hidden]="!currentUserDoc" (click)="filterIntroJS(); displayFilterNotLoggedIn()">
         <img src="assets/icons/color-filter.svg" alt="filter">
       </ion-button>
       <!-- Bell button (removed until function is built)
@@ -110,6 +110,8 @@
     <ion-infinite-scroll-content loadingSpinner="bubbles">
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
+
+  <!--FILTERS MODAL-->
   <ion-modal #modal trigger="open-modal">
     <ng-template>
       <ion-header>
