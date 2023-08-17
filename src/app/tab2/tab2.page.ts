@@ -27,7 +27,7 @@ export class Tab2Page {
   categoryItems$: Observable<any>;
   items = [];
   categoryItems = [];
-  trendingLimit = 20;
+  trendingLimit = 100;
   categoryLimit = 10;
   sourceImages = [];
   trendingLoading = true;
@@ -113,6 +113,12 @@ export class Tab2Page {
           }
         }
       } else items.push(d.data());
+    });
+
+    //Set a topic on each trending article
+    items.forEach((i) => {
+      console.log(i.link);
+      i.topic = this.setTrendingArticleTopic(i.link);
     });
 
     this.items.push(...items);
@@ -328,5 +334,27 @@ export class Tab2Page {
 
   closeMenu() {
     this.menuController.close('tab2-menu');
+  }
+
+  //Pass a link and this return a string depending on topic in link
+  setTrendingArticleTopic (link : string) {
+    let topic = 'News';
+
+    //Add on this as more categories are identified
+    if(link.includes('politics')) return 'Politics';
+    if(link.includes('nation')) return 'Nation';
+    if(link.includes('business')) return 'Business';
+    if(link.includes('us')) return 'U.S.';
+    if(link.includes('us-news')) return 'U.S.';
+    if(link.includes('travel')) return 'Travel';
+    if(link.includes('world')) return 'World';
+    if(link.includes('global')) return 'Global';
+    if(link.includes('investing')) return 'Investing';
+    if(link.includes('europe')) return 'Europe';
+    if(link.includes('economy')) return 'Economy';
+    if(link.includes('asia')) return 'Asia';
+    if(link.includes('russia')) return 'Russia';
+
+    return topic;
   }
 }
