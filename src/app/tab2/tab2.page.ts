@@ -27,7 +27,7 @@ export class Tab2Page {
   categoryItems$: Observable<any>;
   items = [];
   categoryItems = [];
-  trendingLimit = 100;
+  trendingLimit = 20;
   categoryLimit = 10;
   sourceImages = [];
   trendingLoading = true;
@@ -117,7 +117,6 @@ export class Tab2Page {
 
     //Set a topic on each trending article
     items.forEach((i) => {
-      console.log(i.link);
       i.topic = this.setTrendingArticleTopic(i.link);
     });
 
