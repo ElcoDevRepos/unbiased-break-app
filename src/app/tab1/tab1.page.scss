@@ -284,6 +284,7 @@ ion-label p {
     margin: 0px;
     padding: 3px 7px 3px 7px;
     font-size: medium;
+    box-shadow: 2px 2px 4px rgb(106, 106, 106);
 }
 
 .scroll-container {
@@ -301,13 +302,17 @@ ion-label p {
 }
 
 .topic-not-checked {
-    background-color: rgb(162, 0, 0);
+    background-color: rgba(219, 20, 27, 0.73);
     color: #fff;
+    margin: 2px 4px 2px 4px;
+    padding: 1px 3px 1px 3px;
+    transition: all 0.15s ease-in-out;
 }
 
 .topic-checked {
-    background-color: rgb(25,48,82);
+    background-color: rgb(59, 30, 190);
     color: #fff;
+    transition: all 0.15s ease-in-out;
 }
 
 .toolbar-btns {
