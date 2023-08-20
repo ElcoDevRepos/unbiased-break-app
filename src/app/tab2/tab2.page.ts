@@ -214,6 +214,10 @@ export class Tab2Page {
   //This will return the referenced image link in the "img" container inside item
   //If there is no value, this will return a placeholder image
   getImage(item) {
+    
+    //This is to prevent empty image from displaying (currently only for business insider)
+    if(item.image == "https://www.businessinsider.com/public/assets/subscription/marketing/banner-overlay/top-left.svg") return this.getSourceImage(item);
+
     if (item.image) return item.image;
     
     //Get random placeholder image
