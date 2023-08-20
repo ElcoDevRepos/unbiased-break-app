@@ -115,8 +115,7 @@
   </div>
   <!--END OF SECTION-->
 
-  <ion-infinite-scroll threshold="150px" (ionInfinite)="loadData($event)">
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
-    </ion-infinite-scroll-content>
+   <ion-infinite-scroll threshold="500px" (ionInfinite)="loadData($event)">
+      <ion-spinner *ngIf="!categoryLoading" name="dots" style="margin-bottom: 600px;"></ion-spinner>
   </ion-infinite-scroll>
 </ion-content>

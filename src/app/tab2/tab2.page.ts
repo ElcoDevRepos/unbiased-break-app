@@ -320,7 +320,6 @@ export class Tab2Page {
     this.categoryItems = [];
     this.stopCategoryArticleQuery = false;
     await this.getCategoryData();
-    console.log(this.categoryItems);
   }
 
   getHoursAgo(timestamp: Timestamp): number {
