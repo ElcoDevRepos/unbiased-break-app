@@ -322,12 +322,17 @@ export class Tab2Page {
     await this.getCategoryData();
   }
 
-  getHoursAgo(timestamp: Timestamp): number {
+  getHoursAgo(timestamp: Timestamp): string {
     const currentDate = new Date();
     const publishedDate = timestamp.toDate();
     const timeDifference = currentDate.getTime() - publishedDate.getTime();
     const hoursDifference = Math.floor(timeDifference / (1000 * 3600));
-    return hoursDifference;
+    
+    //Return "Just now" if the hour difference is within an hour
+    if(hoursDifference > 0)
+      return `${hoursDifference.toString()} hours ago`;
+    else
+      return "Just now";
   }
 
   closeMenu() {
