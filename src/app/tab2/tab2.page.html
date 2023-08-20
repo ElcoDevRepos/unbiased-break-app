@@ -53,7 +53,7 @@
           <p>{{item.siteName}}</p>
         </div>
       </ion-card>
-      <div *ngIf="trendingLoading">
+      <div *ngIf="trendingLoading" class="loading-spinner-container">
         <ion-spinner name="dots"></ion-spinner>
       </div>
     </div>
@@ -108,7 +108,7 @@
         </ion-card>
       </ion-list>
 
-        <div *ngIf="categoryLoading">
+        <div *ngIf="categoryLoading" class="loading-spinner-container">
           <ion-spinner name="dots"></ion-spinner>
         </div>
     </div>
@@ -116,6 +116,6 @@
   <!--END OF SECTION-->
 
    <ion-infinite-scroll threshold="500px" (ionInfinite)="loadData($event)">
-      <ion-spinner *ngIf="!categoryLoading" name="dots" style="margin-bottom: 600px;"></ion-spinner>
+      <ion-spinner *ngIf="!categoryLoading" class="loading-spinner-container" name="dots" style="margin-bottom: 600px;"></ion-spinner>
   </ion-infinite-scroll>
 </ion-content>
