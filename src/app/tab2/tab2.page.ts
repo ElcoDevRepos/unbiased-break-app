@@ -216,6 +216,8 @@ export class Tab2Page {
   getImage(item) {
     
     //This is to prevent empty image from displaying (currently only for business insider)
+    if(item.link.includes("markets.businessinsider.com")) return "https://markets.businessinsider.com/Images/FacebookIcon.jpg";
+    //This is a fix for market insider articles since there images are wack
     if(item.image == "https://www.businessinsider.com/public/assets/subscription/marketing/banner-overlay/top-left.svg") return this.getSourceImage(item);
 
     if (item.image) return item.image;
@@ -229,6 +231,7 @@ export class Tab2Page {
   //This will return the source img/logo based on the item
   //i.e a item from CNN will return the CNN img/logo
   getSourceImage (item) {
+
     let newUrl = new URL(item.link);
     let url = "";
     if (newUrl.host.includes("www.")) {
