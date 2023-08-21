@@ -241,6 +241,10 @@ export class Tab2Page {
     }
     if (item.siteName) {
       let site = item.siteName.replaceAll(" ", "").toLocaleLowerCase();
+
+      //Fix for the washington post image
+      if(site === "thewashingtonpost") site = "washingtonpost";
+
       let index = _.findIndex(this.sourceImages, (s) => s.url.includes(site));
       if (index != -1) {
         return this.sourceImages[index].image;
