@@ -98,7 +98,8 @@
           </ion-label>
         </ion-item>
 
-        <p *ngIf="items.length === 0 && !loading">No Articles Found</p>
+        <p *ngIf="items.length === 0 && !loading && topicCheckedList.length != 0">No articles found...</p>
+        <p *ngIf="topicCheckedList.length == 0">Select a topic to load articles</p>
       </ion-list>
 
       <div *ngIf="loading" [ngClass]="{'loading': !expanded, 'loading-exp': expanded}">
