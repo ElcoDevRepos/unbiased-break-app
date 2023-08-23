@@ -70,7 +70,6 @@ export class Tab1Page implements OnInit{
     
 
   ngOnInit() {
-    this.tabsPage.selectedTab = "tab1";
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
     this.auth.onAuthStateChanged(async () => {
       let ref = collection(
@@ -89,6 +88,10 @@ export class Tab1Page implements OnInit{
         this.getUserData();
       }, 1200);
     })
+  }
+
+  ionViewWillEnter() {
+    this.tabsPage.selectedTab = "tab1";
   }
 
 
@@ -567,6 +570,22 @@ export class Tab1Page implements OnInit{
   }
   onRightChanged(ev, i) {
     this.rightFilters[i].on = ev.detail.checked;
+  }
+
+  allLeftFilterSelect(checked : boolean) {
+    this.leftFilters.forEach((f) => {
+      f.on = checked;
+    });
+  }
+  allMiddleFilterSelect(checked : boolean) {
+    this.middleFilters.forEach((f) => {
+      f.on = checked;
+    });
+  }
+  allRightFilterSelect(checked : boolean) {
+    this.rightFilters.forEach((f) => {
+      f.on = checked;
+    });
   }
 
   onImgError(item, event) {

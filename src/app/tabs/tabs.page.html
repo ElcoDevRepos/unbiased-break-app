@@ -4,14 +4,17 @@
 
     <ion-tab-button tab="tab1" (click)="onTabButtonClick('tab1')" [ngClass]="{'grayscale-0': selectedTab === 'tab1', 'grayscale-100': selectedTab !== 'tab1'}">
       <img src="assets/icons/color-newspaper.svg" alt="newspaper">
+      <p>Feed</p>
     </ion-tab-button>
     
     <ion-tab-button tab="tab2" (click)="onTabButtonClick('tab2')" [ngClass]="{'grayscale-0': selectedTab === 'tab2', 'grayscale-100': selectedTab !== 'tab2'}">
       <img src="assets/icons/color-clock.svg" alt="clock">
+      <p>Trending</p>
     </ion-tab-button>
     
     <ion-tab-button tab="tab3" (click)="onTabButtonClick('tab3')" [ngClass]="{'grayscale-0': selectedTab === 'tab3', 'grayscale-100': selectedTab !== 'tab3'}">
       <img src="assets/icons/color-person.svg" alt="person">
+      <p>Profile</p>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>

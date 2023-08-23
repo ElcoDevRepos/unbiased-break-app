@@ -1,8 +1,6 @@
 .blue-background {
     --background: #ffffff;
     --color: white;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
     box-shadow: -1px 3px 20px 0px #404040;
 }
 
@@ -15,10 +13,26 @@ img {
     img {
         filter: grayscale(0%);
     }
+
+    p {
+        margin: 0px;
+        font-size: 12px;
+        font-weight: 500;
+        background: -webkit-linear-gradient(#3C1EBF, #DC151C);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
   }
   
 .grayscale-100 {
     img {
         filter: grayscale(100%);
+    }
+
+    p {
+        margin: 0px;
+        font-size: 12px;
+        font-weight: 500;
+        color: black;
     }
   }

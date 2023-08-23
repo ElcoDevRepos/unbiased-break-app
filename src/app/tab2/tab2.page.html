@@ -6,10 +6,12 @@
         <ion-button class="toolbar-btns" (click)="toggleSearchBar()">
           <img src="assets/icons/color-search.svg" alt="search">
         </ion-button>
+        <!-- Bell button (removed until function is built)
         <ion-button class="toolbar-btns">
           <img src="assets/icons/color-notification.svg" alt="bell">
         </ion-button>
-      <ion-button class="toolbar-btns">
+        -->
+      <ion-button class="toolbar-btns" routerLink="../tab3">
         <ion-img src="assets/icon/favicon.png">
         </ion-img>
       </ion-button>
@@ -39,11 +41,11 @@
           [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/trending-articles']" [state]="{ article: item }">
         <div>
           <img class="trending-article-img" [src]="getImage(item)" (error)="onImgError($event)" alt="trending article image">
-          <!--<div class="trending-article-topic-pill">Politics</div>-->
+          <div class="trending-article-topic-pill">{{item.topic}}</div>
         </div>
         <div class="trending-article-trending-and-time-container">
           <span>🔥Trending no. {{ i + 1 }}</span>
-          <span>{{ getHoursAgo(item.date) }} hours ago</span>
+          <span>{{ getHoursAgo(item.date) }}</span>
         </div>
         <p class="trending-article-title">{{item.title}}</p>
         <div class="trending-article-source-container">
@@ -51,6 +53,9 @@
           <p>{{item.siteName}}</p>
         </div>
       </ion-card>
+      <div *ngIf="trendingLoading" class="loading-spinner-container">
+        <ion-spinner name="dots"></ion-spinner>
+      </div>
     </div>
   </div>
   <!--END OF SECTION-->
@@ -78,7 +83,7 @@
   <div class="category-section">
     <div style="margin-top:15px">
 
-      <ion-list lines="none" *ngIf="!loading">
+      <ion-list lines="none" *ngIf="!categoryLoading">
         <ion-card class="category-article" *ngFor="let item of categoryItems"
           (click)="readArticles.push(item.id); onArticleClick(item);"
           [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/category-articles']" [state]="{ article: item }">
@@ -103,15 +108,14 @@
         </ion-card>
       </ion-list>
 
-        <div *ngIf="loading">
+        <div *ngIf="categoryLoading" class="loading-spinner-container">
           <ion-spinner name="dots"></ion-spinner>
         </div>
     </div>
   </div>
   <!--END OF SECTION-->
 
-  <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
-    </ion-infinite-scroll-content>
+   <ion-infinite-scroll threshold="600px" (ionInfinite)="loadData($event)">
+      <ion-spinner *ngIf="!categoryLoading" class="loading-spinner-container" name="dots" style="margin-bottom: 600px;"></ion-spinner>
   </ion-infinite-scroll>
 </ion-content>

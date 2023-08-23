@@ -34,6 +34,9 @@ export class Tab3Page implements OnInit, OnDestroy {
   showReadArticles;
   public favorites = [];
   public readArticles = [];
+  loadingBookmarks : boolean = true;
+  loadingReadArticles : boolean = true;
+
   isDesktop: boolean;
   displayName = this.auth.currentUser.displayName
   requestedNewsSources : any = [];
@@ -44,7 +47,6 @@ export class Tab3Page implements OnInit, OnDestroy {
   private inAppBrowser : InAppBrowser, private toastController : ToastController, private introService : IntrojsService, private tabsPage : TabsPage) { }
 
   async ngOnInit() {
-    this.tabsPage.selectedTab = "tab3";
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
     this.createFakeHistory();
   }
@@ -64,9 +66,14 @@ export class Tab3Page implements OnInit, OnDestroy {
   }
 
   async ionViewWillEnter() {
-    await this.checkIfAdmin();
+    this.tabsPage.selectedTab = "tab3";
+    
     this.favorites = await this.userService.getFavorites() as any;
+    this.loadingBookmarks = false;
     this.readArticles = await this.userService.getReadArticles() as any;
+    this.loadingReadArticles = false;
+
+    await this.checkIfAdmin();
     this.checkNotificationSettings();
     
     //Check if intro.js is going to be shown

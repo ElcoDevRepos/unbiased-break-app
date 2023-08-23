@@ -18,6 +18,8 @@ export class FormPage implements OnInit {
   email: string;
   password: string;
   isLogin: boolean;
+  showPassword: boolean = false;
+
   constructor(private router: Router, public auth: Auth, private firestore: Firestore, private alertController: AlertController) { }
 
   ngOnInit() {
@@ -75,6 +77,10 @@ export class FormPage implements OnInit {
       alert("Something went wrong")
     }
     
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
 }

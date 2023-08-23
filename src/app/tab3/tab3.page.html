@@ -24,10 +24,12 @@
       <ion-label>Update Profile</ion-label>
     </ion-item>
     <ion-item button detail id="open-bookmark-modal">
-      <ion-label>Bookmarks ({{favorites.length}})</ion-label>
+      <ion-label *ngIf="loadingBookmarks">Bookmarks (loading bookmarks...)</ion-label>
+      <ion-label *ngIf="!loadingBookmarks">Bookmarks ({{favorites.length}})</ion-label>
     </ion-item>
     <ion-item button detail id="open-read-articles-modal">
-      <ion-label>Read Articles ({{readArticles.length}})</ion-label>
+      <ion-label *ngIf="loadingReadArticles">Read Articles (loading read articles...)</ion-label>
+      <ion-label *ngIf="!loadingReadArticles">Read Articles ({{readArticles.length}}<span *ngIf="readArticles.length == 50">+</span>)</ion-label>
     </ion-item>
     <ion-item *ngIf="isAdmin" button detail id="open-approve-news-sources" (click)="getRequestedNewsSources()">
       <ion-label>Approve News Sources</ion-label>
@@ -89,6 +91,12 @@
         </ion-toolbar>
       </ion-header>
       <ion-content>
+        <h3 *ngIf="favorites.length === 0" style="text-align: center;">No bookmarked articles...</h3>
+        <div *ngIf="favorites.length === 0" class="cta-container">
+          <span>Click </span>
+          <ion-button class="toolbar-btns" routerLink="../tab2" (click)="modalTwo.dismiss()" fill="outline">here</ion-button>
+          <span> to find a article to bookmark!</span>
+        </div>
         <ion-list>
           <ion-item *ngFor="let item of favorites" [routerLink]="['/news-article/' + item.id + '/' + item.type]"
             (click)="modalTwo.dismiss()">
@@ -115,7 +123,16 @@
         </ion-toolbar>
       </ion-header>
       <ion-content>
-        <ion-list>
+
+        <!--Display text and CTA when there are no read articles-->
+        <h3 *ngIf="readArticles.length === 0" style="text-align: center;">No read articles...</h3>
+        <div *ngIf="readArticles.length === 0" class="cta-container">
+          <span>Click </span>
+          <ion-button class="toolbar-btns" routerLink="../tab2" (click)="modalFour.dismiss()" fill="outline">here</ion-button>
+          <span> to start reading!</span>
+        </div>
+
+        <ion-list>        
           <ion-item *ngFor="let item of readArticles" [routerLink]="['/news-article/' + item.id + '/' + item.type]"
             (click)="modalFour.dismiss()">
             <ion-label>

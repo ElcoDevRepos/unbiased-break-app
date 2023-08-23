@@ -27,9 +27,11 @@ export class Tab2Page {
   categoryItems$: Observable<any>;
   items = [];
   categoryItems = [];
-  limit = 20;
+  trendingLimit = 20;
+  categoryLimit = 10;
   sourceImages = [];
-  loading = true;
+  trendingLoading = true;
+  categoryLoading = true;
   lastVisible;
   search = '';
   hasSearched = false;
@@ -45,7 +47,6 @@ export class Tab2Page {
      private auth: Auth, private iab: InAppBrowser, private router : Router, private menuController : MenuController, private tabsPage : TabsPage) { }
 
   ngOnInit() {
-    this.tabsPage.selectedTab = "tab2";
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
 
     this.getData();
@@ -53,6 +54,8 @@ export class Tab2Page {
   }
 
   ionViewWillEnter() {
+
+    this.tabsPage.selectedTab = "tab2";
 
     this.auth.onAuthStateChanged(async () => {
       let ref = collection(
@@ -83,7 +86,7 @@ export class Tab2Page {
       this.firestore,
       'trending-articles'
     );
-    let q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), limit(this.limit));
+    let q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), limit(this.trendingLimit));
     let docSnaps = await getDocs(q);
     let items = [];
     
@@ -112,7 +115,13 @@ export class Tab2Page {
       } else items.push(d.data());
     });
 
+    //Set a topic on each trending article
+    items.forEach((i) => {
+      i.topic = this.setTrendingArticleTopic(i.link);
+    });
+
     this.items.push(...items);
+    this.trendingLoading = false;
     if (this.hasSearched) this.searchShownArticles();
   }
 
@@ -126,9 +135,9 @@ export class Tab2Page {
     );
     let q;
     if (this.lastVisible) {
-      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), where('topic', '==', this.category), limit(this.limit), startAfter(this.lastVisible));
+      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), where('topic', '==', this.category), limit(this.categoryLimit), startAfter(this.lastVisible));
     } else {
-      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), where('topic', '==', this.category), limit(this.limit));
+      q = query(responsesRef, orderBy('date', 'desc'), where('deleted', '==', false), where('topic', '==', this.category), limit(this.categoryLimit));
     }
 
     let docSnaps = await getDocs(q);
@@ -170,7 +179,7 @@ export class Tab2Page {
     });
 
     this.categoryItems.push(...categoryItems);
-    this.loading = false;
+    this.categoryLoading = false;
     if (this.hasSearched) this.searchShownArticles();
   }
 
@@ -205,6 +214,12 @@ export class Tab2Page {
   //This will return the referenced image link in the "img" container inside item
   //If there is no value, this will return a placeholder image
   getImage(item) {
+    
+    //This is to prevent empty image from displaying (currently only for business insider)
+    if(item.link.includes("markets.businessinsider.com")) return "https://markets.businessinsider.com/Images/FacebookIcon.jpg";
+    //This is a fix for market insider articles since there images are wack
+    if(item.image == "https://www.businessinsider.com/public/assets/subscription/marketing/banner-overlay/top-left.svg") return this.getSourceImage(item);
+
     if (item.image) return item.image;
     
     //Get random placeholder image
@@ -216,6 +231,7 @@ export class Tab2Page {
   //This will return the source img/logo based on the item
   //i.e a item from CNN will return the CNN img/logo
   getSourceImage (item) {
+
     let newUrl = new URL(item.link);
     let url = "";
     if (newUrl.host.includes("www.")) {
@@ -225,6 +241,12 @@ export class Tab2Page {
     }
     if (item.siteName) {
       let site = item.siteName.replaceAll(" ", "").toLocaleLowerCase();
+
+      //Fix for the washington post image
+      if(site === "thewashingtonpost") site = "washingtonpost";
+      //Fix for BBC image
+      if(site === "bbcnews") site = "bbc";
+
       let index = _.findIndex(this.sourceImages, (s) => s.url.includes(site));
       if (index != -1) {
         return this.sourceImages[index].image;
@@ -311,18 +333,44 @@ export class Tab2Page {
     this.categoryItems = [];
     this.stopCategoryArticleQuery = false;
     await this.getCategoryData();
-    console.log(this.categoryItems);
   }
 
-  getHoursAgo(timestamp: Timestamp): number {
+  getHoursAgo(timestamp: Timestamp): string {
     const currentDate = new Date();
     const publishedDate = timestamp.toDate();
     const timeDifference = currentDate.getTime() - publishedDate.getTime();
     const hoursDifference = Math.floor(timeDifference / (1000 * 3600));
-    return hoursDifference;
+    
+    //Return "Just now" if the hour difference is within an hour
+    if(hoursDifference > 0)
+      return `${hoursDifference.toString()} hours ago`;
+    else
+      return "Just now";
   }
 
   closeMenu() {
     this.menuController.close('tab2-menu');
+  }
+
+  //Pass a link and this return a string depending on topic in link
+  setTrendingArticleTopic (link : string) {
+    let topic = 'News';
+
+    //Add on this as more categories are identified
+    if(link.includes('politics')) return 'Politics';
+    if(link.includes('nation')) return 'Nation';
+    if(link.includes('business')) return 'Business';
+    if(link.includes('us')) return 'U.S.';
+    if(link.includes('us-news')) return 'U.S.';
+    if(link.includes('travel')) return 'Travel';
+    if(link.includes('world')) return 'World';
+    if(link.includes('global')) return 'Global';
+    if(link.includes('investing')) return 'Investing';
+    if(link.includes('europe')) return 'Europe';
+    if(link.includes('economy')) return 'Economy';
+    if(link.includes('asia')) return 'Asia';
+    if(link.includes('russia')) return 'Russia';
+
+    return topic;
   }
 }
