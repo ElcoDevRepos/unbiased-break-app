@@ -1,42 +1,60 @@
 <ion-header [translucent]="false" id="tab1-menu">
   <ion-toolbar>
+    <ion-searchbar
+      #searchBar
+      *ngIf="showSearchBar"
+      class="search"
+      [(ngModel)]="search"
+      debounce="500"
+      (ionChange)="searchShownArticles()"
+      (ionClear)="clearSearch()"
+    ></ion-searchbar>
 
-    <ion-searchbar #searchBar *ngIf="showSearchBar" class="search" [(ngModel)]="search" debounce="500" (ionChange)="searchShownArticles()" (ionClear)="clearSearch()"></ion-searchbar>
-
-    <ion-buttons slot="end" style="align-self: center; gap: 5px;">
+    <ion-buttons slot="end" style="align-self: center; gap: 5px">
       <ion-button class="toolbar-btns" (click)="toggleSearchBar()">
-        <img src="assets/icons/color-search.svg" alt="search">
+        <img src="assets/icons/color-search.svg" alt="search" />
       </ion-button>
-      <ion-button class="toolbar-btns" id="open-modal" [hidden]="!currentUserDoc" (click)="filterIntroJS(); displayFilterNotLoggedIn()">
-        <img src="assets/icons/color-filter.svg" alt="filter">
+      <ion-button
+        class="toolbar-btns"
+        id="open-modal"
+        [hidden]="!currentUserDoc"
+        (click)="filterIntroJS();"
+      >
+        <img src="assets/icons/color-filter.svg" alt="filter" />
       </ion-button>
       <!-- Bell button (removed until function is built)
       <ion-button class="toolbar-btns">
         <img src="assets/icons/color-notification.svg" alt="bell">
       </ion-button>
       -->
-    <ion-button class="toolbar-btns" routerLink="../tab3">
-      <ion-img src="assets/icon/favicon.png">
-      </ion-img>
-    </ion-button>
-  </ion-buttons>
-    
+      <ion-button class="toolbar-btns" routerLink="../tab3">
+        <ion-img src="assets/icon/favicon.png"> </ion-img>
+      </ion-button>
+    </ion-buttons>
+
     <!-- INTRO JS REPLAY AND FILTER BUTTON (ADD LATER IN DIFFERENT PLACE)
     <ion-button fill="clear" slot="end" (click)="introJSReplay()">
       <ion-icon name="help-outline"></ion-icon>
     </ion-button>
     -->
-
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="false" style="background: #f3f3f3">
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" pullFactor="0.8" pullMin="100" pullMax="130" style="background: #f3f3f3">
-    <ion-refresher-content 
-    pullingIcon="chevron-down-circle-outline"
-    pullingText="Pull to refresh"
-    refreshingSpinner="circles"
-    refreshingText="Refreshing..."></ion-refresher-content>
+  <ion-refresher
+    slot="fixed"
+    (ionRefresh)="doRefresh($event)"
+    pullFactor="0.8"
+    pullMin="100"
+    pullMax="130"
+    style="background: #f3f3f3"
+  >
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Refreshing..."
+    ></ion-refresher-content>
   </ion-refresher>
 
   <ion-item class="show-gradient no-border">
@@ -45,18 +63,37 @@
 
   <div class="scroll-container">
     <div class="scroll-content">
-      <ion-card class="topic-card" *ngFor="let topic of topicOptions; let last = last" [class.topic-checked]="topic.checked" [class.topic-not-checked]="!topic.checked" (click)="topicClick(topic)" [id]="last ? 'introjs-step2' : ''">
+      <ion-card
+        class="topic-card"
+        *ngFor="let topic of topicOptions; let last = last"
+        [class.topic-checked]="topic.checked"
+        [class.topic-not-checked]="!topic.checked"
+        (click)="topicClick(topic)"
+        [id]="last ? 'introjs-step2' : ''"
+      >
         {{ topic.display | titlecase}}
-      </ion-card>      
-      <ion-card id="introjs-step3" class="topic-card" (click)="openTopicModal()">
+      </ion-card>
+      <ion-card
+        id="introjs-step3"
+        class="topic-card"
+        (click)="openTopicModal()"
+      >
         Edit Topics
       </ion-card>
     </div>
   </div>
 
-  <div class="news-section" style="margin-left: 12px; margin-right: 12px; border-radius: 12px;">
-    <div style="padding-top:6px">
-      <ion-segment value="middle" [(ngModel)]="selectedTab" (ionChange)="segmentChanged()" [disabled]="loading">
+  <div
+    class="news-section"
+    style="margin-left: 12px; margin-right: 12px; border-radius: 12px"
+  >
+    <div style="padding-top: 6px">
+      <ion-segment
+        value="middle"
+        [(ngModel)]="selectedTab"
+        (ionChange)="segmentChanged()"
+        [disabled]="loading"
+      >
         <ion-segment-button value="left">
           <ion-label>Left</ion-label>
         </ion-segment-button>
@@ -68,8 +105,17 @@
         </ion-segment-button>
       </ion-segment>
     </div>
-    <div style="margin-top:15px; border-radius: 12px; margin-left: 12px; margin-right: 12px">
-      <ion-label class="news-articles-label"> {{getSelectedTopic() | titlecase}} News Articles</ion-label>
+    <div
+      style="
+        margin-top: 15px;
+        border-radius: 12px;
+        margin-left: 12px;
+        margin-right: 12px;
+      "
+    >
+      <ion-label class="news-articles-label">
+        {{getSelectedTopic() | titlecase}} News Articles</ion-label
+      >
       <!--<div class="card-container">
         <ion-card *ngFor="let item of items" class="content-card" (click)="readArticles.push(item.id)"
         [routerLink]="['/news-article/' + item.id + '/' + selectedTab + '-articles']" [state]="{ article: item }">
@@ -83,26 +129,44 @@
           </ion-card-content>
         </ion-card>
       </div>-->
-     <ion-list lines="none" *ngIf="!loading">
-        <ion-item class="news-link"
-          *ngFor="let item of items; let i = index;" [id]="i === 0 ? 'introjs-step5' : ''"
+      <ion-list lines="none" *ngIf="!loading">
+        <ion-item
+          class="news-link"
+          *ngFor="let item of items; let i = index;"
+          [id]="i === 0 ? 'introjs-step5' : ''"
           (click)="readArticles.push(item.id); onArticleClick(item)"
-          [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/' + selectedTab + '-articles']" [state]="{ article: item }">
+          [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/' + selectedTab + '-articles']"
+          [state]="{ article: item }"
+        >
           <ion-thumbnail slot="start">
-            <img [src]="getImage(item)" (error)="onImgError(item, $event)">
+            <img [src]="getImage(item)" (error)="onImgError(item, $event)" />
           </ion-thumbnail>
           <ion-label class="article-data-thumb">
-            <h3 style="white-space: initial;" [ngStyle]="{'font-weight': !isRead(item.id) ? 'bold': 'normal'}">{{item.title}}</h3>
+            <h3
+              style="white-space: initial"
+              [ngStyle]="{'font-weight': !isRead(item.id) ? 'bold': 'normal'}"
+            >
+              {{item.title}}
+            </h3>
             <p>{{item.siteName}}</p>
             <p>{{item.date?.toDate() | date:'mediumDate'}}</p>
           </ion-label>
         </ion-item>
 
-        <p *ngIf="items.length === 0 && !loading && topicCheckedList.length != 0">No articles found...</p>
-        <p *ngIf="topicCheckedList.length == 0">Select a topic to load articles</p>
+        <p
+          *ngIf="items.length === 0 && !loading && topicCheckedList.length != 0"
+        >
+          No articles found...
+        </p>
+        <p *ngIf="topicCheckedList.length == 0">
+          Select a topic to load articles
+        </p>
       </ion-list>
 
-      <div *ngIf="loading" [ngClass]="{'loading': !expanded, 'loading-exp': expanded}">
+      <div
+        *ngIf="loading"
+        [ngClass]="{'loading': !expanded, 'loading-exp': expanded}"
+      >
         <ion-spinner name="dots"></ion-spinner>
       </div>
     </div>
@@ -118,9 +182,16 @@
       <ion-header>
         <ion-toolbar>
           <ion-title>Filters</ion-title>
-          <ion-progress-bar *ngIf="requestNewsSourceLoading" type="indeterminate"></ion-progress-bar>
+          <ion-progress-bar
+            *ngIf="requestNewsSourceLoading"
+            type="indeterminate"
+          ></ion-progress-bar>
           <ion-buttons slot="start">
-            <ion-back-button defaultHref="/tabs/tab1" (click)="closeAndSave()" text="">
+            <ion-back-button
+              defaultHref="/tabs/tab1"
+              (click)="closeAndSave()"
+              text=""
+            >
               <ion-icon name="arrow-back"></ion-icon>
             </ion-back-button>
           </ion-buttons>
@@ -129,18 +200,18 @@
       <ion-content>
         <ion-list>
           <ion-item-divider>
-            <ion-label>
-              Request News Source
-            </ion-label>
+            <ion-label> Request News Source </ion-label>
           </ion-item-divider>
           <ion-item id="introjs-filters2">
-            <ion-input [(ngModel)]="requestedNewsSource" label="Source" placeholder="Enter a news source"></ion-input>
+            <ion-input
+              [(ngModel)]="requestedNewsSource"
+              label="Source"
+              placeholder="Enter a news source"
+            ></ion-input>
             <ion-button (click)="requestNewsSource()">Request</ion-button>
           </ion-item>
           <ion-item-divider>
-            <ion-label>
-              Left Filters
-            </ion-label>
+            <ion-label> Left Filters </ion-label>
             <ion-button (click)="allLeftFilterSelect(true)" slot="end">
               Select all
             </ion-button>
@@ -149,13 +220,16 @@
             </ion-button>
           </ion-item-divider>
           <ion-item *ngFor="let filter of leftFilters; let i = index">
-            <ion-label class="ion-text-wrap">{{filter.label | split}}</ion-label>
-            <ion-checkbox (ionChange)="onLeftChanged($event, i)" [checked]="filter.on"></ion-checkbox>
+            <ion-label class="ion-text-wrap"
+              >{{filter.label | split}}</ion-label
+            >
+            <ion-checkbox
+              (ionChange)="onLeftChanged($event, i)"
+              [checked]="filter.on"
+            ></ion-checkbox>
           </ion-item>
           <ion-item-divider>
-            <ion-label>
-              Middle Filters
-            </ion-label>
+            <ion-label> Middle Filters </ion-label>
             <ion-button (click)="allMiddleFilterSelect(true)" slot="end">
               Select all
             </ion-button>
@@ -164,13 +238,16 @@
             </ion-button>
           </ion-item-divider>
           <ion-item *ngFor="let filter of middleFilters; let i = index">
-            <ion-label class="ion-text-wrap">{{filter.label | split}}</ion-label>
-            <ion-checkbox (ionChange)="onMiddleChanged($event, i)" [checked]="filter.on"></ion-checkbox>
+            <ion-label class="ion-text-wrap"
+              >{{filter.label | split}}</ion-label
+            >
+            <ion-checkbox
+              (ionChange)="onMiddleChanged($event, i)"
+              [checked]="filter.on"
+            ></ion-checkbox>
           </ion-item>
           <ion-item-divider>
-            <ion-label>
-              Right Filters
-            </ion-label>
+            <ion-label> Right Filters </ion-label>
             <ion-button (click)="allRightFilterSelect(true)" slot="end">
               Select all
             </ion-button>
@@ -179,8 +256,13 @@
             </ion-button>
           </ion-item-divider>
           <ion-item *ngFor="let filter of rightFilters; let i = index">
-            <ion-label class="ion-text-wrap">{{filter.label | split}}</ion-label>
-            <ion-checkbox (ionChange)="onRightChanged($event, i)" [checked]="filter.on"></ion-checkbox>
+            <ion-label class="ion-text-wrap"
+              >{{filter.label | split}}</ion-label
+            >
+            <ion-checkbox
+              (ionChange)="onRightChanged($event, i)"
+              [checked]="filter.on"
+            ></ion-checkbox>
           </ion-item>
         </ion-list>
       </ion-content>
