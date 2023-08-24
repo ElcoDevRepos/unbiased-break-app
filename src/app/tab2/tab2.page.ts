@@ -122,7 +122,6 @@ export class Tab2Page {
 
     this.items.push(...items);
     this.trendingLoading = false;
-    if (this.hasSearched) this.searchShownArticles();
   }
 
   //Get category articles from firestore
@@ -178,9 +177,19 @@ export class Tab2Page {
       } else categoryItems.push(d.data());
     });
 
+    //This is for loading new articles after a search has been preformed
+    if(this.hasSearched) {
+      const searcher = new FuzzySearch(categoryItems, ['title'], {
+        caseSensitive: false,
+        sort: true
+      });
+      const result = searcher.search(this.search);
+      categoryItems = result;
+    }
+
     this.categoryItems.push(...categoryItems);
+
     this.categoryLoading = false;
-    if (this.hasSearched) this.searchShownArticles();
   }
 
   async getSources() {
@@ -273,7 +282,6 @@ export class Tab2Page {
     });
     const result = searcher.search(this.search);
     this.categoryItems = result;
-    
   }
 
   async clearSearch() {
