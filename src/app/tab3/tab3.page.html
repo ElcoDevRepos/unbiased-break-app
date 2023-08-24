@@ -29,7 +29,7 @@
     </ion-item>
     <ion-item button detail id="open-read-articles-modal">
       <ion-label *ngIf="loadingReadArticles">Read Articles (loading read articles...)</ion-label>
-      <ion-label *ngIf="!loadingReadArticles">Read Articles ({{readArticles.length}}<span *ngIf="readArticles.length == 50">+</span>)</ion-label>
+      <ion-label *ngIf="!loadingReadArticles">Read Articles ({{readArticlesAmount}})</ion-label>
     </ion-item>
     <ion-item *ngIf="isAdmin" button detail id="open-approve-news-sources" (click)="getRequestedNewsSources()">
       <ion-label>Approve News Sources</ion-label>

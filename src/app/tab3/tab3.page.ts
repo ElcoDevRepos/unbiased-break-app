@@ -34,6 +34,7 @@ export class Tab3Page implements OnInit, OnDestroy {
   showReadArticles;
   public favorites = [];
   public readArticles = [];
+  readArticlesAmount;
   loadingBookmarks : boolean = true;
   loadingReadArticles : boolean = true;
 
@@ -71,6 +72,7 @@ export class Tab3Page implements OnInit, OnDestroy {
     this.favorites = await this.userService.getFavorites() as any;
     this.loadingBookmarks = false;
     this.readArticles = await this.userService.getReadArticles() as any;
+    this.readArticlesAmount = await this.userService.getReadArticlesAmount() as any;
     this.loadingReadArticles = false;
 
     await this.checkIfAdmin();
