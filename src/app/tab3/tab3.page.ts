@@ -41,6 +41,7 @@ export class Tab3Page implements OnInit, OnDestroy {
   isDesktop: boolean;
   displayName = this.auth.currentUser.displayName
   requestedNewsSources : any = [];
+  newsSources : any = [];
   isAdmin : boolean = false;
 
   constructor(private router: Router, public auth: Auth, private modal: ModalController, private userService: UserService, private actionSheetController: ActionSheetController,
@@ -108,6 +109,7 @@ export class Tab3Page implements OnInit, OnDestroy {
     });
   }
 
+  //Gets all requested news sources from firestore DB
   async getRequestedNewsSources() {
     this.requestedNewsSources = [];
     const q = query(collection(this.fireStore, 'requested-news-sources'), orderBy('timestamp', 'desc'));
@@ -124,6 +126,28 @@ export class Tab3Page implements OnInit, OnDestroy {
     });
   }
 
+  //Gets all current/active news sources from firestore DB 
+  async getNewsSources() {
+    this.newsSources = [];
+
+    // Define the collection names
+    const collectionNames = ["right-sources", "middle-sources", "left-sources"];
+
+    // Loop through each collection name and fetch the data
+    for (const collectionName of collectionNames) {
+      const q = query(collection(this.fireStore, collectionName));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        this.newsSources.push({
+          ...doc.data(), 
+          'id': doc.id,
+          'collection': collectionName
+        });
+      });
+    }
+  }
+
+  //Approves news source by adding it to firestore DB and displays toast as feedback
   async approveNewsSource (source : any) {
     const url = source.url;
     const imageUrl = source.imageUrl;
@@ -199,7 +223,7 @@ export class Tab3Page implements OnInit, OnDestroy {
       });
     }
   }
-
+  //Deletes a requested news source from firestore DB and displays toast as feedback
   async deleteNewsSource (source : any, showToast : boolean) {
 
     const successToast = await this.toastController.create({
@@ -221,6 +245,30 @@ export class Tab3Page implements OnInit, OnDestroy {
       }).catch((err) => {
         console.error('Error deleting requested news source', err);
         if(showToast) errorToast.present();
+      })
+  }
+
+  //Removes existing news source
+  async removeNewsSource (source : any) {
+    const successToast = await this.toastController.create({
+      message: 'Success removing news source!',
+      duration: 2000,
+      position: 'top',
+    });
+    const errorToast = await this.toastController.create({
+      message: 'Error removing news source',
+      duration: 2000,
+      position: 'top',
+    });
+
+    await deleteDoc(doc(this.fireStore, source.collection, source.id))
+      .then(() => {
+        console.log('Success removing news source!')
+        successToast.present();
+        this.getNewsSources();
+      }).catch((err) => {
+        console.error('Error removing news source', err);
+        errorToast.present();
       })
   }
 
