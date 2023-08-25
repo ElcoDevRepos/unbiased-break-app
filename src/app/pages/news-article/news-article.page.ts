@@ -36,6 +36,7 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   playing = false;
   urlsToPlay = [];
   isDesktop;
+  showAd : boolean = true;
 
   allRelatedArticles = [];
   currentReaderCount : number = 1;
@@ -67,10 +68,13 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     this.admobService.showBanner();
 
     //Check if intro.js is going to be shown
-    const showIntroJS = localStorage.getItem('showArticleIntro');
-    if(showIntroJS != 'false') {
-      localStorage.setItem('showArticleIntro', 'false');
-      this.introService.articleFeature();
+    if (this.userService.getLoggedInUser()) {
+      const showIntroJS = localStorage.getItem('showArticleIntro');
+      if(showIntroJS != 'false') {
+        this.showAd = false;
+        localStorage.setItem('showArticleIntro', 'false');
+        this.introService.articleFeature();
+      }
     }
   }
 
