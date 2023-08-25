@@ -551,14 +551,16 @@ export class Tab1Page implements OnInit{
     this.loading = false;
 
     //Check if intro.js is going to be shown
-    const showIntroJS = localStorage.getItem('showHomeIntro');
-    if(showIntroJS != 'false') {
-      setTimeout(() => {
-        const container = this.elementRef.nativeElement.querySelector('.scroll-container');
-        this.renderer.setProperty(container, 'scrollLeft', container.scrollWidth);
-        localStorage.setItem('showHomeIntro', 'false');
-        this.introService.featureOne();
-      }, 400);          
+    if(this.currentUserDoc){
+      const showIntroJS = localStorage.getItem('showHomeIntro');
+      if(showIntroJS != 'false') {
+        setTimeout(() => {
+          const container = this.elementRef.nativeElement.querySelector('.scroll-container');
+          this.renderer.setProperty(container, 'scrollLeft', container.scrollWidth);
+          localStorage.setItem('showHomeIntro', 'false');
+          this.introService.featureOne();
+        }, 400);          
+      }
     }
   }
 

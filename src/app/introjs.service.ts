@@ -29,7 +29,7 @@ export class IntrojsService {
             intro: 'Click on "Edit Topics" to add/remove topics',
           },
           {
-            element: '#introjs-step4',
+            element: '#open-modal',
             intro: 'Click on "Filters" to edit your news sources',
           },
           {
@@ -37,9 +37,14 @@ export class IntrojsService {
             intro: 'Click on an article to open it',
           },
           {
+            element: '#tab-button-tab2',
+            intro:
+              'Click on the "Trending" tab to see trending articles and explore article categories',
+          },
+          {
             element: '#tab-button-tab3',
             intro:
-              'Click on "Settings" to see saved bookmarks and read articles',
+              'Click on the "Profile" tab to see saved bookmarks and read articles',
           },
         ],
       })
