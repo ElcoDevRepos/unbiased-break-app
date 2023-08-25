@@ -34,12 +34,14 @@ export class Tab3Page implements OnInit, OnDestroy {
   showReadArticles;
   public favorites = [];
   public readArticles = [];
+  readArticlesAmount;
   loadingBookmarks : boolean = true;
   loadingReadArticles : boolean = true;
 
   isDesktop: boolean;
   displayName = this.auth.currentUser.displayName
   requestedNewsSources : any = [];
+  newsSources : any = [];
   isAdmin : boolean = false;
 
   constructor(private router: Router, public auth: Auth, private modal: ModalController, private userService: UserService, private actionSheetController: ActionSheetController,
@@ -71,6 +73,7 @@ export class Tab3Page implements OnInit, OnDestroy {
     this.favorites = await this.userService.getFavorites() as any;
     this.loadingBookmarks = false;
     this.readArticles = await this.userService.getReadArticles() as any;
+    this.readArticlesAmount = await this.userService.getReadArticlesAmount() as any;
     this.loadingReadArticles = false;
 
     await this.checkIfAdmin();
@@ -106,6 +109,7 @@ export class Tab3Page implements OnInit, OnDestroy {
     });
   }
 
+  //Gets all requested news sources from firestore DB
   async getRequestedNewsSources() {
     this.requestedNewsSources = [];
     const q = query(collection(this.fireStore, 'requested-news-sources'), orderBy('timestamp', 'desc'));
@@ -122,6 +126,28 @@ export class Tab3Page implements OnInit, OnDestroy {
     });
   }
 
+  //Gets all current/active news sources from firestore DB 
+  async getNewsSources() {
+    this.newsSources = [];
+
+    // Define the collection names
+    const collectionNames = ["right-sources", "middle-sources", "left-sources"];
+
+    // Loop through each collection name and fetch the data
+    for (const collectionName of collectionNames) {
+      const q = query(collection(this.fireStore, collectionName));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        this.newsSources.push({
+          ...doc.data(), 
+          'id': doc.id,
+          'collection': collectionName
+        });
+      });
+    }
+  }
+
+  //Approves news source by adding it to firestore DB and displays toast as feedback
   async approveNewsSource (source : any) {
     const url = source.url;
     const imageUrl = source.imageUrl;
@@ -197,7 +223,7 @@ export class Tab3Page implements OnInit, OnDestroy {
       });
     }
   }
-
+  //Deletes a requested news source from firestore DB and displays toast as feedback
   async deleteNewsSource (source : any, showToast : boolean) {
 
     const successToast = await this.toastController.create({
@@ -219,6 +245,30 @@ export class Tab3Page implements OnInit, OnDestroy {
       }).catch((err) => {
         console.error('Error deleting requested news source', err);
         if(showToast) errorToast.present();
+      })
+  }
+
+  //Removes existing news source
+  async removeNewsSource (source : any) {
+    const successToast = await this.toastController.create({
+      message: 'Success removing news source!',
+      duration: 2000,
+      position: 'top',
+    });
+    const errorToast = await this.toastController.create({
+      message: 'Error removing news source',
+      duration: 2000,
+      position: 'top',
+    });
+
+    await deleteDoc(doc(this.fireStore, source.collection, source.id))
+      .then(() => {
+        console.log('Success removing news source!')
+        successToast.present();
+        this.getNewsSources();
+      }).catch((err) => {
+        console.error('Error removing news source', err);
+        errorToast.present();
       })
   }
 

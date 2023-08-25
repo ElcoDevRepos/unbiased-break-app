@@ -99,83 +99,79 @@ export class UserService {
     let ref = collection(this.firestore, 'users');
     const q = query(ref, where('email', '==', this.auth.currentUser.email));
     let docs = await getDocs(q);
-    docs.forEach((d) => {
+    let readArticlesIDs = [];
 
+    docs.forEach(async (d) => {
       //At most fetch 50 read articles to limit load times
-      let readArticlesIDs = [];
-      if(d.data().readArticles.length > 50) readArticlesIDs = d.data().readArticles.slice((d.data().readArticles.length - 50), d.data().readArticles.length);
+      if(d.data().readArticles.length > 50) {
+        readArticlesIDs = d.data().readArticles.slice((d.data().readArticles.length - 50), d.data().readArticles.length);
+      }
       else readArticlesIDs = d.data().readArticles;
       readArticlesIDs = readArticlesIDs.reverse();
 
-      readArticlesIDs.forEach(async id => {
+      await Promise.all(readArticlesIDs.map(async id => {
         let found = false;
 
-        // Query the middle-articles collection for documents with a matching ID
-        let q = query(collection(this.firestore, "middle-articles"), where("id", "==", id));
-        let querySnapshot = await getDocs(q);
-        querySnapshot.forEach((doc) => {
-          readArticles.push({
-            ...doc.data(),
-            type: 'middle-articles'
-          });
-          found = true;
-        });
-        
-        // Query the left-articles collection for documents with a matching ID
-        if(!found){
-          q = query(collection(this.firestore, "left-articles"), where("id", "==", id));
-          querySnapshot = await getDocs(q);
-          querySnapshot.forEach((doc) => {
-            readArticles.push({
-              ...doc.data(),
-              type: 'left-articles'
-            });
-            found = true;
-          });
-        }
-        
-        if(!found){
-          // Query the right-articles collection for documents with a matching ID
-          q = query(collection(this.firestore, "right-articles"), where("id", "==", id));
-          querySnapshot = await getDocs(q);
-          querySnapshot.forEach((doc) => {
-            readArticles.push({
-              ...doc.data(),
-              type: 'right-articles'
-            });
-            found = true;
-          });
-        }
+        const collections = [
+          { name: "middle-articles", type: "middle-articles" },
+          { name: "left-articles", type: "left-articles" },
+          { name: "right-articles", type: "right-articles" },
+          { name: "trending-articles", type: "trending-articles" },
+          { name: "category-articles", type: "category-articles" }
+      ];
 
-        if(!found){
-          // Query the trending-articles collection for documents with a matching ID
-          q = query(collection(this.firestore, "trending-articles"), where("id", "==", id));
-          querySnapshot = await getDocs(q);
-          querySnapshot.forEach((doc) => {
-            readArticles.push({
-              ...doc.data(),
-              type: 'trending-articles'
-            });
-            found = true;
-          });
-        }
+      // Create a promises array to collect promises for each collection query
+      const promises = [];
 
-        if(!found){
-          // Query the category-articles collection for documents with a matching ID
-          q = query(collection(this.firestore, "category-articles"), where("id", "==", id));
-          querySnapshot = await getDocs(q);
-          querySnapshot.forEach((doc) => {
-            readArticles.push({
-              ...doc.data(),
-              type: 'category-articles'
-            });
-          });
+      for (const collectionInfo of collections) {
+          const q = query(collection(this.firestore, collectionInfo.name), where("id", "==", id));
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+              querySnapshot.forEach(doc => {
+                  promises.push(Promise.resolve({
+                      ...doc.data(),
+                      type: collectionInfo.type
+                  }));
+                  found = true;
+              });
+          }
+
+          if (found) {
+              break;
+          }
+        }  
+        return promises;
+    }))
+      .then(results => {
+        // Flatten the results and add articles to readArticles in the correct order
+        const flattenedResults = [].concat(...results);
+        let flatArticles = [];
+        flatArticles.push(...flattenedResults);
+        for (const zoneAwarePromise of flatArticles) {
+            readArticles.push(zoneAwarePromise.__zone_symbol__value);
         }
-      });            
+      });
     });
     
     return readArticles;
   }
+
+  //Use this to get the total amount of read articles without loading all data to limit load times
+  async getReadArticlesAmount() {
+    if(!this.auth.currentUser) return;
+
+    let ref = collection(this.firestore, 'users');
+    const q = query(ref, where('email', '==', this.auth.currentUser.email));
+    let docs = await getDocs(q);
+    let amt = 0;
+    docs.forEach((d) => {  
+      amt = d.data().readArticles.length;
+    });
+
+    return amt;
+  }
+
 
   async setDeviceToken(token) {
     if (!this.auth.currentUser) return;
