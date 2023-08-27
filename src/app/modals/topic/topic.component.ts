@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, HostListener } from '@angular/core';
 import { AlertController, ModalController, NavParams, PopoverController } from '@ionic/angular';
 import { v4 as uuidv4 } from 'uuid';
 import { Firestore, addDoc, collection, updateDoc, doc } from '@angular/fire/firestore';
@@ -21,6 +21,7 @@ export class TopicComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.currentUser = this.navParams.data.currentUser;
     this.topics = this.navParams.data.topics;
+    this.createFakeHistory();
     this.topics.forEach((t) => {
       if (t.checked === undefined) 
       t.checked = true;
@@ -34,6 +35,20 @@ export class TopicComponent implements OnInit, AfterViewInit {
     if(showIntroJS != 'false') {
       localStorage.setItem('showTopicsIntro', 'false');
       this.introService.topicsFeature();
+    }
+  }
+
+  //These two functions are used to manipulate the navigation so the back button works to close the modal
+  createFakeHistory() {
+    const modalState = {
+      modal : true,
+      desc : 'fake state for our modal'
+    };
+    history.pushState(modalState, null);
+  }
+  ngOnDestroy() {
+    if (window.history.state.modal) {
+      history.back();
     }
   }
 
@@ -117,8 +132,10 @@ export class TopicComponent implements OnInit, AfterViewInit {
   }
   }
 
+  @HostListener('window:popstate', ['$event'])
   dismiss() {
     this.modalCtrl.dismiss(this.topics);
+    this.popoverController.dismiss();
   }
 
   async addNewTopic() {

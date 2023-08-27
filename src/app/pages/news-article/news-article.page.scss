@@ -135,7 +135,12 @@ ion-segment {
 
 .related-article-title {
     font-size: small; 
-    padding: 5px;
+    padding: 5px 5px 0px 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limit the content to three lines */
+    -webkit-box-orient: vertical;
 }
 
 .related-article-subtitle { 
