@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { TabsPage } from '../tabs/tabs.page';
 
 @Component({
   selector: 'app-tab4',
@@ -8,11 +8,10 @@ import { Router } from '@angular/router';
 })
 export class Tab4Page {
 
-  constructor(private router: Router) {}
+  constructor( private tabsPage : TabsPage ) {}
 
-  logOut() {
-    this.router.navigate(['login'], {
-      replaceUrl: true
-    });
+  ionViewWillEnter() {
+    this.tabsPage.selectedTab = "tab4";
   }
+
 }
