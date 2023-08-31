@@ -1,107 +1,19 @@
 <ion-header [translucent]="false">
   <ion-toolbar>
     <ion-title>
-      Politicians
+      GPT Summary
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
- <ion-card>
-   <ion-card-content>
-    <ion-item lines="none">
-      <ion-avatar slot="start" class="avatar">
-        <img src="../../assets/img/tammy.png">
-      </ion-avatar>
-      <ion-label>
-        <h3>Tammy Duckworth</h3>
-        <h6>Senator, IL</h6>
-      </ion-label>
-    </ion-item>
-    <hr style="color:black; border-bottom: 1px solid black">
-    <ion-item lines="none">
-        <ion-row style="display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: center;
-        align-items: center;"
-        class="pass-match">
-          <ion-col>
-            <fa-icon icon="percent" style="font-size: 25px"></fa-icon>
-          </ion-col>
-          <ion-col>
-            <ion-label style="margin-left: 5px;">
-              67% Match on the issues
-            </ion-label>
-          </ion-col>
-        </ion-row>
-    </ion-item>
-    <ion-item lines="none">
-        <ion-row style="display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: center;
-        align-items: center;"
-        class="pass-match">
-          <ion-col>
-            <fa-icon icon="pen-to-square" style="font-size: 25px"></fa-icon>
-          </ion-col>
-          <ion-col>
-            <ion-label>
-              87% Match with voting pattern
-            </ion-label>
-          </ion-col>
-        </ion-row>
-    </ion-item>
-   </ion-card-content>
- </ion-card>
+  <ion-card *ngFor="let summary of gptSummaries" class="summary-card">
+    <ion-card-header>
+      <ion-card-title>{{ summary.title }}</ion-card-title>
+    </ion-card-header>
 
- <ion-card>
-  <ion-card-content>
-   <ion-item lines="none">
-     <ion-avatar slot="start" class="avatar">
-      <img src="../../assets/img/adam.png">
-    </ion-avatar>
-     <ion-label>
-       <h3>Adam Kizinger</h3>
-       <h6>Senator, IL</h6>
-     </ion-label>
-   </ion-item>
-   <hr style="color:black; border-bottom: 1px solid black">
-   <ion-item lines="none">
-       <ion-row style="display: flex;
-       flex-direction: row;
-       flex-wrap: nowrap;
-       justify-content: center;
-       align-items: center;"
-        class="failed-match">
-         <ion-col>
-           <fa-icon icon="percent" style="font-size: 25px"></fa-icon>
-         </ion-col>
-         <ion-col>
-           <ion-label style="margin-left: 5px;">
-             32% Match on the issues
-           </ion-label>
-         </ion-col>
-       </ion-row>
-   </ion-item>
-   <ion-item lines="none">
-       <ion-row style="display: flex;
-       flex-direction: row;
-       flex-wrap: nowrap;
-       justify-content: center;
-       align-items: center;"
-       class="failed-match">
-         <ion-col>
-           <fa-icon icon="pen-to-square" style="font-size: 25px"></fa-icon>
-         </ion-col>
-         <ion-col>
-           <ion-label>
-             28% Match with voting pattern
-           </ion-label>
-         </ion-col>
-       </ion-row>
-   </ion-item>
-  </ion-card-content>
-</ion-card>
+    <ion-card-content>
+      {{ summary.summary }}
+    </ion-card-content>
+  </ion-card>
 </ion-content>
