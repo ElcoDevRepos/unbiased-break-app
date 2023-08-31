@@ -7,7 +7,13 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-card *ngFor="let summary of gptSummaries">
-    <p>{{ summary.summary }}</p>
+  <ion-card *ngFor="let summary of gptSummaries" class="summary-card">
+    <ion-card-header>
+      <ion-card-title>{{ summary.title }}</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      {{ summary.summary }}
+    </ion-card-content>
   </ion-card>
 </ion-content>
