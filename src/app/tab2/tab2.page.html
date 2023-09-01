@@ -1,32 +1,46 @@
-<ion-header [translucent]="false"> 
+<ion-header [translucent]="false">
   <ion-toolbar>
-    <ion-searchbar #searchBar *ngIf="showSearchBar" class="search" [(ngModel)]="search" debounce="500" (ionChange)="searchShownArticles()" (ionClear)="clearSearch()"></ion-searchbar>
+    <ion-searchbar
+      #searchBar
+      *ngIf="showSearchBar"
+      class="search"
+      [(ngModel)]="search"
+      debounce="500"
+      (ionChange)="searchShownArticles()"
+      (ionClear)="clearSearch()"
+    ></ion-searchbar>
 
-    <ion-buttons slot="end" style="align-self: center; gap: 5px;">
-        <ion-button class="toolbar-btns" (click)="toggleSearchBar()">
-          <img src="assets/icons/color-search.svg" alt="search">
-        </ion-button>
-        <!-- Bell button (removed until function is built)
+    <ion-buttons slot="end" style="align-self: center; gap: 5px">
+      <ion-button class="toolbar-btns" (click)="toggleSearchBar()">
+        <img src="assets/icons/color-search.svg" alt="search" />
+      </ion-button>
+      <!-- Bell button (removed until function is built)
         <ion-button class="toolbar-btns">
           <img src="assets/icons/color-notification.svg" alt="bell">
         </ion-button>
         -->
       <ion-button class="toolbar-btns" routerLink="../tab3">
-        <ion-img src="assets/icon/favicon.png">
-        </ion-img>
+        <ion-img src="assets/icon/favicon.png"> </ion-img>
       </ion-button>
     </ion-buttons>
-
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="show-gradient">
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" pullFactor="0.8" pullMin="100" pullMax="130" style="background: #f3f3f3">
-    <ion-refresher-content 
-    pullingIcon="chevron-down-circle-outline"
-    pullingText="Pull to refresh"
-    refreshingSpinner="circles"
-    refreshingText="Refreshing..."></ion-refresher-content>
+  <ion-refresher
+    slot="fixed"
+    (ionRefresh)="doRefresh($event)"
+    pullFactor="0.8"
+    pullMin="100"
+    pullMax="130"
+    style="background: #f3f3f3"
+  >
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Refreshing..."
+    ></ion-refresher-content>
   </ion-refresher>
 
   <!--HORIZONTAL TRENDING ARTICLE SECTION-->
@@ -36,11 +50,20 @@
 
   <div class="scroll-container trending-article-container">
     <div class="scroll-content">
-      <ion-card class="trending-articles" *ngFor="let item of items let i = index;"
-      (click)="readArticles.push(item.id); onArticleClick(item);"
-          [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/trending-articles']" [state]="{ article: item }">
+      <ion-card
+        class="trending-articles"
+        *ngFor="let item of items let i = index;"
+        (click)="readArticles.push(item.id); onArticleClick(item);"
+        [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/trending-articles']"
+        [state]="{ article: item }"
+      >
         <div>
-          <img class="trending-article-img" [src]="getImage(item)" (error)="onImgError($event)" alt="trending article image">
+          <img
+            class="trending-article-img"
+            [src]="getImage(item)"
+            (error)="onImgError($event)"
+            alt="trending article image"
+          />
           <div class="trending-article-topic-pill">{{item.topic}}</div>
         </div>
         <div class="trending-article-trending-and-time-container">
@@ -49,7 +72,10 @@
         </div>
         <p class="trending-article-title">{{item.title}}</p>
         <div class="trending-article-source-container">
-          <img [src]="getSourceImage(item)" alt="trending article source image">
+          <img
+            [src]="getSourceImage(item)"
+            alt="trending article source image"
+          />
           <p>{{item.siteName}}</p>
         </div>
       </ion-card>
@@ -68,26 +94,82 @@
 
   <div class="scroll-container">
     <div class="scroll-content category-container">
-      <button (click)="setCategory('world')" style="background-image: url('assets/category-imgs/world.jpg')" [class.active-button]="category === 'world'">World</button>
-      <button (click)="setCategory('united-states')" style="background-image: url('assets/category-imgs/us.jpg')" [class.active-button]="category === 'united-states'">U.S.</button>
-      <button (click)="setCategory('politics')" style="background-image: url('assets/category-imgs/politics.jpg')" [class.active-button]="category === 'politics'">Politics</button>
-      <button (click)="setCategory('economy')" style="background-image: url('assets/category-imgs/economy.jpg')" [class.active-button]="category === 'economy'">Economy</button>
-      <button (click)="setCategory('business')" style="background-image: url('assets/category-imgs/business.jpg')" [class.active-button]="category === 'business'">Business</button>
-      <button (click)="setCategory('tech')" style="background-image: url('assets/category-imgs/tech.jpg')" [class.active-button]="category === 'tech'">Tech</button>
-      <button (click)="setCategory('markets')" style="background-image: url('assets/category-imgs/markets.jpg')" [class.active-button]="category === 'markets'">Markets</button>
-      <button (click)="setCategory('opinion')" style="background-image: url('assets/category-imgs/opinion.jpg')" [class.active-button]="category === 'opinion'">Opinion</button>
-      <button (click)="setCategory('sports')" style="background-image: url('assets/category-imgs/sports.jpg')" [class.active-button]="category === 'sports'">Sports</button>
+      <button
+        (click)="setCategory('world')"
+        style="background-image: url('assets/category-imgs/world.jpg')"
+        [class.active-button]="category === 'world'"
+      >
+        World
+      </button>
+      <button
+        (click)="setCategory('united-states')"
+        style="background-image: url('assets/category-imgs/us.jpg')"
+        [class.active-button]="category === 'united-states'"
+      >
+        U.S.
+      </button>
+      <button
+        (click)="setCategory('politics')"
+        style="background-image: url('assets/category-imgs/politics.jpg')"
+        [class.active-button]="category === 'politics'"
+      >
+        Politics
+      </button>
+      <button
+        (click)="setCategory('economy')"
+        style="background-image: url('assets/category-imgs/economy.jpg')"
+        [class.active-button]="category === 'economy'"
+      >
+        Economy
+      </button>
+      <button
+        (click)="setCategory('business')"
+        style="background-image: url('assets/category-imgs/business.jpg')"
+        [class.active-button]="category === 'business'"
+      >
+        Business
+      </button>
+      <button
+        (click)="setCategory('tech')"
+        style="background-image: url('assets/category-imgs/tech.jpg')"
+        [class.active-button]="category === 'tech'"
+      >
+        Tech
+      </button>
+      <button
+        (click)="setCategory('markets')"
+        style="background-image: url('assets/category-imgs/markets.jpg')"
+        [class.active-button]="category === 'markets'"
+      >
+        Markets
+      </button>
+      <button
+        (click)="setCategory('opinion')"
+        style="background-image: url('assets/category-imgs/opinion.jpg')"
+        [class.active-button]="category === 'opinion'"
+      >
+        Opinion
+      </button>
+      <button
+        (click)="setCategory('sports')"
+        style="background-image: url('assets/category-imgs/sports.jpg')"
+        [class.active-button]="category === 'sports'"
+      >
+        Sports
+      </button>
     </div>
   </div>
 
   <div class="category-section">
-    <div style="margin-top:15px">
-
+    <div style="margin-top: 15px">
       <ion-list lines="none" *ngIf="!categoryLoading">
-        <ion-card class="category-article" *ngFor="let item of categoryItems"
+        <ion-card
+          class="category-article"
+          *ngFor="let item of categoryItems"
           (click)="readArticles.push(item.id); onArticleClick(item);"
-          [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/category-articles']" [state]="{ article: item }">
-          
+          [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/category-articles']"
+          [state]="{ article: item }"
+        >
           <div class="category-card-content-container">
             <div>
               <div class="category-and-time">
@@ -95,27 +177,41 @@
                 <p>{{item.date?.toDate() | date:'mediumDate'}}</p>
               </div>
 
-              <p class="title" style="white-space: initial;" [ngStyle]="{'font-weight': !isRead(item.id) ? 'bold': 'normal'}">{{item.title}}</p>
+              <p
+                class="title"
+                style="white-space: initial"
+                [ngStyle]="{'font-weight': !isRead(item.id) ? 'bold': 'normal'}"
+              >
+                {{item.title}}
+              </p>
 
               <div class="source-container">
-                <img [src]="getSourceImage(item)" alt="trending article source image">
+                <img
+                  [src]="getSourceImage(item)"
+                  alt="trending article source image"
+                />
                 <p>{{item.siteName}}</p>
               </div>
             </div>
 
-            <img [src]="getImage(item)" (error)="onImgError($event)">
+            <img [src]="getImage(item)" (error)="onImgError($event)" />
           </div>
         </ion-card>
       </ion-list>
 
-        <div *ngIf="categoryLoading" class="loading-spinner-container">
-          <ion-spinner name="dots"></ion-spinner>
-        </div>
+      <div *ngIf="categoryLoading" class="loading-spinner-container">
+        <ion-spinner name="dots"></ion-spinner>
+      </div>
     </div>
   </div>
   <!--END OF SECTION-->
 
-   <ion-infinite-scroll threshold="600px" (ionInfinite)="loadData($event)">
-      <ion-spinner *ngIf="!categoryLoading" class="loading-spinner-container" name="dots" style="margin-bottom: 600px;"></ion-spinner>
+  <ion-infinite-scroll threshold="600px" (ionInfinite)="loadData($event)">
+    <ion-spinner
+      *ngIf="!categoryLoading"
+      class="loading-spinner-container"
+      name="dots"
+      style="margin-bottom: 600px"
+    ></ion-spinner>
   </ion-infinite-scroll>
 </ion-content>
