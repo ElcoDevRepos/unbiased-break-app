@@ -255,6 +255,8 @@ export class Tab2Page {
       if(site === "thewashingtonpost") site = "washingtonpost";
       //Fix for BBC image
       if(site === "bbcnews") site = "bbc";
+      //Fix for NYP image
+      if(site === "newyorkpost") site = "nyp";
 
       let index = _.findIndex(this.sourceImages, (s) => s.url.includes(site));
       if (index != -1) {
