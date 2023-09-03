@@ -50,18 +50,7 @@ export class Tab4Page implements OnInit{
   //This will return the referenced image link in the "img" container inside item
   //If there is no value, this will return a placeholder image
   getImage(item) {
-    
-    //This is to prevent empty image from displaying (currently only for business insider)
-    if(item.link.includes("markets.businessinsider.com")) return "https://markets.businessinsider.com/Images/FacebookIcon.jpg";
-    //This is a fix for market insider articles since there images are wack
-    if(item.image == "https://www.businessinsider.com/public/assets/subscription/marketing/banner-overlay/top-left.svg") return this.getSourceImage(item);
-
     if (item.image) return item.image;
-    
-    //Get random placeholder image
-    else {
-      return this.getSourceImage(item);
-    }
   }
 
   //This will return the source img/logo based on the item

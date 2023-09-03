@@ -15,6 +15,9 @@
     <ion-card-content>
       {{ summary.summary }}
     </ion-card-content>
+
+    <img *ngIf="summary.image" class="article-img" [src]="getImage(summary)" alt="Article image">
+
     <div class="source-container">
       <img
         [src]="getSourceImage(summary)"
