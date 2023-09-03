@@ -15,5 +15,12 @@
     <ion-card-content>
       {{ summary.summary }}
     </ion-card-content>
+    <div class="source-container">
+      <img
+        [src]="getSourceImage(summary)"
+        alt="summary source image"
+      />
+      <p>{{summary.source}}</p>
+    </div>
   </ion-card>
 </ion-content>
