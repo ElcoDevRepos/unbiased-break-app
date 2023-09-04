@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { TabsPage } from '../tabs/tabs.page';
 import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot, endBefore, addDoc, Timestamp } from '@angular/fire/firestore';
 import * as _ from 'lodash';
+import { UserService } from '../services/user.service';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 
 @Component({
   selector: 'app-tab4',
@@ -13,7 +15,7 @@ export class Tab4Page implements OnInit{
   gptSummaries;
   sourceImages = [];
 
-  constructor( private tabsPage : TabsPage, private firestore : Firestore ) {}
+  constructor( private tabsPage : TabsPage, private firestore : Firestore, private userService : UserService, private iab : InAppBrowser ) {}
 
   async ngOnInit() {
     this.getSourceImages();
@@ -105,5 +107,14 @@ export class Tab4Page implements OnInit{
         this.sourceImages.push(d.data());
       }
     })
+  }
+
+
+  onArticleClick(item: any) {
+    const link = item.link;
+    if (link.includes('nytimes.com') || link.includes('wsj.com')) {
+      const browser = this.iab.create(link, '_blank');
+      browser.show();
+    }
   }
 }
