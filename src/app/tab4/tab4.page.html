@@ -15,5 +15,21 @@
     <ion-card-content>
       {{ summary.summary }}
     </ion-card-content>
+
+    <img *ngIf="summary.image" class="article-img" [src]="getImage(summary)" alt="Article image">
+
+    <div class="source-container">
+      <img
+        [src]="getSourceImage(summary)"
+        alt="summary source image"
+      />
+      <p>{{summary.source}}</p>
+
+      <a
+      [routerLink]="(summary.link.includes('nytimes.com') || summary.link.includes('wsj.com')) ? [] : ['/news-article/' + summary.id + '/trending-articles']"
+      (click)="onArticleClick(summary);">
+      Read more</a>
+
+    </div>
   </ion-card>
 </ion-content>
