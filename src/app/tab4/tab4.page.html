@@ -8,6 +8,13 @@
 
 <ion-content [fullscreen]="true">
   <ion-card *ngFor="let summary of gptSummaries" class="summary-card">
+
+    <div class="share-btn-container">
+      <ion-button fill="clear" class="share-btn">
+        <ion-icon name="share-social-outline"></ion-icon>
+      </ion-button>
+    </div>
+
     <ion-card-header>
       <ion-card-title>{{ summary.title }}</ion-card-title>
     </ion-card-header>
