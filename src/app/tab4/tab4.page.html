@@ -10,7 +10,7 @@
   <ion-card *ngFor="let summary of gptSummaries" class="summary-card">
 
     <div class="share-btn-container">
-      <ion-button fill="clear" class="share-btn">
+      <ion-button fill="clear" class="share-btn" (click)="share(summary)">
         <ion-icon name="share-social-outline"></ion-icon>
       </ion-button>
     </div>
