@@ -4,6 +4,7 @@ import { Firestore, collection, query, where, orderBy, limit, startAfter, getDoc
 import * as _ from 'lodash';
 import { UserService } from '../services/user.service';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { Share } from '@capacitor/share';
 
 @Component({
   selector: 'app-tab4',
@@ -109,12 +110,21 @@ export class Tab4Page implements OnInit{
     })
   }
 
-
   onArticleClick(item: any) {
     const link = item.link;
     if (link.includes('nytimes.com') || link.includes('wsj.com')) {
       const browser = this.iab.create(link, '_blank');
       browser.show();
     }
+  }
+
+  //Share the article using capacitor share plugin
+  async share(article: any) {
+    await Share.share({
+      title: article.title,
+      text: article.summary,
+      url: "https://app.unbiasedbreak.com/news-article/" + article.id + "/trending-articles",
+      dialogTitle: 'Share with your friends',
+    });
   }
 }

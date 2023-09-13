@@ -1,6 +1,10 @@
 .summary-card {
     padding: 10px;
 
+    ion-card-header {
+      padding-top: 5px;
+    }
+
     ion-card-title {
         font-size: 18px;
     }
@@ -28,4 +32,13 @@
 
 .article-img {
     border-radius: 10px;
+}
+
+.share-btn-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.share-btn {
+  margin: 0px;
 }
