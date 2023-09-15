@@ -102,7 +102,7 @@ export class Tab1Page implements OnInit{
   async getUserData() {
     let user = this.auth.currentUser;
     if (user) {
-      this.userService.setDeviceToken(window.localStorage.getItem('pushtoken'));
+      if(!this.isDesktop) this.userService.setDeviceToken(window.localStorage.getItem('pushtoken'));
       this.userService.setLastSeen();
       let ref = collection(
         this.firestore,
