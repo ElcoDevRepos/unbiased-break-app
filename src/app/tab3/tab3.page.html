@@ -243,6 +243,14 @@
                 <ion-toggle [(ngModel)]="reminders" (ionChange)="updateRemindersSetting($event)"></ion-toggle>
               </ion-item>
               <ion-item>
+                <ion-label>Daily Random Article</ion-label>
+                <ion-toggle [(ngModel)]="randomArticle" (ionChange)="updateRandomArticleSetting($event)"></ion-toggle>
+              </ion-item>
+              <ion-item>
+                <ion-label>Daily GPT Summaries</ion-label>
+                <ion-toggle [(ngModel)]="GPTSummaries" (ionChange)="updateGPTSummariesSetting($event)"></ion-toggle>
+              </ion-item>
+              <ion-item>
                 <ion-label>Replies</ion-label>
                 <ion-toggle [(ngModel)]="replies" (ionChange)="updateRepliesSetting($event)"></ion-toggle>
               </ion-item>
