@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { AdmobService } from './services/admob.service';
 import {
   ActionPerformed,
@@ -6,7 +6,7 @@ import {
   PushNotifications,
   Token,
 } from '@capacitor/push-notifications';
-import { App as CapacitorApp } from '@capacitor/app';
+import { App, App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
 
 
 import { UserService } from './services/user.service';
@@ -18,7 +18,22 @@ import { Router } from '@angular/router';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  constructor(private admob: AdmobService, private router: Router, private platform: Platform, private toastCtrl: ToastController, private alertCtrl: AlertController) {
+  constructor(private admob: AdmobService, private router: Router, private platform: Platform, private toastCtrl: ToastController, private alertCtrl: AlertController, private zone: NgZone) {
+
+    App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
+      this.zone.run(() => {
+          const domain = 'unbiasedbreak.com';
+          const pathArray = event.url.split(domain);
+          const slug = pathArray.pop();
+
+          if (slug) {
+              this.router.navigateByUrl(slug);
+          }
+          // If there is no slug do nothing
+          // let angular route normally
+      });
+  });
+
     this.admob.initialize();
     PushNotifications.requestPermissions().then(result => {
       if (result.receive === 'granted') {
