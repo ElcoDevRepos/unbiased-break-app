@@ -31,6 +31,8 @@ export class Tab3Page implements OnInit, OnDestroy {
   expanded = false;
   replies;
   reminders;
+  randomArticle;
+  GPTSummaries;
   showReadArticles;
   public favorites = [];
   public readArticles = [];
@@ -281,6 +283,8 @@ export class Tab3Page implements OnInit, OnDestroy {
     let userDoc = await getDoc(ref);
     this.replies = userDoc.data().replyNotifications;
     this.reminders = userDoc.data().reminderNotifications;
+    this.randomArticle = userDoc.data().randomArticleNotification;
+    this.GPTSummaries = userDoc.data().GPTSummariesNotification;
     this.showReadArticles = userDoc.data().showReadArticles;
   }
 
@@ -350,6 +354,28 @@ export class Tab3Page implements OnInit, OnDestroy {
     }
   }
 
+  //Toggle the "Daily Random Article" notification
+  updateRandomArticleSetting(ev) {
+    if (ev) {
+      this.randomArticle = ev.detail.checked;
+      let ref = doc(this.fireStore, "users", this.auth.currentUser.uid);
+      updateDoc(ref, {
+        randomArticleNotification: this.randomArticle
+      })
+    }
+  }
+
+  //Toggle the "Daily GPT Summaries" notification
+  updateGPTSummariesSetting(ev) {
+    if (ev) {
+      this.GPTSummaries = ev.detail.checked;
+      let ref = doc(this.fireStore, "users", this.auth.currentUser.uid);
+      updateDoc(ref, {
+        GPTSummariesNotification: this.GPTSummaries
+      })
+    }
+  }
+  
   updateRepliesSetting(ev) {
     if (ev) {
       this.replies = ev.detail.checked;
