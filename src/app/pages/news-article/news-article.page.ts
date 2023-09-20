@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, Meta } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { Firestore, collection, where, query, getDocs, doc, addDoc, getDoc, updateDoc, Timestamp, collectionData, setDoc, docData, increment } from '@angular/fire/firestore';
 import { UserService } from 'src/app/services/user.service';
@@ -43,7 +43,8 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   removeAsReader : boolean  = true;
 
   constructor(public userService: UserService, public sanitizer: DomSanitizer, private route: ActivatedRoute, private firestore: Firestore,
-    private modalCtrl: ModalController, private admobService: AdmobService, private platform: Platform, private auth: Auth, private iab: InAppBrowser, private introService : IntrojsService) {}
+    private modalCtrl: ModalController, private admobService: AdmobService, private platform: Platform, private auth: Auth, private iab: InAppBrowser, 
+    private introService : IntrojsService, private meta: Meta) {}
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
@@ -257,11 +258,25 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   }
 
   async share() {
+
+    if(this.article.image) {
+      this.meta.updateTag({
+        name: 'og:image',
+        content: this.article.image
+      });
+    } else {
+      this.meta.updateTag({
+        name: 'og:image',
+        content: 'https://assets.digitalocean.com/labs/images/community_bg.png'
+      });
+    }
+
     await Share.share({
       title: this.article.title,
       text: this.article.excerpt,
       url: "https://app.unbiasedbreak.com/news-article/" + this.articleId + "/" + this.artticleType,
       dialogTitle: 'Share with your friends',
+      files: [this.article.image]
     });
   }
 
