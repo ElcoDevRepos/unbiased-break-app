@@ -193,10 +193,10 @@ export class UserService {
     return amt;
   }
 
-  async setDeviceToken(user, token) {
-    if (!user) return;
+  async setDeviceToken(token) {
+    if (!this.auth.currentUser) return;
     let ref = collection(this.firestore, 'users');
-    const q = query(ref, where('email', '==', user.email));
+    const q = query(ref, where('email', '==', this.auth.currentUser.email));
     let docs = await getDocs(q);
     docs.forEach((d) => {
       updateDoc(doc(this.firestore, 'users', d.id), { token });
