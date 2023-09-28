@@ -30,7 +30,14 @@
                 "output": "./svg"
               },
               "src/manifest.webmanifest",
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest",
+              {
+                "glob": "**/*",
+                "input": "src/.well-known",
+                "output": "/.well-known/"
+              },
+              "src/.well-known/apple-app-site-association",
+              "src/.well-known/assetlinks.json"
             ],
             "styles": ["src/theme/variables.scss", "src/global.scss", "node_modules/intro.js/introjs.css"],
             "scripts": ["node_modules/intro.js/intro.js"],
@@ -103,6 +110,12 @@
             "styles": [],
             "scripts": [],
             "assets": [
+              {
+                "glob": "**/*",
+                "input": "src/.well-known",
+                "output": "/"
+              },
+              "src/.well-known/apple-app-site-association",
               {
                 "glob": "favicon.ico",
                 "input": "src/",
