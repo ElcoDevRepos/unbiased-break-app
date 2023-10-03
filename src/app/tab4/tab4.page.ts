@@ -1,50 +1,107 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 import { TabsPage } from '../tabs/tabs.page';
-import { Firestore, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, doc, getDoc, QuerySnapshot, endBefore, addDoc, Timestamp } from '@angular/fire/firestore';
+import {
+  Firestore,
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+  getDocs,
+  updateDoc,
+  doc,
+  getDoc,
+  QuerySnapshot,
+  endBefore,
+  addDoc,
+  Timestamp,
+} from '@angular/fire/firestore';
 import * as _ from 'lodash';
 import { UserService } from '../services/user.service';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { Share } from '@capacitor/share';
+import { AdmobService } from '../services/admob.service';
 
 @Component({
   selector: 'app-tab4',
   templateUrl: 'tab4.page.html',
-  styleUrls: ['tab4.page.scss']
+  styleUrls: ['tab4.page.scss'],
 })
-export class Tab4Page implements OnInit{
-
+export class Tab4Page implements OnInit {
   gptSummaries;
   sourceImages = [];
-
-  constructor( private tabsPage : TabsPage, private firestore : Firestore, private userService : UserService, private iab : InAppBrowser ) {}
+  summariesRead = 0;
+  @ViewChild('slides') slides: any;
+  constructor(
+    private tabsPage: TabsPage,
+    private firestore: Firestore,
+    private userService: UserService,
+    private iab: InAppBrowser,
+    private admobService: AdmobService,
+    private renderer: Renderer2,
+    private el: ElementRef
+  ) {}
 
   async ngOnInit() {
     this.getSourceImages();
     try {
       let sum = await this.getSummaries();
+      // check to see if summary is bookmarked
+      let favoriteSummaries = await this.userService.getFavoriteSummaries();
+      function isElementInFavorites(element, array) {
+        return array.some(function (arrayElement) {
+          return arrayElement.id === element.id;
+        });
+      }
+      sum[0].forEach((element) => {
+        if (isElementInFavorites(element, favoriteSummaries)) {
+          element.favorited = true;
+        }
+      });
       this.gptSummaries = sum[0];
-      console.log(this.gptSummaries); // This will print the summaries to the browser console
     } catch (error) {
-      console.error("Failed to fetch summaries:", error);
+      console.error('Failed to fetch summaries:', error);
     }
   }
 
+  favoriteArticle(summary) {
+    if (!this.userService.getLoggedInUser()) return;
+
+    if (typeof summary.favorited == 'boolean') {
+      summary.favorited = !summary.favorited;
+    } else {
+      summary.favorited = true;
+    }
+    this.userService.toggleFavoriteSummary(summary);
+  }
+
   ionViewWillEnter() {
-    this.tabsPage.selectedTab = "tab4";
+    this.tabsPage.selectedTab = 'tab4';
+    this.admobService.showBanner();
+  }
+
+  ionViewWillLeave() {
+    this.admobService.hideBanner();
   }
 
   //Fetch the gpt summaries from firestore
   getSummaries(): Promise<any[]> {
     return new Promise((resolve, reject) => {
-
       const ref = collection(this.firestore, 'gpt-summaries');
       const q = query(ref, orderBy('timestamp', 'desc'), limit(1));
 
       getDocs(q)
-        .then(docSnaps => {
-          resolve(docSnaps.docs.map(doc => doc.data().summaries));
+        .then((docSnaps) => {
+          resolve(docSnaps.docs.map((doc) => doc.data().summaries));
         })
-        .catch(err => {
+        .catch((err) => {
           reject(err);
         });
     });
@@ -56,26 +113,33 @@ export class Tab4Page implements OnInit{
     if (item.image) return item.image;
   }
 
+  async didChangeToNext() {
+    this.summariesRead++;
+    if (this.summariesRead >= 3) {
+      this.summariesRead = 0;
+      this.admobService.showInterstitial();
+    }
+  }
+
   //This will return the source img/logo based on the item
   //i.e a item from CNN will return the CNN img/logo
-  getSourceImage (item) {
-
+  getSourceImage(item) {
     let newUrl = new URL(item.link);
-    let url = "";
-    if (newUrl.host.includes("www.")) {
-      url = newUrl.host.split("www.")[1];
+    let url = '';
+    if (newUrl.host.includes('www.')) {
+      url = newUrl.host.split('www.')[1];
     } else {
       url = newUrl.host;
     }
     if (item.source) {
-      let site = item.source.replaceAll(" ", "").toLocaleLowerCase();
+      let site = item.source.replaceAll(' ', '').toLocaleLowerCase();
 
       //Fix for the washington post image
-      if(site === "thewashingtonpost") site = "washingtonpost";
+      if (site === 'thewashingtonpost') site = 'washingtonpost';
       //Fix for BBC image
-      if(site === "bbcnews") site = "bbc";
+      if (site === 'bbcnews') site = 'bbc';
       //Fix for NYP image
-      if(site === "newyorkpost") site = "nyp";
+      if (site === 'newyorkpost') site = 'nyp';
 
       let index = _.findIndex(this.sourceImages, (s) => s.url.includes(site));
       if (index != -1) {
@@ -83,31 +147,31 @@ export class Tab4Page implements OnInit{
       }
     }
 
-    return newUrl.origin + "/favicon.ico";
+    return newUrl.origin + '/favicon.ico';
   }
 
   async getSourceImages() {
-    let collectionRef = collection(this.firestore, "left-sources");
+    let collectionRef = collection(this.firestore, 'left-sources');
     let leftDocs = await getDocs(collectionRef);
     leftDocs.forEach((d) => {
       if (d.data().image) {
         this.sourceImages.push(d.data());
       }
-    })
-    collectionRef = collection(this.firestore, "middle-sources");
+    });
+    collectionRef = collection(this.firestore, 'middle-sources');
     let midDocs = await getDocs(collectionRef);
     midDocs.forEach((d) => {
       if (d.data().image) {
         this.sourceImages.push(d.data());
       }
-    })
-    collectionRef = collection(this.firestore, "right-sources");
+    });
+    collectionRef = collection(this.firestore, 'right-sources');
     let rightDocs = await getDocs(collectionRef);
     rightDocs.forEach((d) => {
       if (d.data().image) {
         this.sourceImages.push(d.data());
       }
-    })
+    });
   }
 
   onArticleClick(item: any) {
@@ -123,7 +187,10 @@ export class Tab4Page implements OnInit{
     await Share.share({
       title: article.title,
       text: article.summary,
-      url: "https://app.unbiasedbreak.com/news-article/" + article.id + "/trending-articles",
+      url:
+        'https://app.unbiasedbreak.com/news-article/' +
+        article.id +
+        '/trending-articles',
       dialogTitle: 'Share with your friends',
     });
   }

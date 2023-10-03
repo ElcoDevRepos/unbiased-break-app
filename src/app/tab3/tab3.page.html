@@ -1,8 +1,6 @@
 <ion-header [translucent]="false">
   <ion-toolbar>
-    <ion-title>
-      My Profile
-    </ion-title>
+    <ion-title> My Profile </ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -10,42 +8,70 @@
   <ion-avatar class="avatar">
     <img
       [src]="auth.currentUser.photoURL ? auth.currentUser.photoURL : 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'"
-      id="profile-image">
+      id="profile-image"
+    />
   </ion-avatar>
   <div class="background">
     <span class="user-name">
       <h4>
         {{auth.currentUser.displayName}}
-        <br>
+        <br />
         {{auth.currentUser.email}}
       </h4>
     </span>
+    <ion-item button detail id="open-premium-modal">
+      <ion-label>Purchase Premium</ion-label>
+    </ion-item>
     <ion-item button detail id="open-profile-modal">
       <ion-label>Update Profile</ion-label>
     </ion-item>
     <ion-item button detail id="open-bookmark-modal">
-      <ion-label *ngIf="loadingBookmarks">Bookmarks (loading bookmarks...)</ion-label>
-      <ion-label *ngIf="!loadingBookmarks">Bookmarks ({{favorites.length}})</ion-label>
+      <ion-label *ngIf="loadingBookmarks"
+        >Bookmarks (loading bookmarks...)</ion-label
+      >
+      <ion-label *ngIf="!loadingBookmarks"
+        >Bookmarks ({{favorites.length}})</ion-label
+      >
+    </ion-item>
+    <ion-item button detail id="open-gptbookmark-modal">
+      <ion-label *ngIf="loadingBookmarks"
+        >GPT Bookmarks (loading bookmarks...)</ion-label
+      >
+      <ion-label *ngIf="!loadingBookmarks"
+        >GPT Bookmarks ({{favoriteSummaries.length}})</ion-label
+      >
     </ion-item>
     <ion-item button detail id="open-read-articles-modal">
-      <ion-label *ngIf="loadingReadArticles">Read Articles (loading read articles...)</ion-label>
-      <ion-label *ngIf="!loadingReadArticles">Read Articles ({{readArticlesAmount}})</ion-label>
+      <ion-label *ngIf="loadingReadArticles"
+        >Read Articles (loading read articles...)</ion-label
+      >
+      <ion-label *ngIf="!loadingReadArticles"
+        >Read Articles ({{readArticlesAmount}})</ion-label
+      >
     </ion-item>
-    <ion-item *ngIf="isAdmin" button detail id="open-approve-news-sources" (click)="getRequestedNewsSources()">
+    <ion-item
+      *ngIf="isAdmin"
+      button
+      detail
+      id="open-approve-news-sources"
+      (click)="getRequestedNewsSources()"
+    >
       <ion-label>Approve News Sources</ion-label>
     </ion-item>
-    <ion-item *ngIf="isAdmin" button detail id="open-remove-news-sources" (click)="getNewsSources()">
+    <ion-item
+      *ngIf="isAdmin"
+      button
+      detail
+      id="open-remove-news-sources"
+      (click)="getNewsSources()"
+    >
       <ion-label>Remove News Sources</ion-label>
     </ion-item>
     <ion-item button detail id="settings-modal">
-      <ion-label>
-        Settings
-      </ion-label>
+      <ion-label> Settings </ion-label>
     </ion-item>
     <ion-item button detail (click)="logOut()">
-      <ion-label>
-        Log Out
-      </ion-label>
+      <ion-label> Log Out </ion-label>
     </ion-item>
   </div>
   <ion-modal #modal trigger="open-profile-modal">
@@ -53,7 +79,11 @@
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-back-button (click)="modal.dismiss()" defaultHref="/tabs/tab3" text="">
+            <ion-back-button
+              (click)="modal.dismiss()"
+              defaultHref="/tabs/tab3"
+              text=""
+            >
               <ion-icon name="arrow-back"></ion-icon>
             </ion-back-button>
           </ion-buttons>
@@ -86,7 +116,11 @@
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-back-button (click)="modalTwo.dismiss()" defaultHref="/tabs/tab3" text="">
+            <ion-back-button
+              (click)="modalTwo.dismiss()"
+              defaultHref="/tabs/tab3"
+              text=""
+            >
               <ion-icon name="arrow-back"></ion-icon>
             </ion-back-button>
           </ion-buttons>
@@ -94,31 +128,48 @@
         </ion-toolbar>
       </ion-header>
       <ion-content>
-        <h3 *ngIf="favorites.length === 0" style="text-align: center;">No bookmarked articles...</h3>
+        <h3 *ngIf="favorites.length === 0" style="text-align: center">
+          No bookmarked articles...
+        </h3>
         <div *ngIf="favorites.length === 0" class="cta-container">
           <span>Click </span>
-          <ion-button class="toolbar-btns" routerLink="../tab2" (click)="modalTwo.dismiss()" fill="outline">here</ion-button>
+          <ion-button
+            class="toolbar-btns"
+            routerLink="../tab2"
+            (click)="modalTwo.dismiss()"
+            fill="outline"
+            >here</ion-button
+          >
           <span> to find a article to bookmark!</span>
         </div>
         <ion-list>
-          <ion-item *ngFor="let item of favorites" [routerLink]="['/news-article/' + item.id + '/' + item.type]"
-            (click)="modalTwo.dismiss()">
+          <ion-item
+            *ngFor="let item of favorites"
+            [routerLink]="['/news-article/' + item.id + '/' + item.type]"
+            (click)="modalTwo.dismiss()"
+          >
             <ion-label>
-              <h3 style="font-weight: bold; white-space: initial;">{{item.title}}</h3>
+              <h3 style="font-weight: bold; white-space: initial">
+                {{item.title}}
+              </h3>
               <h6>{{item.siteName}}</h6>
             </ion-label>
           </ion-item>
         </ion-list>
       </ion-content>
     </ng-template>
-  </ion-modal>    
+  </ion-modal>
   <!--READ ARTICLES MODAL-->
   <ion-modal #modalFour trigger="open-read-articles-modal">
     <ng-template>
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-back-button (click)="modalFour.dismiss()" defaultHref="/tabs/tab3" text="">
+            <ion-back-button
+              (click)="modalFour.dismiss()"
+              defaultHref="/tabs/tab3"
+              text=""
+            >
               <ion-icon name="arrow-back"></ion-icon>
             </ion-back-button>
           </ion-buttons>
@@ -126,20 +177,32 @@
         </ion-toolbar>
       </ion-header>
       <ion-content>
-
         <!--Display text and CTA when there are no read articles-->
-        <h3 *ngIf="readArticles.length === 0" style="text-align: center;">No read articles...</h3>
+        <h3 *ngIf="readArticles.length === 0" style="text-align: center">
+          No read articles...
+        </h3>
         <div *ngIf="readArticles.length === 0" class="cta-container">
           <span>Click </span>
-          <ion-button class="toolbar-btns" routerLink="../tab2" (click)="modalFour.dismiss()" fill="outline">here</ion-button>
+          <ion-button
+            class="toolbar-btns"
+            routerLink="../tab2"
+            (click)="modalFour.dismiss()"
+            fill="outline"
+            >here</ion-button
+          >
           <span> to start reading!</span>
         </div>
 
-        <ion-list>        
-          <ion-item *ngFor="let item of readArticles" [routerLink]="['/news-article/' + item.id + '/' + item.type]"
-            (click)="modalFour.dismiss()">
+        <ion-list>
+          <ion-item
+            *ngFor="let item of readArticles"
+            [routerLink]="['/news-article/' + item.id + '/' + item.type]"
+            (click)="modalFour.dismiss()"
+          >
             <ion-label>
-              <h3 style="font-weight: bold; white-space: initial;">{{item.title}}</h3>
+              <h3 style="font-weight: bold; white-space: initial">
+                {{item.title}}
+              </h3>
               <h6>{{item.siteName}}</h6>
               <h6>{{ (item.date.seconds * 1000) | date:'yyyy-MM-dd' }}</h6>
             </ion-label>
@@ -154,7 +217,11 @@
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-back-button (click)="modalFive.dismiss()" defaultHref="/tabs/tab3" text="">
+            <ion-back-button
+              (click)="modalFive.dismiss()"
+              defaultHref="/tabs/tab3"
+              text=""
+            >
               <ion-icon name="arrow-back"></ion-icon>
             </ion-back-button>
           </ion-buttons>
@@ -166,29 +233,43 @@
           <ion-item *ngFor="let item of requestedNewsSources">
             <ion-list>
               <ion-item>
-                <Label>URL:&nbsp;</Label><input type="text" [(ngModel)]="item.url">
+                <label>URL:&nbsp;</label
+                ><input type="text" [(ngModel)]="item.url" />
               </ion-item>
               <ion-item>
                 <h6><b>User requesting: </b>{{item.user}}</h6>
               </ion-item>
               <ion-item>
-                <h6><b>Date of request: </b>{{ (item.timestamp.seconds * 1000) | date:'yyyy-MM-dd' }}</h6>
+                <h6>
+                  <b>Date of request: </b>{{ (item.timestamp.seconds * 1000) |
+                  date:'yyyy-MM-dd' }}
+                </h6>
               </ion-item>
-            
+
               <ion-item>
-                <ion-select label="sourceBias" placeholder="Bias: Left/Middle/Right" [(ngModel)]="item.bias">
+                <ion-select
+                  label="sourceBias"
+                  placeholder="Bias: Left/Middle/Right"
+                  [(ngModel)]="item.bias"
+                >
                   <ion-select-option value="left">Left</ion-select-option>
                   <ion-select-option value="middle">Middle</ion-select-option>
                   <ion-select-option value="right">Right</ion-select-option>
                 </ion-select>
               </ion-item>
-            
+
               <ion-item>
-                <ion-input label="imageUrl" placeholder="Source Image URL" [(ngModel)]="item.imageUrl"></ion-input>
+                <ion-input
+                  label="imageUrl"
+                  placeholder="Source Image URL"
+                  [(ngModel)]="item.imageUrl"
+                ></ion-input>
               </ion-item>
 
               <ion-button (click)="approveNewsSource(item)">Approve</ion-button>
-              <ion-button (click)="deleteNewsSource(item, true)">Delete</ion-button>
+              <ion-button (click)="deleteNewsSource(item, true)"
+                >Delete</ion-button
+              >
             </ion-list>
           </ion-item>
         </ion-list>
@@ -201,7 +282,11 @@
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-back-button (click)="modalFive.dismiss()" defaultHref="/tabs/tab3" text="">
+            <ion-back-button
+              (click)="modalFive.dismiss()"
+              defaultHref="/tabs/tab3"
+              text=""
+            >
               <ion-icon name="arrow-back"></ion-icon>
             </ion-back-button>
           </ion-buttons>
@@ -212,7 +297,9 @@
         <ion-list>
           <ion-item *ngFor="let item of newsSources">
             <h3>{{item.url}}</h3>
-            <ion-button slot="end" (click)="removeNewsSource(item)">Remove</ion-button>
+            <ion-button slot="end" (click)="removeNewsSource(item)"
+              >Remove</ion-button
+            >
           </ion-item>
         </ion-list>
       </ion-content>
@@ -224,7 +311,11 @@
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-back-button (click)="modalThree.dismiss()" defaultHref="/tabs/tab3" text="">
+            <ion-back-button
+              (click)="modalThree.dismiss()"
+              defaultHref="/tabs/tab3"
+              text=""
+            >
               <ion-icon name="arrow-back"></ion-icon>
             </ion-back-button>
           </ion-buttons>
@@ -240,19 +331,31 @@
             <ion-list>
               <ion-item>
                 <ion-label>Daily Reminders</ion-label>
-                <ion-toggle [(ngModel)]="reminders" (ionChange)="updateRemindersSetting($event)"></ion-toggle>
+                <ion-toggle
+                  [(ngModel)]="reminders"
+                  (ionChange)="updateRemindersSetting($event)"
+                ></ion-toggle>
               </ion-item>
               <ion-item>
                 <ion-label>Daily Random Article</ion-label>
-                <ion-toggle [(ngModel)]="randomArticle" (ionChange)="updateRandomArticleSetting($event)"></ion-toggle>
+                <ion-toggle
+                  [(ngModel)]="randomArticle"
+                  (ionChange)="updateRandomArticleSetting($event)"
+                ></ion-toggle>
               </ion-item>
               <ion-item>
                 <ion-label>Daily GPT Summaries</ion-label>
-                <ion-toggle [(ngModel)]="GPTSummaries" (ionChange)="updateGPTSummariesSetting($event)"></ion-toggle>
+                <ion-toggle
+                  [(ngModel)]="GPTSummaries"
+                  (ionChange)="updateGPTSummariesSetting($event)"
+                ></ion-toggle>
               </ion-item>
               <ion-item>
                 <ion-label>Replies</ion-label>
-                <ion-toggle [(ngModel)]="replies" (ionChange)="updateRepliesSetting($event)"></ion-toggle>
+                <ion-toggle
+                  [(ngModel)]="replies"
+                  (ionChange)="updateRepliesSetting($event)"
+                ></ion-toggle>
               </ion-item>
             </ion-list>
           </ion-card-content>
@@ -265,9 +368,136 @@
             <ion-list>
               <ion-item>
                 <ion-label>Show Read Articles</ion-label>
-                <ion-toggle [(ngModel)]="showReadArticles" (ionChange)="updateShowReadArticles($event)"></ion-toggle>
+                <ion-toggle
+                  [(ngModel)]="showReadArticles"
+                  (ionChange)="updateShowReadArticles($event)"
+                ></ion-toggle>
               </ion-item>
             </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal #modalSix trigger="open-gptbookmark-modal">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-back-button
+              (click)="modalSix.dismiss()"
+              defaultHref="/tabs/tab3"
+              text=""
+            >
+              <ion-icon name="arrow-back"></ion-icon>
+            </ion-back-button>
+          </ion-buttons>
+          <ion-title>Bookmarks</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <h3 *ngIf="favoriteSummaries.length === 0" style="text-align: center">
+          No bookmarked articles...
+        </h3>
+        <div *ngIf="favoriteSummaries.length === 0" class="cta-container">
+          <span>Click </span>
+          <ion-button
+            class="toolbar-btns"
+            routerLink="../tab4"
+            (click)="modalSix.dismiss()"
+            fill="outline"
+            >here</ion-button
+          >
+          <span> to find a article to bookmark!</span>
+        </div>
+        <ion-list>
+          <ion-card
+            *ngFor="let summary of favoriteSummaries"
+            class="summary-card"
+          >
+            <div class="share-btn-container">
+              <ion-button
+                fill="clear"
+                class="share-btn"
+                (click)="share(summary)"
+              >
+                <ion-icon name="share-social-outline"></ion-icon>
+              </ion-button>
+            </div>
+
+            <ion-card-header>
+              <ion-card-title>{{ summary.title }}</ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content> {{ summary.summary }} </ion-card-content>
+
+            <img
+              *ngIf="summary.image"
+              class="article-img"
+              [src]="getImage(summary)"
+              alt="Article image"
+            />
+            <!--<ion-button fill="clear">Remove</ion-button>-->
+            <div class="source-container">
+              <img [src]="getSourceImage(summary)" alt="summary source image" />
+              <p>{{summary.source}}</p>
+
+              <a
+                [routerLink]="(summary.link.includes('nytimes.com') || summary.link.includes('wsj.com')) ? [] : ['/news-article/' + summary.id + '/trending-articles']"
+                (click)="onArticleClick(summary);"
+              >
+                Read more</a
+              >
+            </div>
+          </ion-card>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal #modalSeven trigger="open-premium-modal">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-back-button
+              (click)="modalSeven.dismiss()"
+              defaultHref="/tabs/tab3"
+              text=""
+            >
+              <ion-icon name="arrow-back"></ion-icon>
+            </ion-back-button>
+          </ion-buttons>
+          <ion-title>Premium</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle> Purchase premium monthly! </ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <p>Subscribing to premium unlocks the following:</p>
+            <ul>
+              <li>Removes all Ads</li>
+              <li>Provides ability to summarize any article using GPT</li>
+            </ul>
+            <a
+              href="https://www.freeprivacypolicy.com/live/f2f5fd2e-0c58-4cf6-beb8-b32f5690747f"
+              target="_blank"
+              >Privacy Policy</a
+            >
+            <br />
+            <a
+              href="https://www.freeprivacypolicy.com/live/65c3bed6-6f9b-43a7-8267-9948f8b7d6a8"
+              target="_blank"
+              >Terms of Use</a
+            >
+            <br /><br />
+            <ion-button expand="full" (click)="purchase()"
+              >Subscribe for $7.99 / month</ion-button
+            >
           </ion-card-content>
         </ion-card>
       </ion-content>

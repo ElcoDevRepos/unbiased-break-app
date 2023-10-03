@@ -1,45 +1,65 @@
 <ion-header [translucent]="false">
   <ion-toolbar>
     <ion-title> GPT Summary </ion-title>
-    <ion-buttons slot="end">
+    <!--<ion-buttons slot="end">
       <ion-button> Clear </ion-button>
-    </ion-buttons>
+    </ion-buttons>-->
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-card *ngFor="let summary of gptSummaries" class="summary-card">
-    <div class="share-btn-container">
-      <ion-button fill="clear" class="share-btn" (click)="share(summary)">
-        <ion-icon name="share-social-outline"></ion-icon>
-      </ion-button>
-    </div>
+  <ion-slides
+    style="margin-top: 25px"
+    (ionSlideNextEnd)="didChangeToNext()"
+    #slides
+  >
+    <ion-slide *ngFor="let summary of gptSummaries">
+      <ion-card class="summary-card">
+        <div class="share-btn-container">
+          <ion-button fill="clear" class="share-btn" (click)="share(summary)">
+            <ion-icon name="share-social-outline"></ion-icon>
+          </ion-button>
+        </div>
 
-    <ion-card-header>
-      <ion-card-title>{{ summary.title }}</ion-card-title>
-    </ion-card-header>
+        <ion-card-header>
+          <ion-card-title>{{ summary.title }}</ion-card-title>
+        </ion-card-header>
 
-    <ion-card-content> {{ summary.summary }} </ion-card-content>
+        <ion-card-content> {{ summary.summary }} </ion-card-content>
 
-    <img
-      *ngIf="summary.image"
-      class="article-img"
-      [src]="getImage(summary)"
-      alt="Article image"
-    />
+        <img
+          *ngIf="summary.image"
+          class="article-img"
+          [src]="getImage(summary)"
+          alt="Article image"
+        />
 
-    <ion-button fill="clear">Bookmark</ion-button>
-    <ion-button fill="clear">Remove</ion-button>
-    <div class="source-container">
-      <img [src]="getSourceImage(summary)" alt="summary source image" />
-      <p>{{summary.source}}</p>
+        <ion-button fill="clear" (click)="favoriteArticle(summary)"
+          ><ion-icon
+            *ngIf="summary.favorited"
+            slot="icon-only"
+            name="bookmark"
+          ></ion-icon>
+          <ion-icon
+            *ngIf="!summary.favorited"
+            slot="icon-only"
+            name="bookmark-outline"
+          ></ion-icon
+          >Bookmark</ion-button
+        >
+        <!--<ion-button fill="clear">Remove</ion-button>-->
+        <div class="source-container">
+          <img [src]="getSourceImage(summary)" alt="summary source image" />
+          <p>{{summary.source}}</p>
 
-      <a
-        [routerLink]="(summary.link.includes('nytimes.com') || summary.link.includes('wsj.com')) ? [] : ['/news-article/' + summary.id + '/trending-articles']"
-        (click)="onArticleClick(summary);"
-      >
-        Read more</a
-      >
-    </div>
-  </ion-card>
+          <a
+            [routerLink]="(summary.link.includes('nytimes.com') || summary.link.includes('wsj.com')) ? [] : ['/news-article/' + summary.id + '/trending-articles']"
+            (click)="onArticleClick(summary);"
+          >
+            Read more</a
+          >
+        </div>
+      </ion-card>
+    </ion-slide>
+  </ion-slides>
 </ion-content>

@@ -1,7 +1,22 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DomSanitizer, Meta } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { Firestore, collection, where, query, getDocs, doc, addDoc, getDoc, updateDoc, Timestamp, collectionData, setDoc, docData, increment } from '@angular/fire/firestore';
+import {
+  Firestore,
+  collection,
+  where,
+  query,
+  getDocs,
+  doc,
+  addDoc,
+  getDoc,
+  updateDoc,
+  Timestamp,
+  collectionData,
+  setDoc,
+  docData,
+  increment,
+} from '@angular/fire/firestore';
 import { UserService } from 'src/app/services/user.service';
 import { ModalController, Platform } from '@ionic/angular';
 import { CommentthreadComponent } from 'src/app/modals/commentthread/commentthread.component';
@@ -20,9 +35,7 @@ import { IntrojsService } from 'src/app/introjs.service';
   templateUrl: './news-article.page.html',
   styleUrls: ['./news-article.page.scss'],
 })
-
 export class NewsArticlePage implements OnInit, OnDestroy {
-
   currentReaders$;
 
   article = {} as any;
@@ -36,31 +49,51 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   playing = false;
   urlsToPlay = [];
   isDesktop;
-  showAd : boolean = true;
+  showAd: boolean = true;
 
   allRelatedArticles = [];
-  currentReaderCount : number = 1;
-  removeAsReader : boolean  = true;
+  currentReaderCount: number = 1;
+  removeAsReader: boolean = true;
 
-  constructor(public userService: UserService, public sanitizer: DomSanitizer, private route: ActivatedRoute, private firestore: Firestore,
-    private modalCtrl: ModalController, private admobService: AdmobService, private platform: Platform, private auth: Auth, private iab: InAppBrowser, 
-    private introService : IntrojsService, private meta: Meta) {}
+  constructor(
+    public userService: UserService,
+    public sanitizer: DomSanitizer,
+    private route: ActivatedRoute,
+    private firestore: Firestore,
+    private modalCtrl: ModalController,
+    private admobService: AdmobService,
+    private platform: Platform,
+    private auth: Auth,
+    private iab: InAppBrowser,
+    private introService: IntrojsService,
+    private meta: Meta
+  ) {}
 
   ngOnInit() {
-    this.isDesktop = this.platform.is('desktop') && !this.platform.is('android') && !this.platform.is('ios');
+    this.isDesktop =
+      this.platform.is('desktop') &&
+      !this.platform.is('android') &&
+      !this.platform.is('ios');
     console.log(this.userService.getLoggedInUser());
     //this.article = this.router.getCurrentNavigation().extras.state.article;
-    this.route.params.subscribe((params) => this.getNewsArticle(params.id, params.type));
+    this.route.params.subscribe((params) =>
+      this.getNewsArticle(params.id, params.type)
+    );
     this.addToRead();
   }
 
   async ngOnDestroy() {
     //Remove as current reader on compnent exit
-    if(this.removeAsReader){
+    if (this.removeAsReader) {
       this.removeAsReader = false;
-      const currentReadersCollection = collection(this.firestore, 'current-readers');
+      const currentReadersCollection = collection(
+        this.firestore,
+        'current-readers'
+      );
       const articleDocRef = doc(currentReadersCollection, this.articleId);
-      await updateDoc(articleDocRef, { currentReaders: (this.currentReaderCount-1) });
+      await updateDoc(articleDocRef, {
+        currentReaders: this.currentReaderCount - 1,
+      });
     }
   }
 
@@ -71,7 +104,7 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     //Check if intro.js is going to be shown
     if (this.userService.getLoggedInUser()) {
       const showIntroJS = localStorage.getItem('showArticleIntro');
-      if(showIntroJS != 'false') {
+      if (showIntroJS != 'false') {
         this.showAd = false;
         localStorage.setItem('showArticleIntro', 'false');
         this.introService.articleFeature();
@@ -83,25 +116,30 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     this.admobService.hideBanner();
   }
 
-  async setCurrentReaders () {
-
-    const q = query(collection(this.firestore, 'current-readers'), where('__name__', '==', this.articleId));
+  async setCurrentReaders() {
+    const q = query(
+      collection(this.firestore, 'current-readers'),
+      where('__name__', '==', this.articleId)
+    );
     let docsRef = await getDocs(q);
 
     //Create current readers doc
-    if(docsRef.empty) {
+    if (docsRef.empty) {
       await setDoc(doc(this.firestore, 'current-readers', this.articleId), {
-        currentReaders: 0
+        currentReaders: 0,
       });
     }
 
-    const currentReadersCollection = collection(this.firestore, 'current-readers');
+    const currentReadersCollection = collection(
+      this.firestore,
+      'current-readers'
+    );
     const articleDocRef = doc(currentReadersCollection, this.articleId);
 
     let readers = 0;
     let readersRef = await getDoc(articleDocRef);
-    readers = readersRef.data()['currentReaders']+1;
-    if(readers < 1) readers = 1;
+    readers = readersRef.data()['currentReaders'] + 1;
+    if (readers < 1) readers = 1;
 
     await updateDoc(articleDocRef, { currentReaders: readers });
 
@@ -111,31 +149,41 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     });
 
     //Handle component close
-    if(this.removeAsReader){
+    if (this.removeAsReader) {
       window.addEventListener('beforeunload', async () => {
         this.removeAsReader = false;
-        await updateDoc(articleDocRef, { currentReaders: (this.currentReaderCount-1) });
+        await updateDoc(articleDocRef, {
+          currentReaders: this.currentReaderCount - 1,
+        });
       });
     }
   }
 
+  async getSummary() {
+    alert('Coming Soon');
+  }
+
   async addToRead() {
     if (!this.userService.getLoggedInUser()) return;
-    let user = await getDoc(doc(this.firestore, 'users', this.userService.getLoggedInUser().uid));
+    let user = await getDoc(
+      doc(this.firestore, 'users', this.userService.getLoggedInUser().uid)
+    );
     let readArticles = user.data().readArticles || [];
-    
-    if (!readArticles.includes(this.articleId)) 
-      readArticles.push(this.articleId)
 
-    updateDoc(doc(this.firestore, 'users', this.userService.getLoggedInUser().uid), {
-      readArticles
-    })
+    if (!readArticles.includes(this.articleId))
+      readArticles.push(this.articleId);
+
+    updateDoc(
+      doc(this.firestore, 'users', this.userService.getLoggedInUser().uid),
+      {
+        readArticles,
+      }
+    );
   }
 
   toggleTextToSpeech() {
     this.playing = !this.playing;
     if (this.playing) {
-      
     }
   }
 
@@ -143,46 +191,46 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     this.artticleType = type;
     this.articleId = id;
     this.favorited = await this.userService.isArticleFavorited(id);
-    
-    const responsesRef = collection(
-      this.firestore,
-      type
-    );
+
+    const responsesRef = collection(this.firestore, type);
     const q = query(responsesRef, where('id', '==', id));
     let docs = await getDocs(q);
     docs.forEach((d) => {
       this.article = d.data();
 
       this.allRelatedArticles = [];
-      if(d.data().related_articles){
+      if (d.data().related_articles) {
         d.data().related_articles.forEach((relatedArticle) => {
           this.loadRelatedArticles(relatedArticle); //Gets the related_articles from articles document and calls loadRelatedArticles
         });
       }
-      
+
       this.docid = d.id;
       let articleUpdate = doc(this.firestore, type, d.id);
       updateDoc(articleUpdate, {
-        clicks: this.article.clicks ? ++this.article.clicks : 1
-      })
+        clicks: this.article.clicks ? ++this.article.clicks : 1,
+      });
       let content = d.data().content;
       content = content.replaceAll('<p>', '<p style="font-size: 18px">');
       content = content.replaceAll('</p>', '</p><br>');
-      content = content.replaceAll('<img', '<img style="max-width: 100%; height: fit-content" ');
+      content = content.replaceAll(
+        '<img',
+        '<img style="max-width: 100%; height: fit-content" '
+      );
 
       // Remove <picture> container to prevent double pictures
       content = content.replace(/<picture\b[^>]*>.*?<\/picture>/g, '');
 
       this.article.content = this.sanitizer.bypassSecurityTrustHtml(content);
       let image = new Image();
-      if(this.article.image)
-        image.src = this.article.image;
+      if (this.article.image) image.src = this.article.image;
       image.onload = () => {
         if (image.width <= 125) {
-          this.article.image = 'https://assets.digitalocean.com/labs/images/community_bg.png';
+          this.article.image =
+            'https://assets.digitalocean.com/labs/images/community_bg.png';
         }
-      }
-    })
+      };
+    });
     /*let urls = await this.http.post("https://url-content-extractor.herokuapp.com/speech", {
       text: this.article.textBody
     }).toPromise() as Array<any>;
@@ -193,13 +241,16 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   }
 
   async getComments() {
-    const commentRef = collection(this.firestore, this.artticleType + "/" + this.docid + "/comments" );
+    const commentRef = collection(
+      this.firestore,
+      this.artticleType + '/' + this.docid + '/comments'
+    );
     let docs = await getDocs(commentRef);
     if (docs.empty) this.comments = [];
     else {
       docs.forEach((d) => {
-        this.comments.push({id: d.id, data: d.data()});
-        console.log(d.data())
+        this.comments.push({ id: d.id, data: d.data() });
+        console.log(d.data());
       });
     }
   }
@@ -207,20 +258,34 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   async submitComment() {
     let obj = {
       text: this.comment,
-      author: this.userService.getLoggedInUser().displayName || this.userService.getLoggedInUser().email,
+      author:
+        this.userService.getLoggedInUser().displayName ||
+        this.userService.getLoggedInUser().email,
       photo: this.userService.getLoggedInUser().photoURL,
       uid: this.userService.getLoggedInUser().uid,
       date: new Date().toISOString(),
       id: 'id-' + Math.random().toString(36).slice(2, 18),
-      comments: []
-    }
+      comments: [],
+    };
 
-
-    let ref = collection(this.firestore, this.artticleType, this.docid, "comments");
+    let ref = collection(
+      this.firestore,
+      this.artticleType,
+      this.docid,
+      'comments'
+    );
     let resp = await addDoc(ref, obj);
     let newCommentid = resp.id;
-    let comment = await getDoc(doc(this.firestore, this.artticleType, this.docid, "comments", newCommentid));
-    this.comments.push({id: comment.id, data: comment.data()});
+    let comment = await getDoc(
+      doc(
+        this.firestore,
+        this.artticleType,
+        this.docid,
+        'comments',
+        newCommentid
+      )
+    );
+    this.comments.push({ id: comment.id, data: comment.data() });
 
     this.comment = '';
   }
@@ -233,18 +298,18 @@ export class NewsArticlePage implements OnInit, OnDestroy {
         comment,
         articleType: this.artticleType,
         docid: this.docid,
-      }
+      },
     });
 
     this.admobService.hideBanner();
 
-    modal.onDidDismiss().then(() => this.admobService.showBanner())
+    modal.onDidDismiss().then(() => this.admobService.showBanner());
     await modal.present();
   }
 
-
   onImgError(event) {
-    event.target.src = 'https://assets.digitalocean.com/labs/images/community_bg.png';
+    event.target.src =
+      'https://assets.digitalocean.com/labs/images/community_bg.png';
   }
 
   favoriteArticle(flag = false) {
@@ -254,109 +319,124 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     } else {
       this.favorited = !this.favorited;
     }
-    this.userService.toggleFavorite(this.favorited, this.article, this.artticleType, this.docid)
+    this.userService.toggleFavorite(
+      this.favorited,
+      this.article,
+      this.artticleType,
+      this.docid
+    );
   }
 
   async share() {
-
-    if(this.article.image) {
+    if (this.article.image) {
       this.meta.updateTag({
         name: 'og:image',
-        content: this.article.image
+        content: this.article.image,
       });
     } else {
       this.meta.updateTag({
         name: 'og:image',
-        content: 'https://assets.digitalocean.com/labs/images/community_bg.png'
+        content: 'https://assets.digitalocean.com/labs/images/community_bg.png',
       });
     }
 
     await Share.share({
       title: this.article.title,
       text: this.article.excerpt,
-      url: "https://app.unbiasedbreak.com/news-article/" + this.articleId + "/" + this.artticleType,
+      url:
+        'https://app.unbiasedbreak.com/news-article/' +
+        this.articleId +
+        '/' +
+        this.artticleType,
       dialogTitle: 'Share with your friends',
-      files: [this.article.image]
+      files: [this.article.image],
     });
   }
 
-  async loadRelatedArticles (relatedArticle) {
+  async loadRelatedArticles(relatedArticle) {
+    const leftDocRef = await getDoc(
+      doc(this.firestore, 'left-articles', `${relatedArticle}`)
+    );
+    const middleDocRef = await getDoc(
+      doc(this.firestore, 'middle-articles', `${relatedArticle}`)
+    );
+    const rightDocRef = await getDoc(
+      doc(this.firestore, 'right-articles', `${relatedArticle}`)
+    );
+    const trendingDocRef = await getDoc(
+      doc(this.firestore, 'trending-articles', `${relatedArticle}`)
+    );
 
-    const leftDocRef = await getDoc(doc(this.firestore, 'left-articles', `${relatedArticle}`));
-    const middleDocRef = await getDoc(doc(this.firestore, 'middle-articles', `${relatedArticle}`));
-    const rightDocRef = await getDoc(doc(this.firestore, 'right-articles', `${relatedArticle}`));
-    const trendingDocRef = await getDoc(doc(this.firestore, 'trending-articles', `${relatedArticle}`));
-
-    if(leftDocRef.exists) {
+    if (leftDocRef.exists) {
       const data = leftDocRef.data();
-      if(data) {
+      if (data) {
         this.allRelatedArticles.push({
           title: data.title,
           image: data.image,
           id: data.id,
           source: data.siteName,
           link: data.link,
-          articleGroup: "left-articles"
+          articleGroup: 'left-articles',
         });
       }
     }
-      
-    if(middleDocRef.exists) {
+
+    if (middleDocRef.exists) {
       const data = middleDocRef.data();
-      if(data) {
+      if (data) {
         this.allRelatedArticles.push({
           title: data.title,
           image: data.image,
           id: data.id,
           source: data.siteName,
           link: data.link,
-          articleGroup: "middle-articles"
+          articleGroup: 'middle-articles',
         });
       }
     }
 
-    if(rightDocRef.exists) {
+    if (rightDocRef.exists) {
       const data = rightDocRef.data();
-      if(data) {
+      if (data) {
         this.allRelatedArticles.push({
           title: data.title,
           image: data.image,
           id: data.id,
           source: data.siteName,
           link: data.link,
-          articleGroup: "right-articles"
+          articleGroup: 'right-articles',
         });
       }
     }
 
-    if(trendingDocRef.exists) {
+    if (trendingDocRef.exists) {
       const data = trendingDocRef.data();
-      if(data) {
+      if (data) {
         this.allRelatedArticles.push({
           title: data.title,
           image: data.image,
           id: data.id,
           source: data.siteName,
           link: data.link,
-          articleGroup: "trending-articles"
+          articleGroup: 'trending-articles',
         });
       }
     }
   }
 
-  checkIfAnyRelatedArticles () {
-    if(this.allRelatedArticles) {
-      if(this.allRelatedArticles.length > 0) return true;
+  checkIfAnyRelatedArticles() {
+    if (this.allRelatedArticles) {
+      if (this.allRelatedArticles.length > 0) return true;
       else return false;
     }
   }
 
   getRelatedArticleImage(image) {
-    if(image) return image;
+    if (image) return image;
     else return 'https://assets.digitalocean.com/labs/images/community_bg.png';
   }
 
-  relatedArticleClick(article : any) {
+  relatedArticleClick(article: any) {
     const link = article.link;
     if (link.includes('nytimes.com') || link.includes('wsj.com')) {
       const browser = this.iab.create(link, '_blank');

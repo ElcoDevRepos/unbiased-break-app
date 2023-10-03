@@ -1,37 +1,37 @@
 .summary-card {
-    padding: 10px;
+  padding: 10px;
+  margin-top: 10%;
+  ion-card-header {
+    padding-top: 5px;
+  }
 
-    ion-card-header {
-      padding-top: 5px;
-    }
-
-    ion-card-title {
-        font-size: 18px;
-    }
+  ion-card-title {
+    font-size: 18px;
+  }
 }
 
 .source-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 
-    img {
-      height: 20px;
-      width: 25px;
-      margin: 5px;
-    }
+  img {
+    height: 20px;
+    width: 25px;
+    margin: 5px;
+  }
 
-    P {
-      margin: 0px;
-    }
+  P {
+    margin: 0px;
+  }
 
-    a {
-      margin-left: auto;
-    }
+  a {
+    margin-left: auto;
+  }
 }
 
 .article-img {
-    border-radius: 10px;
+  border-radius: 10px;
 }
 
 .share-btn-container {

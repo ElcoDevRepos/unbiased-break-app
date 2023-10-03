@@ -21,7 +21,20 @@ import _ from 'lodash-es';
   providedIn: 'root',
 })
 export class UserService {
-  constructor(private firestore: Firestore, private auth: Auth) {}
+  isPro: boolean = false;
+  constructor(private firestore: Firestore, private auth: Auth) {
+    this.auth.onAuthStateChanged((user) => {
+      if (user) {
+        let ref = collection(this.firestore, 'users');
+        const q = query(ref, where('email', '==', user.email));
+        getDocs(q).then((docs) => {
+          docs.forEach((d) => {
+            this.isPro = d.data()['isPro'] || false;
+          });
+        });
+      }
+    });
+  }
 
   getLoggedInUser() {
     return this.auth.currentUser;
@@ -75,7 +88,7 @@ export class UserService {
       });
     else {
       let found = _.findIndex(favorites, (f) => {
-        return f.id === article.idid;
+        return f.id === article.id;
       });
 
       favorites.splice(found, 1);
@@ -90,6 +103,34 @@ export class UserService {
     });
   }
 
+  async toggleFavoriteSummary(summary) {
+    if (!this.auth.currentUser) return;
+    let ref = collection(this.firestore, 'users');
+    const q = query(ref, where('email', '==', this.auth.currentUser.email));
+    let docs = await getDocs(q);
+
+    let favorites = [];
+    let docid;
+    docs.forEach((d) => {
+      docid = d.id;
+      favorites = d.data().favoriteSummaries || [];
+    });
+
+    if (summary.favorited) {
+      favorites.push(summary);
+    } else {
+      let found = _.findIndex(favorites, (f) => {
+        return f.id === summary.id;
+      });
+
+      favorites.splice(found, 1);
+    }
+    let updateref = doc(this.firestore, 'users', docid);
+    await updateDoc(updateref, {
+      favoriteSummaries: favorites,
+    });
+  }
+
   async getFavorites() {
     if (!this.auth.currentUser) return;
     let ref = collection(this.firestore, 'users');
@@ -98,6 +139,19 @@ export class UserService {
     let f = [];
     docs.forEach((d) => {
       if (d.data().favorites) f = d.data().favorites;
+    });
+
+    return f;
+  }
+
+  async getFavoriteSummaries() {
+    if (!this.auth.currentUser) return;
+    let ref = collection(this.firestore, 'users');
+    const q = query(ref, where('email', '==', this.auth.currentUser.email));
+    let docs = await getDocs(q);
+    let f = [];
+    docs.forEach((d) => {
+      if (d.data().favoriteSummaries) f = d.data().favoriteSummaries;
     });
 
     return f;
@@ -210,6 +264,15 @@ export class UserService {
     let docs = await getDocs(q);
     docs.forEach((d) => {
       updateDoc(doc(this.firestore, 'users', d.id), { lastSeen: new Date() });
+    });
+  }
+  async setIsPro(flag) {
+    if (!this.auth.currentUser) return;
+    let ref = collection(this.firestore, 'users');
+    const q = query(ref, where('email', '==', this.auth.currentUser.email));
+    let docs = await getDocs(q);
+    docs.forEach((d) => {
+      updateDoc(doc(this.firestore, 'users', d.id), { isPro: flag });
     });
   }
 }
