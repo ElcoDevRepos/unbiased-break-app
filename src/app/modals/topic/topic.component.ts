@@ -1,7 +1,18 @@
 import { Component, OnInit, AfterViewInit, HostListener } from '@angular/core';
-import { AlertController, ModalController, NavParams, PopoverController } from '@ionic/angular';
+import {
+  AlertController,
+  ModalController,
+  NavParams,
+  PopoverController,
+} from '@ionic/angular';
 import { v4 as uuidv4 } from 'uuid';
-import { Firestore, addDoc, collection, updateDoc, doc } from '@angular/fire/firestore';
+import {
+  Firestore,
+  addDoc,
+  collection,
+  updateDoc,
+  doc,
+} from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { TopiclistComponent } from 'src/app/components/topiclist/topiclist.component';
 import { IntrojsService } from 'src/app/introjs.service';
@@ -14,17 +25,24 @@ import { IntrojsService } from 'src/app/introjs.service';
 export class TopicComponent implements OnInit, AfterViewInit {
   topics = [] as any;
   isAdding = false;
-  newTopic = "";
+  newTopic = '';
   currentUser;
-  constructor(private navParams: NavParams,private alertController: AlertController, private modalCtrl: ModalController, private firestore: Firestore, private auth: Auth, public popoverController: PopoverController, private introService : IntrojsService) { }
+  constructor(
+    private navParams: NavParams,
+    private alertController: AlertController,
+    private modalCtrl: ModalController,
+    private firestore: Firestore,
+    private auth: Auth,
+    public popoverController: PopoverController,
+    private introService: IntrojsService
+  ) {}
 
   ngOnInit() {
     this.currentUser = this.navParams.data.currentUser;
     this.topics = this.navParams.data.topics;
     this.createFakeHistory();
     this.topics.forEach((t) => {
-      if (t.checked === undefined) 
-      t.checked = true;
+      if (t.checked === undefined) t.checked = true;
     });
     console.log(this.topics);
   }
@@ -32,17 +50,17 @@ export class TopicComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     //Check if intro.js is going to be shown
     const showIntroJS = localStorage.getItem('showTopicsIntro');
-    if(showIntroJS != 'false') {
-      localStorage.setItem('showTopicsIntro', 'false');
-      this.introService.topicsFeature();
+    if (showIntroJS != 'false') {
+      //localStorage.setItem('showTopicsIntro', 'false');
+      //this.introService.topicsFeature();
     }
   }
 
   //These two functions are used to manipulate the navigation so the back button works to close the modal
   createFakeHistory() {
     const modalState = {
-      modal : true,
-      desc : 'fake state for our modal'
+      modal: true,
+      desc: 'fake state for our modal',
     };
     history.pushState(modalState, null);
   }
@@ -54,16 +72,16 @@ export class TopicComponent implements OnInit, AfterViewInit {
 
   async toggleChanged(i, ev) {
     this.topics[i].checked = ev.detail.checked;
-    await updateDoc(doc(this.firestore, "users", this.currentUser), {
-      topics: this.topics
+    await updateDoc(doc(this.firestore, 'users', this.currentUser), {
+      topics: this.topics,
     });
 
-    if(i === 0 && this.topics[i].checked == false) {
+    if (i === 0 && this.topics[i].checked == false) {
       //Check if intro.js is going to be shown
       const showIntroJS = localStorage.getItem('showTopicsDeleteIntro');
-      if(showIntroJS != 'false') {
-        localStorage.setItem('showTopicsDeleteIntro', 'false');
-        this.introService.topicsDeleteFeature();
+      if (showIntroJS != 'false') {
+        //localStorage.setItem('showTopicsDeleteIntro', 'false');
+        //this.introService.topicsDeleteFeature();
       }
     }
   }
@@ -88,8 +106,8 @@ export class TopicComponent implements OnInit, AfterViewInit {
               }
             }
 
-            updateDoc(doc(this.firestore, "users", this.currentUser), {
-              topics: this.topics
+            updateDoc(doc(this.firestore, 'users', this.currentUser), {
+              topics: this.topics,
             });
           },
         },
@@ -99,37 +117,36 @@ export class TopicComponent implements OnInit, AfterViewInit {
     await alert.present();
   }
 
-
   async showPopup(e) {
-    if(this.newTopic != ""){
-    const popover = await this.popoverController.create({
-      component: TopiclistComponent,
-      componentProps: {
-        query: this.newTopic,
-        currentTopics: this.topics
-      },
-      event: e,
-    });
+    if (this.newTopic != '') {
+      const popover = await this.popoverController.create({
+        component: TopiclistComponent,
+        componentProps: {
+          query: this.newTopic,
+          currentTopics: this.topics,
+        },
+        event: e,
+      });
 
-    await popover.present();
+      await popover.present();
 
-    const { data } = await popover.onDidDismiss();
+      const { data } = await popover.onDidDismiss();
 
-    if (data) {
-      let newItem = data.item;
-      if (data === 'new') {
-        this.addNewTopic();
-      } else {
-        newItem.checked = true;
-        this.topics.push(newItem);
-        await updateDoc(doc(this.firestore, "users", this.currentUser), {
-          topics: this.topics
-        });
-        this.newTopic = "";
-        this.isAdding = false;      }
-      
+      if (data) {
+        let newItem = data.item;
+        if (data === 'new') {
+          this.addNewTopic();
+        } else {
+          newItem.checked = true;
+          this.topics.push(newItem);
+          await updateDoc(doc(this.firestore, 'users', this.currentUser), {
+            topics: this.topics,
+          });
+          this.newTopic = '';
+          this.isAdding = false;
+        }
+      }
     }
-  }
   }
 
   @HostListener('window:popstate', ['$event'])
@@ -143,16 +160,16 @@ export class TopicComponent implements OnInit, AfterViewInit {
       checked: true,
       display: this.newTopic,
       name: this.newTopic,
-      id: uuidv4()
+      id: uuidv4(),
     };
 
-    this.topics.push({...obj});
+    this.topics.push({ ...obj });
     let topics = [];
-    await addDoc(collection(this.firestore, "topics"), obj);
-    await updateDoc(doc(this.firestore, "users", this.currentUser), {
-      topics: this.topics
+    await addDoc(collection(this.firestore, 'topics'), obj);
+    await updateDoc(doc(this.firestore, 'users', this.currentUser), {
+      topics: this.topics,
     });
     this.isAdding = false;
-    this.newTopic = "";
+    this.newTopic = '';
   }
 }

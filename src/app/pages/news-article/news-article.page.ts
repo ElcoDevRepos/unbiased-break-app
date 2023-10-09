@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DomSanitizer, Meta } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   Firestore,
   collection,
@@ -66,7 +66,8 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     private auth: Auth,
     private iab: InAppBrowser,
     private introService: IntrojsService,
-    private meta: Meta
+    private meta: Meta,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -106,8 +107,8 @@ export class NewsArticlePage implements OnInit, OnDestroy {
       const showIntroJS = localStorage.getItem('showArticleIntro');
       if (showIntroJS != 'false') {
         this.showAd = false;
-        localStorage.setItem('showArticleIntro', 'false');
-        this.introService.articleFeature();
+        //localStorage.setItem('showArticleIntro', 'false');
+        //this.introService.articleFeature();
       }
     }
   }
@@ -160,7 +161,11 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   }
 
   async getSummary() {
-    alert('Coming Soon');
+    if (!this.userService.isPro) {
+      this.router.navigateByUrl('/tabs/tab3?openPremium=true', {});
+    } else {
+      alert('Coming Soon');
+    }
   }
 
   async addToRead() {
@@ -197,6 +202,19 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     let docs = await getDocs(q);
     docs.forEach((d) => {
       this.article = d.data();
+
+      if (this.article.image) {
+        this.meta.updateTag({
+          name: 'og:image',
+          content: this.article.image,
+        });
+      } else {
+        this.meta.updateTag({
+          name: 'og:image',
+          content:
+            'https://assets.digitalocean.com/labs/images/community_bg.png',
+        });
+      }
 
       this.allRelatedArticles = [];
       if (d.data().related_articles) {
@@ -328,18 +346,6 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   }
 
   async share() {
-    if (this.article.image) {
-      this.meta.updateTag({
-        name: 'og:image',
-        content: this.article.image,
-      });
-    } else {
-      this.meta.updateTag({
-        name: 'og:image',
-        content: 'https://assets.digitalocean.com/labs/images/community_bg.png',
-      });
-    }
-
     await Share.share({
       title: this.article.title,
       text: this.article.excerpt,

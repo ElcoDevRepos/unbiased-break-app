@@ -6,7 +6,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Auth, signOut, deleteUser, updateProfile } from '@angular/fire/auth';
 import {
   Firestore,
@@ -97,7 +97,8 @@ export class Tab3Page implements OnInit, OnDestroy {
     private toastController: ToastController,
     private introService: IntrojsService,
     private tabsPage: TabsPage,
-    private ref: ChangeDetectorRef
+    private ref: ChangeDetectorRef,
+    private route: ActivatedRoute
   ) {
     this.premium_id = this.platform.is('ios') ? 'PREMIUM_SUB' : 'premium_sub';
   }
@@ -110,15 +111,18 @@ export class Tab3Page implements OnInit, OnDestroy {
     this.createFakeHistory();
     this.platform.ready().then(() => {
       this.store.verbosity = this.store.DEBUG;
-      console.log('HERE');
       this.registerProducts();
       this.setupListeners();
 
       // Get the real product information
       this.store.ready(() => {
-        console.log(this.store.products);
         this.products = this.store.products;
         this.ref.detectChanges();
+        this.route.queryParams.subscribe((params) => {
+          if (params.openPremium) {
+            this.purchaseModal.present();
+          }
+        });
       });
     });
   }
@@ -239,8 +243,8 @@ export class Tab3Page implements OnInit, OnDestroy {
     //Check if intro.js is going to be shown
     const showIntroJS = localStorage.getItem('showProfileIntro');
     if (showIntroJS != 'false') {
-      localStorage.setItem('showProfileIntro', 'false');
-      this.introService.profileFeature();
+      //localStorage.setItem('showProfileIntro', 'false');
+      //this.introService.profileFeature();
     }
   }
 

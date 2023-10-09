@@ -612,8 +612,8 @@ export class Tab1Page implements OnInit {
             'scrollLeft',
             container.scrollWidth
           );
-          localStorage.setItem('showHomeIntro', 'false');
-          this.introService.featureOne();
+          //localStorage.setItem('showHomeIntro', 'false');
+          //this.introService.featureOne();
         }, 400);
       }
     }
@@ -840,8 +840,8 @@ export class Tab1Page implements OnInit {
     const showIntroJS = localStorage.getItem('showFilterIntro');
     if (showIntroJS != 'false') {
       setTimeout(() => {
-        localStorage.setItem('showFilterIntro', 'false');
-        this.introService.filtersFeature();
+        //localStorage.setItem('showFilterIntro', 'false');
+        //this.introService.filtersFeature();
       }, 400);
     }
   }
@@ -851,7 +851,7 @@ export class Tab1Page implements OnInit {
     const container =
       this.elementRef.nativeElement.querySelector('.scroll-container');
     this.renderer.setProperty(container, 'scrollLeft', container.scrollWidth);
-    this.introService.featureOne();
+    //this.introService.featureOne();
     localStorage.setItem('showFilterIntro', 'true');
     localStorage.setItem('showTopicsDeleteIntro', 'true');
     localStorage.setItem('showProfileIntro', 'true');
