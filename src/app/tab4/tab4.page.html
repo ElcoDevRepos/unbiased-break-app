@@ -1,13 +1,16 @@
 <ion-header [translucent]="false">
   <ion-toolbar>
     <ion-title> GPT Summary </ion-title>
-    <!--<ion-buttons slot="end">
-      <ion-button> Clear </ion-button>
-    </ion-buttons>-->
+    <ion-buttons slot="end">
+      <ion-button (click)="clearAllSummaries($event)">Clear All</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <div *ngIf="(!gptSummaries || gptSummaries.length == 0) && doneLoading" style="height: max-content">
+    <h1 style="margin: 10% 20px 0 20px; text-align: center"><b>Looks Like There's No More Summaries...</b></h1>
+  </div>
   <ion-slides
     style="margin-top: 25px"
     (ionSlideNextEnd)="didChangeToNext()"
@@ -16,6 +19,9 @@
     <ion-slide *ngFor="let summary of gptSummaries">
       <ion-card class="summary-card">
         <div class="share-btn-container">
+          <ion-button fill="clear" (click)="clearSummary($event, summary.id)">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
           <ion-button fill="clear" class="share-btn" (click)="share(summary)">
             <ion-icon name="share-social-outline"></ion-icon>
           </ion-button>

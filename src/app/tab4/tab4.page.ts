@@ -38,6 +38,8 @@ export class Tab4Page implements OnInit {
   gptSummaries;
   sourceImages = [];
   summariesRead = 0;
+  doneLoading = false;
+  dateString;
   @ViewChild('slides') slides: any;
   constructor(
     private tabsPage: TabsPage,
@@ -66,9 +68,12 @@ export class Tab4Page implements OnInit {
         }
       });
       this.gptSummaries = sum[0];
+      this.goToNextNotClearedSummary();
+      this.doneLoading = true;
     } catch (error) {
       console.error('Failed to fetch summaries:', error);
     }
+    console.log(this.gptSummaries);
   }
 
   favoriteArticle(summary) {
@@ -99,6 +104,7 @@ export class Tab4Page implements OnInit {
 
       getDocs(q)
         .then((docSnaps) => {
+          if (docSnaps.docs.length > 0) this.dateString = docSnaps.docs[0].data().timestamp.toDate();
           resolve(docSnaps.docs.map((doc) => doc.data().summaries));
         })
         .catch((err) => {
@@ -194,4 +200,54 @@ export class Tab4Page implements OnInit {
       dialogTitle: 'Share with your friends',
     });
   }
+
+  /* Add all the summaries for the day to the cleared list */
+  clearAllSummaries(event: any) {
+    this.addSummariesToCleared(this.gptSummaries.map((s) => s.id));
+    this.gptSummaries = [];
+  }
+
+  /* Add the summary to the cleared list */
+  async clearSummary(event: any, articleId: string) {
+    this.addSummariesToCleared([articleId]);
+    this.gptSummaries.splice(this.gptSummaries.findIndex((s) => s.id === articleId), 1);
+  }
+
+  /* Add the summaries to the cleared list in local storage */
+  private addSummariesToCleared(articleIds: string[]) {
+    let clearedValues = [];
+    const gptClearedToday = this.getGptClearedForToday();
+    if (gptClearedToday) {
+      clearedValues = gptClearedToday.split(',');
+    }
+    for (let i = 0; i < articleIds.length; i++) {
+      if (!clearedValues.includes(articleIds[i])) {
+        clearedValues.push(articleIds[i]);
+      }
+    }
+    localStorage.setItem(this.getGptClearedForTodayKey(), clearedValues.join(','));
+  }
+
+  /* After fetching summaries on load, go to the next summary that has not been cleared */
+  private goToNextNotClearedSummary() {
+    const gptClearedToday = this.getGptClearedForToday();
+    if (!gptClearedToday) {
+      return;
+    }
+    const clearedValues = gptClearedToday.split(',');
+    this.gptSummaries = this.gptSummaries.filter((s) => !clearedValues.includes(s.id));
+    return;
+  }
+
+  /* Get the cleared summaries for the day from local storage */
+  private getGptClearedForToday() {
+    return localStorage.getItem(this.getGptClearedForTodayKey());
+  }
+
+  /* Get the key for the cleared summaries for the day from local storage */
+  private getGptClearedForTodayKey() {
+    const date = new Date();
+    return `${this.dateString}gpt-cleared`;
+  }
+
 }
