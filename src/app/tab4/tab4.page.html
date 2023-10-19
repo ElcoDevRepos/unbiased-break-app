@@ -65,6 +65,22 @@
             Read more</a
           >
         </div>
+            <div style="display: flex; justify-content: space-between;">
+              <ion-button
+                *ngIf="gptSummaries && gptSummaries.length > 0 && summary.id != gptSummaries[0].id"
+                fill="clear"
+                style="margin-right: auto"
+                (click)="slides.slidePrev()">
+                <ion-icon name="arrow-back-outline"></ion-icon>
+              </ion-button>
+              <ion-button
+                *ngIf="gptSummaries && gptSummaries.length > 0 && summary.id != gptSummaries[gptSummaries.length - 1].id"
+                fill="clear"
+                style="margin-left: auto"
+                (click)="slides.slideNext()">
+                <ion-icon name="arrow-forward-outline"></ion-icon>
+              </ion-button>
+            </div>
       </ion-card>
     </ion-slide>
   </ion-slides>
