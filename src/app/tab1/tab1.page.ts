@@ -29,11 +29,11 @@ import { ModalController, Platform } from '@ionic/angular';
 import FuzzySearch from 'fuzzy-search';
 import _ from 'lodash-es';
 import { TopicComponent } from '../modals/topic/topic.component';
-import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { ToastController } from '@ionic/angular';
 import { IntrojsService } from '../introjs.service';
 import { MenuController } from '@ionic/angular';
 import { TabsPage } from '../tabs/tabs.page';
+import { Browser } from '@capacitor/browser';
 
 @Component({
   selector: 'app-tab1',
@@ -83,7 +83,6 @@ export class Tab1Page implements OnInit {
     private modal: ModalController,
     private platform: Platform,
     private auth: Auth,
-    private iab: InAppBrowser,
     private toastController: ToastController,
     private introService: IntrojsService,
     private elementRef: ElementRef,
@@ -96,8 +95,7 @@ export class Tab1Page implements OnInit {
     const link = item.link;
     if (link.includes('nytimes.com') || link.includes('wsj.com')) {
       this.addToRead(item.id); //Add the wsj or nyt article to read now because it won't be opening the article page
-      const browser = this.iab.create(link, '_blank');
-      browser.show();
+      Browser.open({ url: link });
     }
   }
 

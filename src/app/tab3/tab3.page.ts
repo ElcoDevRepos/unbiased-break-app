@@ -41,7 +41,7 @@ import {
 } from '@angular/fire/storage';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { async } from '@angular/core/testing';
-import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { Browser } from '@capacitor/browser';
 import { IntrojsService } from '../introjs.service';
 import { TabsPage } from '../tabs/tabs.page';
 import { Share } from '@capacitor/share';
@@ -93,7 +93,6 @@ export class Tab3Page implements OnInit, OnDestroy {
     private fireStore: Firestore,
     private platform: Platform,
     private alertCtrl: AlertController,
-    private inAppBrowser: InAppBrowser,
     private toastController: ToastController,
     private introService: IntrojsService,
     private tabsPage: TabsPage,
@@ -436,7 +435,7 @@ export class Tab3Page implements OnInit, OnDestroy {
   }
 
   openURL(url: string) {
-    const browser = this.inAppBrowser.create(`https://www.${url}`, '_blank');
+    Browser.open({ url });
   }
 
   async checkNotificationSettings() {
@@ -669,8 +668,7 @@ export class Tab3Page implements OnInit, OnDestroy {
   onArticleClick(item: any) {
     const link = item.link;
     if (link.includes('nytimes.com') || link.includes('wsj.com')) {
-      const browser = this.inAppBrowser.create(link, '_blank');
-      browser.show();
+      Browser.open({ url: link });
     }
   }
 }

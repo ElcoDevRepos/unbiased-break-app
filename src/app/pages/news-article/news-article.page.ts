@@ -25,7 +25,7 @@ import { AdmobService } from 'src/app/services/admob.service';
 import { HttpClient } from '@angular/common/http';
 import { Share } from '@capacitor/share';
 import { Auth } from '@angular/fire/auth';
-import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { Browser } from '@capacitor/browser';
 import { v4 } from 'uuid';
 import { Observable } from 'rxjs';
 import { IntrojsService } from 'src/app/introjs.service';
@@ -64,7 +64,6 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     private admobService: AdmobService,
     private platform: Platform,
     private auth: Auth,
-    private iab: InAppBrowser,
     private introService: IntrojsService,
     private meta: Meta,
     private router: Router
@@ -445,8 +444,7 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   relatedArticleClick(article: any) {
     const link = article.link;
     if (link.includes('nytimes.com') || link.includes('wsj.com')) {
-      const browser = this.iab.create(link, '_blank');
-      browser.show();
+      Browser.open({ url: link });
     }
   }
 }

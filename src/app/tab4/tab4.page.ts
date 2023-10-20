@@ -5,6 +5,8 @@ import {
   Renderer2,
   ViewChild,
 } from '@angular/core';
+import { Browser } from '@capacitor/browser';
+
 import { TabsPage } from '../tabs/tabs.page';
 import {
   Firestore,
@@ -25,7 +27,6 @@ import {
 } from '@angular/fire/firestore';
 import * as _ from 'lodash';
 import { UserService } from '../services/user.service';
-import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { Share } from '@capacitor/share';
 import { AdmobService } from '../services/admob.service';
 
@@ -45,7 +46,6 @@ export class Tab4Page implements OnInit {
     private tabsPage: TabsPage,
     private firestore: Firestore,
     private userService: UserService,
-    private iab: InAppBrowser,
     private admobService: AdmobService,
     private renderer: Renderer2,
     private el: ElementRef
@@ -104,7 +104,8 @@ export class Tab4Page implements OnInit {
 
       getDocs(q)
         .then((docSnaps) => {
-          if (docSnaps.docs.length > 0) this.dateString = docSnaps.docs[0].data().timestamp.toDate();
+          if (docSnaps.docs.length > 0)
+            this.dateString = docSnaps.docs[0].data().timestamp.toDate();
           resolve(docSnaps.docs.map((doc) => doc.data().summaries));
         })
         .catch((err) => {
@@ -183,8 +184,7 @@ export class Tab4Page implements OnInit {
   onArticleClick(item: any) {
     const link = item.link;
     if (link.includes('nytimes.com') || link.includes('wsj.com')) {
-      const browser = this.iab.create(link, '_blank');
-      browser.show();
+      Browser.open({ url: link });
     }
   }
 
@@ -210,7 +210,10 @@ export class Tab4Page implements OnInit {
   /* Add the summary to the cleared list */
   async clearSummary(event: any, articleId: string) {
     this.addSummariesToCleared([articleId]);
-    this.gptSummaries.splice(this.gptSummaries.findIndex((s) => s.id === articleId), 1);
+    this.gptSummaries.splice(
+      this.gptSummaries.findIndex((s) => s.id === articleId),
+      1
+    );
   }
 
   /* Add the summaries to the cleared list in local storage */
@@ -225,7 +228,10 @@ export class Tab4Page implements OnInit {
         clearedValues.push(articleIds[i]);
       }
     }
-    localStorage.setItem(this.getGptClearedForTodayKey(), clearedValues.join(','));
+    localStorage.setItem(
+      this.getGptClearedForTodayKey(),
+      clearedValues.join(',')
+    );
   }
 
   /* After fetching summaries on load, go to the next summary that has not been cleared */
@@ -235,7 +241,9 @@ export class Tab4Page implements OnInit {
       return;
     }
     const clearedValues = gptClearedToday.split(',');
-    this.gptSummaries = this.gptSummaries.filter((s) => !clearedValues.includes(s.id));
+    this.gptSummaries = this.gptSummaries.filter(
+      (s) => !clearedValues.includes(s.id)
+    );
     return;
   }
 
@@ -249,5 +257,4 @@ export class Tab4Page implements OnInit {
     const date = new Date();
     return `${this.dateString}gpt-cleared`;
   }
-
 }
