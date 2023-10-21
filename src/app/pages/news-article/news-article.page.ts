@@ -18,7 +18,7 @@ import {
   increment,
 } from '@angular/fire/firestore';
 import { UserService } from 'src/app/services/user.service';
-import { ModalController, Platform } from '@ionic/angular';
+import { LoadingController, ModalController, Platform, ToastController } from '@ionic/angular';
 import { CommentthreadComponent } from 'src/app/modals/commentthread/commentthread.component';
 import { AdMob } from '@capacitor-community/admob';
 import { AdmobService } from 'src/app/services/admob.service';
@@ -29,6 +29,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { v4 } from 'uuid';
 import { Observable } from 'rxjs';
 import { IntrojsService } from 'src/app/introjs.service';
+import { GptSummaryService } from 'src/app/services/gpt-summary.service';
 
 @Component({
   selector: 'app-news-article',
@@ -37,6 +38,8 @@ import { IntrojsService } from 'src/app/introjs.service';
 })
 export class NewsArticlePage implements OnInit, OnDestroy {
   currentReaders$;
+  summary?: string;
+  showSummary: boolean = false;
 
   article = {} as any;
   loading = true;
@@ -67,7 +70,10 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     private iab: InAppBrowser,
     private introService: IntrojsService,
     private meta: Meta,
-    private router: Router
+    private router: Router,
+    private gptSummaryService: GptSummaryService,
+    public toastController: ToastController,
+    public loadingController: LoadingController,
   ) {}
 
   ngOnInit() {
@@ -161,10 +167,42 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   }
 
   async getSummary() {
-    if (!this.userService.isPro) {
+    if (this.showSummary)
+      return;
+    if (this.summary) {
+      this.showSummary = true;
+      return;
+    }
+    if (this.userService.isPro) {
       this.router.navigateByUrl('/tabs/tab3?openPremium=true', {});
     } else {
-      alert('Coming Soon');
+      const loader = await this.loadingController.create({
+        message: 'Summarizing article...',
+        spinner: 'crescent',
+        showBackdrop: true,
+      });
+      try {
+        await loader.present();
+        const response = await this.gptSummaryService.summarizeArticle(
+          this.artticleType,
+          this.articleId
+        );
+        if (response) {
+          this.summary = response;
+          this.showSummary = true;
+        } else {
+          throw new Error('There seemed to be an error summarizing the article');
+        }
+      } catch (error) {
+        this.toastController.create({
+          message: error.message,
+          duration: 3000,
+          position: 'bottom',
+        }).then((toast) => {
+          toast.present();
+        });
+      }
+      await loader.dismiss();
     }
   }
 
