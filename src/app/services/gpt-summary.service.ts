@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { getFunctions, httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 @Injectable({
   providedIn: 'root'
@@ -9,9 +9,7 @@ export class GptSummaryService {
   private summarizeArticleCall = httpsCallable(this.functions, 'summarizeArticle');
 
 
-  constructor() {
-    connectFunctionsEmulator(this.functions, 'localhost', 5001);
-  }
+  constructor() {}
 
   async summarizeArticle(collection: string, articleId: string, user?: any) {
     /* The backend function will check if the user is a Pro user.

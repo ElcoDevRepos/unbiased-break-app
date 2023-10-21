@@ -6,7 +6,7 @@ const fetch = require("node-fetch");
 var cron = require("node-cron");
 const {onCall, HttpsError} = require("firebase-functions/v2/https");
 const { default: OpenAI } = require("openai");
-
+require('dotenv').config();
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -25,7 +25,7 @@ const options = {
   },
 };
 const openai = new OpenAI({
-    apiKey: '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',
+    apiKey: process.env.OPEN_AI_KEY,
 });
 
 /* This function does not check for premium users, the caller should do that */
@@ -34,7 +34,6 @@ async function summarizeArticle(collection, articleId) {
   const snapshot = await db.collection(collection).where('id', '==', articleId).get();
 
   if (snapshot.empty) {
-    console.log("Article does not exist");
     return null;
   }
   const article = snapshot.docs[0];
@@ -44,7 +43,6 @@ async function summarizeArticle(collection, articleId) {
     .collection("gpt-summaries").doc("only").get();
   if (cachedSummary.exists) {
     const summary = cachedSummary.data().summary;
-    console.log("Returning cached summary");
     if (summary) return {
       summary: summary,
       fromCache: true,
@@ -111,7 +109,6 @@ exports.summarizeArticle = onCall(async (req) => {
 
   if (!summary) throw new HttpsError("internal", "Something went wrong");
   if (!fromCache) {
-    console.log("Writing to database");
     const docId = response.docId;
     await db.collection(req.data.collection).doc(docId)
       .collection("gpt-summaries").doc("only").set({
