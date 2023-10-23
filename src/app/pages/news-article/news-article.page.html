@@ -68,7 +68,12 @@
       <ion-badge color="primary">{{ currentReaderCount }}</ion-badge>
     </ion-item>
     <ion-card-content class="news-article">
-      <div [innerHTML]="article.content"></div>
+      <div *ngIf="!showSummary" [innerHTML]="article.content"></div>
+      <div *ngIf="showSummary" style="display: flex; justify-content: space-between; align-items: baseline;">
+        <div style="font-size: 24px; padding-bottom: 10px;">GPT Summary</div>
+        <div (click)="this.showSummary = false" style="text-decoration: underline;">Hide Summary</div>
+      </div>
+      <div *ngIf="showSummary">{{ summary }}</div>
     </ion-card-content>
 
     <ng-container *ngIf="checkIfAnyRelatedArticles()">

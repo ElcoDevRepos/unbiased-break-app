@@ -15,7 +15,8 @@
   "dependencies": {
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.18.0",
-    "node-cron": "^3.0.2"
+    "node-cron": "^3.0.2",
+    "openai": "^4.12.4"
   },
   "devDependencies": {
     "firebase-functions-test": "^0.2.0"

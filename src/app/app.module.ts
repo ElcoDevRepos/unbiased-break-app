@@ -23,7 +23,6 @@ import { indexedDBLocalPersistence } from 'firebase/auth';
 
 import { HttpClientModule } from '@angular/common/http';
 import { PressDirective } from './press.directive';
-import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { InAppPurchase2 } from '@ionic-native/in-app-purchase-2/ngx';
 
 @NgModule({
@@ -49,7 +48,6 @@ import { InAppPurchase2 } from '@ionic-native/in-app-purchase-2/ngx';
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    InAppBrowser,
     InAppPurchase2,
   ],
   bootstrap: [AppComponent],
