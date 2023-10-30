@@ -20,7 +20,12 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getAuth, provideAuth, initializeAuth } from '@angular/fire/auth';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 import { indexedDBLocalPersistence } from 'firebase/auth';
-
+import {
+  provideAnalytics,
+  getAnalytics,
+  ScreenTrackingService,
+  UserTrackingService,
+} from '@angular/fire/analytics';
 import { HttpClientModule } from '@angular/common/http';
 import { PressDirective } from './press.directive';
 import { InAppPurchase2 } from '@ionic-native/in-app-purchase-2/ngx';
@@ -40,6 +45,7 @@ import { InAppPurchase2 } from '@ionic-native/in-app-purchase-2/ngx';
       registrationStrategy: 'registerWhenStable:30000',
     }),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAnalytics(() => getAnalytics()),
     provideFirestore(() => getFirestore()),
     provideAuth(() =>
       initializeAuth(getApp(), { persistence: indexedDBLocalPersistence })

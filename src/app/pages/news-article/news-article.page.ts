@@ -18,7 +18,12 @@ import {
   increment,
 } from '@angular/fire/firestore';
 import { UserService } from 'src/app/services/user.service';
-import { LoadingController, ModalController, Platform, ToastController } from '@ionic/angular';
+import {
+  LoadingController,
+  ModalController,
+  Platform,
+  ToastController,
+} from '@ionic/angular';
 import { CommentthreadComponent } from 'src/app/modals/commentthread/commentthread.component';
 import { AdMob } from '@capacitor-community/admob';
 import { AdmobService } from 'src/app/services/admob.service';
@@ -72,7 +77,7 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     private router: Router,
     private gptSummaryService: GptSummaryService,
     public toastController: ToastController,
-    public loadingController: LoadingController,
+    public loadingController: LoadingController
   ) {}
 
   ngOnInit() {
@@ -166,13 +171,12 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   }
 
   async getSummary() {
-    if (this.showSummary)
-      return;
+    if (this.showSummary) return;
     if (this.summary) {
       this.showSummary = true;
       return;
     }
-    if (this.userService.isPro) {
+    if (!this.userService.isPro) {
       this.router.navigateByUrl('/tabs/tab3?openPremium=true', {});
     } else {
       const loader = await this.loadingController.create({
@@ -184,22 +188,27 @@ export class NewsArticlePage implements OnInit, OnDestroy {
         await loader.present();
         const response = await this.gptSummaryService.summarizeArticle(
           this.artticleType,
-          this.articleId
+          this.articleId,
+          this.userService.getLoggedInUser().uid
         );
         if (response) {
           this.summary = response;
           this.showSummary = true;
         } else {
-          throw new Error('There seemed to be an error summarizing the article');
+          throw new Error(
+            'There seemed to be an error summarizing the article'
+          );
         }
       } catch (error) {
-        this.toastController.create({
-          message: error.message,
-          duration: 3000,
-          position: 'bottom',
-        }).then((toast) => {
-          toast.present();
-        });
+        this.toastController
+          .create({
+            message: error.message,
+            duration: 3000,
+            position: 'bottom',
+          })
+          .then((toast) => {
+            toast.present();
+          });
       }
       await loader.dismiss();
     }

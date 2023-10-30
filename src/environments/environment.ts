@@ -16,12 +16,13 @@ export const environment = {
   production: false,
   useEmulators: true,
   firebaseConfig: {
-    apiKey: "AIzaSyDbwxaT5GWvE-VmPfGNgTSPFwEMgE8BPNc",
-    authDomain: "voter-certified.firebaseapp.com",
-    projectId: "voter-certified",
-    storageBucket: "voter-certified.appspot.com",
-    messagingSenderId: "732092749136",
-    appId: "1:732092749136:web:8482641fe486e579010855"
+    apiKey: 'AIzaSyDbwxaT5GWvE-VmPfGNgTSPFwEMgE8BPNc',
+    authDomain: 'voter-certified.firebaseapp.com',
+    projectId: 'voter-certified',
+    storageBucket: 'voter-certified.appspot.com',
+    messagingSenderId: '732092749136',
+    appId: '1:732092749136:web:8482641fe486e579010855',
+    measurementId: 'G-75ESJQPSRV',
   },
 };
 

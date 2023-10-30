@@ -41,6 +41,7 @@ export class Tab4Page implements OnInit {
   summariesRead = 0;
   doneLoading = false;
   dateString;
+  isLoggedIn = false;
   @ViewChild('slides') slides: any;
   constructor(
     private tabsPage: TabsPage,
@@ -56,17 +57,22 @@ export class Tab4Page implements OnInit {
     try {
       let sum = await this.getSummaries();
       // check to see if summary is bookmarked
-      let favoriteSummaries = await this.userService.getFavoriteSummaries();
-      function isElementInFavorites(element, array) {
-        return array.some(function (arrayElement) {
-          return arrayElement.id === element.id;
+      const user = this.userService.getLoggedInUser();
+      if (user) {
+        this.isLoggedIn = true;
+        let favoriteSummaries = await this.userService.getFavoriteSummaries();
+        function isElementInFavorites(element, array) {
+          return array.some(function (arrayElement) {
+            return arrayElement.id === element.id;
+          });
+        }
+        sum[0].forEach((element) => {
+          if (isElementInFavorites(element, favoriteSummaries)) {
+            element.favorited = true;
+          }
         });
       }
-      sum[0].forEach((element) => {
-        if (isElementInFavorites(element, favoriteSummaries)) {
-          element.favorited = true;
-        }
-      });
+
       this.gptSummaries = sum[0];
       this.goToNextNotClearedSummary();
       this.doneLoading = true;

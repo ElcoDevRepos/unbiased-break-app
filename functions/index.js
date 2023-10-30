@@ -4,9 +4,9 @@ const admin = require("firebase-admin");
 const { Timestamp } = require("firebase-admin/firestore");
 const fetch = require("node-fetch");
 var cron = require("node-cron");
-const {onCall, HttpsError} = require("firebase-functions/v2/https");
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { default: OpenAI } = require("openai");
-require('dotenv').config();
+require("dotenv").config();
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -25,13 +25,16 @@ const options = {
   },
 };
 const openai = new OpenAI({
-    apiKey: process.env.OPEN_AI_KEY,
+  apiKey: process.env.OPEN_AI_KEY,
 });
 
 /* This function does not check for premium users, the caller should do that */
 async function summarizeArticle(collection, articleId) {
   if (!articleId || !collection) return null;
-  const snapshot = await db.collection(collection).where('id', '==', articleId).get();
+  const snapshot = await db
+    .collection(collection)
+    .where("id", "==", articleId)
+    .get();
 
   if (snapshot.empty) {
     return null;
@@ -39,26 +42,28 @@ async function summarizeArticle(collection, articleId) {
   const article = snapshot.docs[0];
 
   /* Check if article is already summarized, if so, return it */
-    const cachedSummary = await db.collection(collection).doc(article.id)
-    .collection("gpt-summaries").doc("only").get();
+  const cachedSummary = await db
+    .collection(collection)
+    .doc(article.id)
+    .collection("gpt-summaries")
+    .doc("only")
+    .get();
   if (cachedSummary.exists) {
     const summary = cachedSummary.data().summary;
-    if (summary) return {
-      summary: summary,
-      fromCache: true,
-    };
+    if (summary)
+      return {
+        summary: summary,
+        fromCache: true,
+      };
   }
 
-
   const data = article.data();
-  if (data.source === "The Washington Post")
-    return null; // Putting this here just to be safe
-
+  if (data.source === "The Washington Post") return null; // Putting this here just to be safe
 
   try {
     const chatCompletion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
-      messages: [{"role": "user", "content": generatePrompt(data.textBody)}],
+      messages: [{ role: "user", content: generatePrompt(data.textBody) }],
     });
 
     const response = chatCompletion.choices[0].message.content;
@@ -79,46 +84,50 @@ function generatePrompt(textBody) {
   return `Create a two sentence summary for this news article: ${textBody}`;
 }
 
-
-exports.summarizeArticle = onCall(async (req) => {
-  if (!req.data.collection || !req.data.article)
+exports.summarizeArticle = functions.https.onCall(async (req) => {
+  console.log(req);
+  if (!req.collection || !req.article)
     throw new HttpsError("invalid-argument", "Missing arguments");
 
   /* Check if user has access to this feature.
-    * Right now, only premium users have access to this feature
-    * and admins
-    */
-    if (!req.auth) throw new HttpsError("unauthenticated", "User is not authenticated");
-  const userId = req.auth.uid;
+   * Right now, only premium users have access to this feature
+   * and admins
+   */
+
+  const userId = req.user;
   try {
     let user = await db.collection("users").doc(userId).get();
     user = user.data();
-    if (!user.admin &&
-      !user.isPro)
-      throw new HttpsError("unauthenticated", "User is not a Premium User");
   } catch (error) {
     /* Ok I know this looks silly, but it just ensures that the client gets a proper error
-      * and not something about uid not being found
-      */
-    throw new HttpsError("unauthenticated", error.message || "User is not a Premium User");
+     * and not something about uid not being found
+     */
+    throw new HttpsError(
+      "unauthenticated",
+      error.message || "User is not a Premium User"
+    );
   }
 
-  const response = await summarizeArticle(req.data.collection, req.data.article);
+  const response = await summarizeArticle(req.collection, req.article);
   if (!response) throw new HttpsError("internal", "Something went wrong");
   const { summary, fromCache } = response;
 
   if (!summary) throw new HttpsError("internal", "Something went wrong");
   if (!fromCache) {
     const docId = response.docId;
-    await db.collection(req.data.collection).doc(docId)
-      .collection("gpt-summaries").doc("only").set({
+    await db
+      .collection(req.collection)
+      .doc(docId)
+      .collection("gpt-summaries")
+      .doc("only")
+      .set({
         summary,
         timestamp: Timestamp.now(),
       });
   }
   return {
     summary,
-  }
+  };
 });
 
 function getProperCollection(a) {
@@ -523,10 +532,7 @@ async function doDailyRandomArticle() {
           body: article.title,
         },
         data: {
-          url:
-            "https://app.unbiasedbreak.com/news-article/" +
-            article.id +
-            "/trending-articles",
+          url: article.id,
         },
       };
 

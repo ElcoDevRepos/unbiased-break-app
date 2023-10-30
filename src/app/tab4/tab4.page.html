@@ -8,8 +8,13 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div *ngIf="(!gptSummaries || gptSummaries.length == 0) && doneLoading" style="height: max-content">
-    <h1 style="margin: 10% 20px 0 20px; text-align: center"><b>Looks Like There's No More Summaries...</b></h1>
+  <div
+    *ngIf="(!gptSummaries || gptSummaries.length == 0) && doneLoading"
+    style="height: max-content"
+  >
+    <h1 style="margin: 10% 20px 0 20px; text-align: center">
+      <b>Looks Like There's No More Summaries...</b>
+    </h1>
   </div>
   <ion-slides
     style="margin-top: 25px"
@@ -40,7 +45,10 @@
           alt="Article image"
         />
 
-        <ion-button fill="clear" (click)="favoriteArticle(summary)"
+        <ion-button
+          fill="clear"
+          (click)="favoriteArticle(summary)"
+          *ngIf="isLoggedIn"
           ><ion-icon
             *ngIf="summary.favorited"
             slot="icon-only"
@@ -65,22 +73,24 @@
             Read more</a
           >
         </div>
-            <div style="display: flex; justify-content: space-between;">
-              <ion-button
-                *ngIf="gptSummaries && gptSummaries.length > 0 && summary.id != gptSummaries[0].id"
-                fill="clear"
-                style="margin-right: auto"
-                (click)="slides.slidePrev()">
-                <ion-icon name="arrow-back-outline"></ion-icon>
-              </ion-button>
-              <ion-button
-                *ngIf="gptSummaries && gptSummaries.length > 0 && summary.id != gptSummaries[gptSummaries.length - 1].id"
-                fill="clear"
-                style="margin-left: auto"
-                (click)="slides.slideNext()">
-                <ion-icon name="arrow-forward-outline"></ion-icon>
-              </ion-button>
-            </div>
+        <div style="display: flex; justify-content: space-between">
+          <ion-button
+            *ngIf="gptSummaries && gptSummaries.length > 0 && summary.id != gptSummaries[0].id"
+            fill="clear"
+            style="margin-right: auto"
+            (click)="slides.slidePrev()"
+          >
+            <ion-icon name="arrow-back-outline"></ion-icon>
+          </ion-button>
+          <ion-button
+            *ngIf="gptSummaries && gptSummaries.length > 0 && summary.id != gptSummaries[gptSummaries.length - 1].id"
+            fill="clear"
+            style="margin-left: auto"
+            (click)="slides.slideNext()"
+          >
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+          </ion-button>
+        </div>
       </ion-card>
     </ion-slide>
   </ion-slides>
