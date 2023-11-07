@@ -54,7 +54,7 @@ export class Tab2Page {
   showReadArticles;
   readArticles = [];
   showSearchBar: boolean = false;
-  category: string = 'world';
+  category: string = 'united-states';
   stopCategoryArticleQuery: boolean = false;
 
   constructor(

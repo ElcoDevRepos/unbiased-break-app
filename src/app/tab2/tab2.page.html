@@ -95,13 +95,6 @@
   <div class="scroll-container">
     <div class="scroll-content category-container">
       <button
-        (click)="setCategory('world')"
-        style="background-image: url('assets/category-imgs/world.jpg')"
-        [class.active-button]="category === 'world'"
-      >
-        World
-      </button>
-      <button
         (click)="setCategory('united-states')"
         style="background-image: url('assets/category-imgs/us.jpg')"
         [class.active-button]="category === 'united-states'"
@@ -149,6 +142,13 @@
         [class.active-button]="category === 'opinion'"
       >
         Opinion
+      </button>
+      <button
+        (click)="setCategory('world')"
+        style="background-image: url('assets/category-imgs/world.jpg')"
+        [class.active-button]="category === 'world'"
+      >
+        World
       </button>
       <button
         (click)="setCategory('sports')"
