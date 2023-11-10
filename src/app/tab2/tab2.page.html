@@ -101,6 +101,23 @@
       >
         U.S.
       </button>
+
+      <button
+        (click)="setCategory('israel-conflict')"
+        style="background-image: url('assets/category-imgs/israel.jpg')"
+        [class.active-button]="category === 'israel-conflict'"
+      >
+        Israel<br>Conflict
+      </button>
+
+      <button
+        (click)="setCategory('ukraine-conflict')"
+        style="background-image: url('assets/category-imgs/ukraine.jpg')"
+        [class.active-button]="category === 'ukraine-conflict'"
+      >
+        Ukraine<br>Conflict
+      </button>
+
       <button
         (click)="setCategory('politics')"
         style="background-image: url('assets/category-imgs/politics.jpg')"
@@ -108,6 +125,7 @@
       >
         Politics
       </button>
+
       <button
         (click)="setCategory('economy')"
         style="background-image: url('assets/category-imgs/economy.jpg')"
@@ -115,6 +133,7 @@
       >
         Economy
       </button>
+
       <button
         (click)="setCategory('business')"
         style="background-image: url('assets/category-imgs/business.jpg')"
@@ -122,6 +141,7 @@
       >
         Business
       </button>
+
       <button
         (click)="setCategory('tech')"
         style="background-image: url('assets/category-imgs/tech.jpg')"
@@ -129,6 +149,7 @@
       >
         Tech
       </button>
+
       <button
         (click)="setCategory('markets')"
         style="background-image: url('assets/category-imgs/markets.jpg')"
@@ -136,6 +157,7 @@
       >
         Markets
       </button>
+
       <button
         (click)="setCategory('opinion')"
         style="background-image: url('assets/category-imgs/opinion.jpg')"
@@ -143,6 +165,7 @@
       >
         Opinion
       </button>
+
       <button
         (click)="setCategory('world')"
         style="background-image: url('assets/category-imgs/world.jpg')"
@@ -150,6 +173,7 @@
       >
         World
       </button>
+
       <button
         (click)="setCategory('sports')"
         style="background-image: url('assets/category-imgs/sports.jpg')"
