@@ -46,10 +46,7 @@ import { IntrojsService } from '../introjs.service';
 import { TabsPage } from '../tabs/tabs.page';
 import { Share } from '@capacitor/share';
 import * as _ from 'lodash';
-import {
-  InAppPurchase2,
-  IAPProduct,
-} from '@ionic-native/in-app-purchase-2/ngx';
+import 'cordova-plugin-purchase';
 
 @Component({
   selector: 'app-tab3',
@@ -76,13 +73,14 @@ export class Tab3Page implements OnInit, OnDestroy {
   requestedNewsSources: any = [];
   newsSources: any = [];
   isAdmin: boolean = false;
-  products: IAPProduct[] = [];
   isPro: boolean = false;
   sourceImages = [];
   loader;
   premium_id;
+  products: any;
+  store?: CdvPurchase.Store;
+
   constructor(
-    private store: InAppPurchase2,
     private router: Router,
     public auth: Auth,
     private modal: ModalController,
@@ -109,36 +107,48 @@ export class Tab3Page implements OnInit, OnDestroy {
       !this.platform.is('ios');
     this.createFakeHistory();
     this.platform.ready().then(() => {
-      this.store.verbosity = this.store.DEBUG;
+      console.log('READY');
+      this.store = CdvPurchase.store;
+      console.log(this.store.products);
       this.registerProducts();
-      this.setupListeners();
 
-      // Get the real product information
+      this.setupListeners();
+      console.log(this.products);
+      this.ref.detectChanges();
+      this.store.initialize([
+        this.platform.is('ios')
+          ? CdvPurchase.Platform.APPLE_APPSTORE
+          : CdvPurchase.Platform.GOOGLE_PLAY,
+      ]);
       this.store.ready(() => {
+        console.log('STORE READY');
+        console.log(this.products);
         this.products = this.store.products;
-        this.ref.detectChanges();
-        this.route.queryParams.subscribe((params) => {
-          if (params.openPremium) {
-            this.purchaseModal.present();
-          }
-        });
+      });
+      this.route.queryParams.subscribe((params) => {
+        if (params.openPremium) {
+          this.purchaseModal.present();
+        }
       });
     });
   }
 
   registerProducts() {
-    this.store.register({
-      id: this.premium_id,
-      type: this.store.PAID_SUBSCRIPTION,
-    });
-
-    this.store.refresh();
+    this.store.register([
+      {
+        type: CdvPurchase.ProductType.PAID_SUBSCRIPTION,
+        id: this.premium_id,
+        platform: this.platform.is('ios')
+          ? CdvPurchase.Platform.APPLE_APPSTORE
+          : CdvPurchase.Platform.GOOGLE_PLAY,
+      },
+    ]);
   }
 
   setupListeners() {
     this.store
-      .when('product')
-      .approved((p: IAPProduct) => {
+      .when()
+      .approved((p: any) => {
         // Handle the product deliverable
         if (p.id === this.premium_id) {
           if (this.loader) {
@@ -152,31 +162,15 @@ export class Tab3Page implements OnInit, OnDestroy {
 
         return p.verify();
       })
-      .verified((p: IAPProduct) => p.finish())
-      .cancelled(() => {
-        if (this.loader) {
-          this.loader.dismiss();
-        }
-      })
-      .error(() => {
+      .verified((p: any) => p.finish())
+      .finished(() => {
         if (this.loader) {
           this.loader.dismiss();
         }
       });
-
-    // Specific query for one ID
-    this.store.when(this.premium_id).owned((p: IAPProduct) => {
-      this.isPro = p.owned;
-      this.userService.isPro = this.isPro;
-      this.userService.setIsPro(p.owned);
-
-      if (this.loader) {
-        this.loader.dismiss();
-      }
-    });
   }
 
-  async purchase(product: IAPProduct) {
+  async purchase(product: CdvPurchase.Product) {
     console.log(product);
     this.loader = await this.loadingCtrl.create({
       message: 'Loading...',
@@ -184,7 +178,7 @@ export class Tab3Page implements OnInit, OnDestroy {
     });
 
     await this.loader.present();
-    this.store.order(product).then(
+    this.store.order(product.getOffer()).then(
       (p) => {
         // Purchase in progress!
         if (this.purchaseModal) this.purchaseModal.dismiss();
@@ -197,7 +191,7 @@ export class Tab3Page implements OnInit, OnDestroy {
   }
 
   restore() {
-    this.store.refresh();
+    this.store.restorePurchases();
   }
 
   async presentAlert(header, message) {

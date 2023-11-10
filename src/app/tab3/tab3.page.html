@@ -495,8 +495,9 @@
               >Terms of Use</a
             >
             <br /><br />
-            <ion-button expand="full" (click)="purchase(products[0])"
-              >Subscribe for $3.99 / month</ion-button
+            <ion-button expand="full" (click)="purchase(store.products[0])"
+              >Subscribe for {{store.products[0].pricing.price}} /
+              month</ion-button
             >
           </ion-card-content>
         </ion-card>

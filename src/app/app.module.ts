@@ -28,7 +28,6 @@ import {
 } from '@angular/fire/analytics';
 import { HttpClientModule } from '@angular/common/http';
 import { PressDirective } from './press.directive';
-import { InAppPurchase2 } from '@ionic-native/in-app-purchase-2/ngx';
 
 @NgModule({
   declarations: [AppComponent, PressDirective],
@@ -52,10 +51,7 @@ import { InAppPurchase2 } from '@ionic-native/in-app-purchase-2/ngx';
     ),
     provideStorage(() => getStorage()),
   ],
-  providers: [
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    InAppPurchase2,
-  ],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })
 export class AppModule {
