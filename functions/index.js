@@ -302,9 +302,29 @@ exports.deleteFeed = functions
     let promise = [deleteMyFeedArticles()];
     return Promise.all(promise);
   });
-async function doReplyNotifification(change) {
+async function doReplyNotifification(change, articleId) {
   let userId = change.after.data().uid;
   let comments = change.after.data().comments;
+
+  // Find article UID
+  const collections = ['left-articles', 'right-articles', 'middle-articles', 'trending-articles'];
+  let articleData = null;
+  let articleUID = '';
+  let col = null;
+
+  // Loop through each collection and check for the article
+  for (const collection of collections) {
+    const doc = await admin.firestore().collection(collection).doc(articleId).get();
+    if (doc.exists) {
+      col = collection;
+      articleData = doc.data();
+      break; // Exit the loop if article is found
+    }
+  }
+
+  if(articleData) articleUID = articleData.id;
+  else articleUID = 'tab1';
+
   if (comments.length > 0) {
     let latestComment = comments[comments.length - 1];
     if (latestComment.uid !== userId) {
@@ -317,9 +337,11 @@ async function doReplyNotifification(change) {
             body: "A User Has Replied To Your Comment",
           },
           data: {
-            body: "sample data",
+            category: col,
+            url: articleUID,
           },
         };
+        console.log("sending payload: ", payload);
         await admin.messaging().send(payload);
       }
     }
@@ -594,28 +616,40 @@ exports.sendResponseNotificationLeft = functions
   .runWith(runtimeOpts)
   .firestore.document("/left-articles/{articleId}/comments/{commentId}")
   .onUpdate((change, context) => {
-    let promise = [doReplyNotifification(change)];
+    // Extract the articleId from the context
+    const articleId = context.params.articleId;
+
+    let promise = [doReplyNotifification(change, articleId)];
     return Promise.all(promise);
   });
 exports.sendResponseNotificationMiddle = functions
   .runWith(runtimeOpts)
   .firestore.document("/middle-articles/{articleId}/comments/{commentId}")
   .onUpdate((change, context) => {
-    let promise = [doReplyNotifification(change)];
+    // Extract the articleId from the context
+    const articleId = context.params.articleId;
+
+    let promise = [doReplyNotifification(change, articleId)];
     return Promise.all(promise);
   });
 exports.sendResponseNotificationRight = functions
   .runWith(runtimeOpts)
   .firestore.document("/right-articles/{articleId}/comments/{commentId}")
   .onUpdate((change, context) => {
-    let promise = [doReplyNotifification(change)];
+    // Extract the articleId from the context
+    const articleId = context.params.articleId;
+
+    let promise = [doReplyNotifification(change, articleId)];
     return Promise.all(promise);
   });
 exports.sendResponseNotificationTrending = functions
   .runWith(runtimeOpts)
   .firestore.document("/trending-articles/{articleId}/comments/{commentId}")
   .onUpdate((change, context) => {
-    let promise = [doReplyNotifification(change)];
+    // Extract the articleId from the context
+    const articleId = context.params.articleId;
+
+    let promise = [doReplyNotifification(change, articleId)];
     return Promise.all(promise);
   });
 

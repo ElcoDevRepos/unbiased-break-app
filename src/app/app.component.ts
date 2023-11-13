@@ -67,6 +67,15 @@ export class AppComponent {
         else if(notification.notification.data.url == "tab4") {
           this.router.navigate(['/tabs/tab4']);
         }
+        // Navigate to specific replied article using category key
+        else if(notification.notification.data.category) {
+          this.router.navigate([
+            '/news-article/' + 
+            notification.notification.data.url + 
+            '/' + 
+            notification.notification.data.category
+          ]);
+        }
         // Navigate to specific article
         else {
           this.router.navigate([
