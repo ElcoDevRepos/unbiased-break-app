@@ -357,7 +357,7 @@ async function doDailyReminder() {
                 body: "Open up your app to catch up on missed news!",
               },
               data: {
-                body: "sample data",
+                url: "tab4",
               },
             };
             console.log("Sending");
@@ -456,7 +456,7 @@ async function doDailyArticlesByTopic() {
                   "!",
               },
               data: {
-                body: "sample data",
+                url: "tab1",
               },
             };
           } else {
@@ -471,7 +471,7 @@ async function doDailyArticlesByTopic() {
                   "!",
               },
               data: {
-                body: "sample data",
+                url: "tab1",
               },
             };
           }
