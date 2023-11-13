@@ -380,6 +380,41 @@ async function doDailyReminder() {
   });
 }
 
+async function doDailyGPT() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let usersRef = await db.collection("users").get();
+
+      let promises = [];
+      usersRef.forEach((u) => {
+        let user = u.data();
+
+        if (user.token && user.GPTSummariesNotification) {
+
+            let payload = {
+              token: user.token,
+              notification: {
+                title: "New GPT Summaries!",
+                body: "Click to check out todays new GPT summaries.",
+              },
+              data: {
+                url: "tab4",
+              },
+            };
+            console.log("Sending GPT notification to ", user.email);
+            console.log(payload);
+            promises.push(admin.messaging().send(payload));
+          }
+      });
+
+      Promise.all(promises).then(() => resolve());
+    } catch (error) {
+      console.log(error);
+      reject();
+    }
+  });
+}
+
 async function doDailyArticlesByTopic() {
   return new Promise(async (resolve) => {
     let promises = [];
@@ -607,3 +642,12 @@ exports.dailyRandomArticle = functions
     let promise = [doDailyRandomArticle()];
     return Promise.all(promise);
   });
+
+exports.dailyGPTSummaries = functions
+  .runWith(runtimeOpts)
+  .pubsub.schedule("0 17 * * *")
+  .onRun(async (context) => {
+    let promise = [doDailyGPT()];
+    return Promise.all(promise);
+  });
+
