@@ -59,11 +59,31 @@ export class AppComponent {
     PushNotifications.addListener(
       'pushNotificationActionPerformed',
       (notification) => {
-        this.router.navigate([
-          '/news-article/' +
-            notification.notification.data.url +
-            '/trending-articles',
-        ]);
+        // Navigate to tab 1
+        if(notification.notification.data.url == "tab1") {
+          this.router.navigate(['/tabs/tab1']);
+        }
+        // Navigate to tab 4 (GPT summary tab)
+        else if(notification.notification.data.url == "tab4") {
+          this.router.navigate(['/tabs/tab4']);
+        }
+        // Navigate to specific replied article using category key
+        else if(notification.notification.data.category) {
+          this.router.navigate([
+            '/news-article/' + 
+            notification.notification.data.url + 
+            '/' + 
+            notification.notification.data.category
+          ]);
+        }
+        // Navigate to specific article
+        else {
+          this.router.navigate([
+            '/news-article/' +
+              notification.notification.data.url +
+              '/trending-articles',
+          ]);
+        }
       }
     );
   }
