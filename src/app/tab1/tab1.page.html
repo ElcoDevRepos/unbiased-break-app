@@ -64,6 +64,13 @@
   <div class="scroll-container">
     <div class="scroll-content">
       <ion-card
+        id="introjs-step3"
+        class="topic-card"
+        (click)="openTopicModal()"
+      >
+        Edit Topics
+      </ion-card>
+      <ion-card
         class="topic-card"
         *ngFor="let topic of topicOptions; let last = last"
         [class.topic-checked]="topic.checked"
@@ -72,13 +79,6 @@
         [id]="last ? 'introjs-step2' : ''"
       >
         {{ topic.display | titlecase}}
-      </ion-card>
-      <ion-card
-        id="introjs-step3"
-        class="topic-card"
-        (click)="openTopicModal()"
-      >
-        Edit Topics
       </ion-card>
     </div>
   </div>
