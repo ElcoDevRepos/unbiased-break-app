@@ -29,6 +29,7 @@ import * as _ from 'lodash';
 import { UserService } from '../services/user.service';
 import { Share } from '@capacitor/share';
 import { AdmobService } from '../services/admob.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab4',
@@ -49,9 +50,10 @@ export class Tab4Page implements OnInit {
     private userService: UserService,
     private admobService: AdmobService,
     private renderer: Renderer2,
-    private el: ElementRef
+    private el: ElementRef,
+    private alertController: AlertController
   ) {}
-
+  
   async ngOnInit() {
     this.getSourceImages();
     try {
@@ -207,8 +209,30 @@ export class Tab4Page implements OnInit {
     });
   }
 
+  /* ion alert to verify clearing all GPT summary articles */
+  async presentGPTClearAlert() {
+    const alert = await this.alertController.create({
+      header: 'Are you sure?',
+      message: "This will clear all of today's GPT summaries.",
+      buttons: [
+      {
+        text: 'Continue',
+        handler: () => {
+          this.clearAllSummaries();
+        }
+      }, 
+      {
+        text: 'Cancel',
+        role: 'cancel',
+      }
+    ]
+    });
+
+    await alert.present();
+  }
+
   /* Add all the summaries for the day to the cleared list */
-  clearAllSummaries(event: any) {
+  clearAllSummaries() {
     this.addSummariesToCleared(this.gptSummaries.map((s) => s.id));
     this.gptSummaries = [];
   }
