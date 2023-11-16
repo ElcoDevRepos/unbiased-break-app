@@ -7,7 +7,6 @@ import {
   AdOptions,
 } from '@capacitor-community/admob';
 import { Platform } from '@ionic/angular';
-import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +14,8 @@ import { UserService } from './user.service';
 export class AdmobService {
   clickLimit = 5;
   clicks = 0;
-  constructor(private platform: Platform, private userService: UserService) {}
+  isPro : boolean = false;
+  constructor(private platform: Platform) {}
 
   async initialize() {
     await AdMob.initialize({
@@ -49,17 +49,17 @@ export class AdmobService {
         adId: 'ca-app-pub-4575624656787324/8113758076',
         isTesting: false,
       };
-      if (!this.userService.isPro) await AdMob.prepareInterstitial(pOptions);
-      if (!this.userService.isPro) await AdMob.showInterstitial();
+      if (!this.isPro) await AdMob.prepareInterstitial(pOptions);
+      if (!this.isPro) await AdMob.showInterstitial();
       this.clicks = 0;
     }
   }
 
   async showBanner() {
-    if (!this.userService.isPro) AdMob.resumeBanner();
+    if (!this.isPro) AdMob.resumeBanner();
   }
   async hideBanner() {
-    if (!this.userService.isPro) AdMob.hideBanner();
+    if (this.isPro) AdMob.hideBanner();
   }
 
   async showInterstitial() {
@@ -67,8 +67,8 @@ export class AdmobService {
       adId: 'ca-app-pub-4575624656787324/8113758076',
       isTesting: false,
     };
-    if (!this.userService.isPro) await AdMob.prepareInterstitial(pOptions);
-    if (!this.userService.isPro) await AdMob.showInterstitial();
+    if (!this.isPro) await AdMob.prepareInterstitial(pOptions);
+    if (!this.isPro) await AdMob.showInterstitial();
   }
 
   async;

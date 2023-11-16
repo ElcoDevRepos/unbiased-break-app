@@ -16,13 +16,14 @@ import {
   signOut,
 } from '@angular/fire/auth';
 import _ from 'lodash-es';
+import { AdmobService } from './admob.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   isPro: boolean = false;
-  constructor(private firestore: Firestore, private auth: Auth) {
+  constructor(private firestore: Firestore, private auth: Auth, private admob : AdmobService) {
     this.auth.onAuthStateChanged((user) => {
       if (user) {
         let ref = collection(this.firestore, 'users');
@@ -30,6 +31,11 @@ export class UserService {
         getDocs(q).then((docs) => {
           docs.forEach((d) => {
             this.isPro = d.data()['isPro'] || false;
+            if(this.isPro) {
+              console.log('isPro');
+              admob.isPro = true;
+              admob.hideBanner();
+            }
           });
         });
       }
