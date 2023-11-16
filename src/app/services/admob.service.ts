@@ -59,7 +59,7 @@ export class AdmobService {
     if (!this.isPro) AdMob.resumeBanner();
   }
   async hideBanner() {
-    if (this.isPro) AdMob.hideBanner();
+    AdMob.hideBanner();
   }
 
   async showInterstitial() {
