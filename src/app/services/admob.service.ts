@@ -14,7 +14,7 @@ import { Platform } from '@ionic/angular';
 export class AdmobService {
   clickLimit = 5;
   clicks = 0;
-  isPro : boolean = false;
+  isPro: boolean = false;
   constructor(private platform: Platform) {}
 
   async initialize() {
@@ -33,12 +33,6 @@ export class AdmobService {
 
     await AdMob.showBanner(options);
     await AdMob.hideBanner();
-
-    const pOptions: AdOptions = {
-      adId: 'ca-app-pub-4575624656787324/8113758076',
-      isTesting: false,
-    };
-    await AdMob.prepareInterstitial(pOptions);
   }
 
   async articleClicked() {
