@@ -171,47 +171,68 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   }
 
   async getSummary() {
+    // Return if article is already summarized
     if (this.showSummary) return;
     if (this.summary) {
       this.showSummary = true;
       return;
     }
+
+    // If user is not logged in show toast message
+    if (!this.userService.getLoggedInUser()) {
+      this.toastController
+        .create({
+          message: 'Log in to summarize articles',
+          duration: 3000,
+          position: 'bottom',
+        })
+        .then((toast) => {
+          toast.present();
+        });
+      return;
+    } 
+
+    // If user is not premium
     if (!this.userService.isPro) {
-      this.router.navigateByUrl('/tabs/tab3?openPremium=true', {});
-    } else {
-      const loader = await this.loadingController.create({
-        message: 'Summarizing article...',
-        spinner: 'crescent',
-        showBackdrop: true,
-      });
-      try {
-        await loader.present();
-        const response = await this.gptSummaryService.summarizeArticle(
-          this.artticleType,
-          this.articleId,
-          this.userService.getLoggedInUser().uid
-        );
-        if (response) {
-          this.summary = response;
-          this.showSummary = true;
-        } else {
-          throw new Error(
-            'There seemed to be an error summarizing the article'
-          );
-        }
-      } catch (error) {
-        this.toastController
-          .create({
-            message: error.message,
-            duration: 3000,
-            position: 'bottom',
-          })
-          .then((toast) => {
-            toast.present();
-          });
-      }
-      await loader.dismiss();
+      // Load interstitial ad
+      this.admobService.showInterstitial();
     }
+
+    // Create loading
+    const loader = await this.loadingController.create({
+      message: 'Summarizing article...',
+      spinner: 'crescent',
+      showBackdrop: true,
+    });
+
+    //Generate article summary
+    try {
+      await loader.present();
+      const response = await this.gptSummaryService.summarizeArticle(
+        this.artticleType,
+        this.articleId,
+        this.userService.getLoggedInUser().uid
+      );
+      if (response) {
+        this.summary = response;
+        this.showSummary = true;
+      } else {
+        throw new Error(
+          'There seemed to be an error summarizing the article'
+        );
+      }
+    } catch (error) {
+      this.toastController
+        .create({
+          message: error.message,
+          duration: 3000,
+          position: 'bottom',
+        })
+        .then((toast) => {
+          toast.present();
+        });
+    }
+    await loader.dismiss();
   }
 
   async addToRead() {
