@@ -270,18 +270,40 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     docs.forEach((d) => {
       this.article = d.data();
 
+      /* Set meta tags */
       if (this.article.image) {
         this.meta.updateTag({
-          name: 'og:image',
+          name: 'image',
+          property: 'og:image',
           content: this.article.image,
         });
       } else {
         this.meta.updateTag({
-          name: 'og:image',
+          name: 'image',
+          property: 'og:image',
           content:
             'https://assets.digitalocean.com/labs/images/community_bg.png',
         });
       }
+      this.meta.updateTag({
+        name: 'title',
+        property: 'og:title',
+        content: this.article.title,
+      });
+      this.meta.updateTag({
+        name: 'type',
+        property: 'og:type',
+        content: 'website',
+      });
+      this.meta.updateTag({
+        name: 'url',
+        property: 'og:url',
+        content: 'https://app.unbiasedbreak.com/news-article/' +
+          this.articleId +
+          '/' +
+          this.artticleType,
+      });
+
 
       this.allRelatedArticles = [];
       if (d.data().related_articles) {
@@ -413,16 +435,15 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   }
 
   async share() {
+
     await Share.share({
       title: this.article.title,
-      text: this.article.excerpt,
       url:
         'https://app.unbiasedbreak.com/news-article/' +
         this.articleId +
         '/' +
         this.artticleType,
       dialogTitle: 'Share with your friends',
-      files: [this.article.image],
     });
   }
 
