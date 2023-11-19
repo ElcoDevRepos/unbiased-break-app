@@ -73,6 +73,7 @@ export class Tab1Page implements OnInit {
   readArticles = [];
   showReadArticles;
   gettingData: boolean = false;
+  getDataStartTime = null;
   requestedNewsSource: string = '';
   requestNewsSourceLoading: boolean = false;
   showSearchBar: boolean = false;
@@ -466,6 +467,10 @@ export class Tab1Page implements OnInit {
     }
     if (this.gettingData) return;
     this.gettingData = true;
+
+    // Start time timer for timing out
+    if(!this.getDataStartTime) this.getDataStartTime = Date.now();
+
     const responsesRef = collection(
       this.firestore,
       this.selectedTab.toLocaleLowerCase() + '-articles'
@@ -594,25 +599,27 @@ export class Tab1Page implements OnInit {
     this.items.push(...this.getFilteredArticles(items));
     if (this.hasSearched) this.searchShownArticles();
     this.gettingData = false;
-    if (this.items.length < this.limit && this.canGetMoreData)
+    if (this.items.length < this.limit && this.canGetMoreData){
+      // Check if timing out
+      if (Date.now() - this.getDataStartTime > 30000) { // 30 seconds
+        console.log("Time exceeded 30 seconds");
+        this.getDataStartTime = null;
+        this.loading = false;
+        return;
+      }
       await this.getData();
+    }
+
+    this.getDataStartTime = null;
     this.loading = false;
 
     //Check if intro.js is going to be shown
+    
     if (this.currentUserDoc) {
       const showIntroJS = localStorage.getItem('showHomeIntro');
       if (showIntroJS != 'false') {
-        setTimeout(() => {
-          const container =
-            this.elementRef.nativeElement.querySelector('.scroll-container');
-          this.renderer.setProperty(
-            container,
-            'scrollLeft',
-            container.scrollWidth
-          );
           //localStorage.setItem('showHomeIntro', 'false');
           //this.introService.featureOne();
-        }, 400);
       }
     }
   }
