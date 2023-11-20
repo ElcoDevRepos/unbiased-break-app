@@ -11,9 +11,15 @@
     ></ion-searchbar>
 
     <ion-buttons slot="end" style="align-self: center; gap: 5px">
+
       <ion-button class="toolbar-btns" (click)="toggleSearchBar()">
         <img src="assets/icons/color-search.svg" alt="search" />
       </ion-button>
+
+      <ion-button class="toolbar-btns" id="filter-modal" [hidden]="!currentUserDoc">
+        <img src="assets/icons/color-filter.svg" alt="filter" />
+      </ion-button>
+
       <!-- Bell button (removed until function is built)
         <ion-button class="toolbar-btns">
           <img src="assets/icons/color-notification.svg" alt="bell">
@@ -238,4 +244,36 @@
       style="margin-bottom: 600px"
     ></ion-spinner>
   </ion-infinite-scroll>
+
+  <!--FILTERS MODAL-->
+  <ion-modal #modal trigger="filter-modal">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Filters</ion-title>
+          <ion-buttons slot="start">
+            <ion-back-button defaultHref="/tabs/tab2" (click)="closeNewsFilter()" text="">
+              <ion-icon name="arrow-back"></ion-icon>
+            </ion-back-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list>
+          <ion-item-divider>
+            <ion-label> News Filters </ion-label>
+          </ion-item-divider>
+          <ion-item *ngFor="let filter of leftFilters; let i = index">
+            <ion-label class="ion-text-wrap">
+              {{filter.label | split}}
+            </ion-label>
+            <ion-checkbox
+              (ionChange)="onLeftChanged($event, i)"
+              [checked]="filter.on"
+            ></ion-checkbox>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>
