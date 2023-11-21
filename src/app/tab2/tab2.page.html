@@ -272,6 +272,24 @@
               [checked]="filter.on"
             ></ion-checkbox>
           </ion-item>
+          <ion-item *ngFor="let filter of middleFilters; let i = index">
+            <ion-label class="ion-text-wrap">
+              {{filter.label | split}}
+            </ion-label>
+            <ion-checkbox
+              (ionChange)="onMiddleChanged($event, i)"
+              [checked]="filter.on"
+            ></ion-checkbox>
+          </ion-item>
+          <ion-item *ngFor="let filter of rightFilters; let i = index">
+            <ion-label class="ion-text-wrap">
+              {{filter.label | split}}
+            </ion-label>
+            <ion-checkbox
+              (ionChange)="onRightChanged($event, i)"
+              [checked]="filter.on"
+            ></ion-checkbox>
+          </ion-item>
         </ion-list>
       </ion-content>
     </ng-template>
