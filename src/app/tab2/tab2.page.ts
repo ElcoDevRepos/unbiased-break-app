@@ -157,6 +157,8 @@ export class Tab2Page {
       i.topic = this.setTrendingArticleTopic(i.link);
     });
 
+    items = this.filterArticles(items);
+
     this.items.push(...items);
     this.trendingLoading = false;
   }
@@ -237,9 +239,56 @@ export class Tab2Page {
       categoryItems = result;
     }
 
+    categoryItems = this.filterArticles(categoryItems);
+
     this.categoryItems.push(...categoryItems);
 
     this.categoryLoading = false;
+  }
+
+  // Filter out articles based on user filter settings
+  filterArticles (articles) {
+    // Just return same articles if user is not logged in
+    if(!this.userService.getLoggedInUser()) return articles;
+
+    let allowedArticles = [];
+
+    articles.forEach(a => {
+      let done = false;
+      for (let i = 0; i < this.leftFilters.length; i++) {
+        if (
+          a.link.includes(this.leftFilters[i].label) &&
+          !this.leftFilters[i].on
+        ) {
+          done = true;
+          break;
+        }
+      }
+      if(!done) {
+        for (let i = 0; i < this.middleFilters.length; i++) {
+          if (
+            a.link.includes(this.middleFilters[i].label) &&
+            !this.middleFilters[i].on
+          ) {
+            done = true;
+            break;
+          }
+        }
+      }
+      if(!done) {
+        for (let i = 0; i < this.rightFilters.length; i++) {
+          if (
+            a.link.includes(this.rightFilters[i].label) &&
+            !this.rightFilters[i].on
+          ) {
+            done = true;
+            break;
+          }
+        }
+      }
+      if(!done) allowedArticles.push(a); 
+    });
+    return allowedArticles;
   }
 
   async getSources() {
