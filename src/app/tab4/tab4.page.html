@@ -63,8 +63,7 @@
         >
         <!--<ion-button fill="clear">Remove</ion-button>-->
         <div class="source-container">
-          <img [src]="getSourceImage(summary)" alt="summary source image" />
-          <p>{{summary.source}}</p>
+           <ion-img src="assets/icon/favicon.png" style="height: 28px; width: fit-content;"></ion-img>
 
           <a
             [routerLink]="(summary.link.includes('nytimes.com') || summary.link.includes('wsj.com')) ? [] : ['/news-article/' + summary.id + '/trending-articles']"
