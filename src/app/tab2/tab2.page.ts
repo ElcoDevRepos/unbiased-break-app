@@ -20,7 +20,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import FuzzySearch from 'fuzzy-search';
 import _ from 'lodash-es';
 import { HttpClient } from '@angular/common/http';
-import { Platform } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 import { UserService } from '../services/user.service';
 import { Browser } from '@capacitor/browser';
 import { Router } from '@angular/router';
@@ -53,6 +53,9 @@ export class Tab2Page {
   currentUserDoc;
   showReadArticles;
   readArticles = [];
+  leftFilters = [];
+  middleFilters = [];
+  rightFilters = [];
   showSearchBar: boolean = false;
   category: string = 'united-states';
   stopCategoryArticleQuery: boolean = false;
@@ -65,7 +68,8 @@ export class Tab2Page {
     private auth: Auth,
     private router: Router,
     private menuController: MenuController,
-    private tabsPage: TabsPage
+    private tabsPage: TabsPage,
+    private modal: ModalController
   ) {}
 
   ngOnInit() {
@@ -92,6 +96,13 @@ export class Tab2Page {
           docSnaps.forEach((d) => {
             this.currentUserDoc = d;
             this.readArticles = d.data().readArticles || [];
+
+            // Fetch users filters from Firestore doc
+            if(d.data().filters) {
+              this.leftFilters = JSON.parse(d.data().filters[0]) || [];
+              this.middleFilters = JSON.parse(d.data().filters[1]) || [];
+              this.rightFilters = JSON.parse(d.data().filters[2]) || [];
+            }
           });
         });
       }
@@ -145,6 +156,8 @@ export class Tab2Page {
     items.forEach((i) => {
       i.topic = this.setTrendingArticleTopic(i.link);
     });
+
+    items = this.filterArticles(items);
 
     this.items.push(...items);
     this.trendingLoading = false;
@@ -226,9 +239,56 @@ export class Tab2Page {
       categoryItems = result;
     }
 
+    categoryItems = this.filterArticles(categoryItems);
+
     this.categoryItems.push(...categoryItems);
 
     this.categoryLoading = false;
+  }
+
+  // Filter out articles based on user filter settings
+  filterArticles (articles) {
+    // Just return same articles if user is not logged in
+    if(!this.userService.getLoggedInUser()) return articles;
+
+    let allowedArticles = [];
+
+    articles.forEach(a => {
+      let done = false;
+      for (let i = 0; i < this.leftFilters.length; i++) {
+        if (
+          a.link.includes(this.leftFilters[i].label) &&
+          !this.leftFilters[i].on
+        ) {
+          done = true;
+          break;
+        }
+      }
+      if(!done) {
+        for (let i = 0; i < this.middleFilters.length; i++) {
+          if (
+            a.link.includes(this.middleFilters[i].label) &&
+            !this.middleFilters[i].on
+          ) {
+            done = true;
+            break;
+          }
+        }
+      }
+      if(!done) {
+        for (let i = 0; i < this.rightFilters.length; i++) {
+          if (
+            a.link.includes(this.rightFilters[i].label) &&
+            !this.rightFilters[i].on
+          ) {
+            done = true;
+            break;
+          }
+        }
+      }
+      if(!done) allowedArticles.push(a); 
+    });
+    return allowedArticles;
   }
 
   async getSources() {
@@ -424,5 +484,41 @@ export class Tab2Page {
     if (link.includes('russia')) return 'Russia';
 
     return topic;
+  }
+
+  // For closing and saving the news filter modal
+  async closeNewsFilter () {
+    // Close modal
+    this.modal.dismiss();
+
+    // Save new filter settings for user
+    let ref = doc(this.firestore, 'users', this.currentUserDoc.id);
+    await updateDoc(ref, {
+      filters: [
+        JSON.stringify(this.leftFilters),
+        JSON.stringify(this.middleFilters),
+        JSON.stringify(this.rightFilters),
+      ],
+    });
+
+    // Reload articles
+    this.hasSearched = false;
+    this.lastVisible = null;
+    this.categoryItems = [];
+    this.items = [];
+    this.stopCategoryArticleQuery = false;
+    await this.getData();
+    await this.getCategoryData();
+  }
+
+  // Handle filter on/off checkbox
+  onLeftChanged(ev, i) {
+    this.leftFilters[i].on = ev.detail.checked;
+  }
+  onMiddleChanged(ev, i) {
+    this.middleFilters[i].on = ev.detail.checked;
+  }
+  onRightChanged(ev, i) {
+    this.rightFilters[i].on = ev.detail.checked;
   }
 }
