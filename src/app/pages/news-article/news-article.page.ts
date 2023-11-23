@@ -35,6 +35,7 @@ import { v4 } from 'uuid';
 import { Observable } from 'rxjs';
 import { IntrojsService } from 'src/app/introjs.service';
 import { GptSummaryService } from 'src/app/services/gpt-summary.service';
+import { replace } from 'lodash';
 
 @Component({
   selector: 'app-news-article',
@@ -328,6 +329,9 @@ export class NewsArticlePage implements OnInit, OnDestroy {
       // Remove <picture> container to prevent double pictures
       content = content.replace(/<picture\b[^>]*>.*?<\/picture>/g, '');
 
+      // Remove timestamps for CNN article
+      if(this.article.siteName == 'CNN') content = this.removeTimestampsForCNN(content);
+
       this.article.content = this.sanitizer.bypassSecurityTrustHtml(content);
       let image = new Image();
       if (this.article.image) image.src = this.article.image;
@@ -535,5 +539,17 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     if (link.includes('nytimes.com') || link.includes('wsj.com')) {
       Browser.open({ url: link });
     }
+  }
+
+  // Sanitize CNN article from displaying timestamps
+  removeTimestampsForCNN (content) {
+    let newContent = content;
+    const pattern = /\d\d:\d\d(:\d\d)?/g;
+    const sourcePattern = /<span>\s*- Source:\s*<a href="https:\/\/www\.cnn\.com\/">CNN<\/a>\s*<\/span>/g;
+    const sourcePattern2 = /<span data-editable="source">[^<]*<\/span>\s*&nbsp;—&nbsp;/g;
+    newContent = newContent.replace(pattern, '');
+    newContent = newContent.replace(sourcePattern, '');
+    newContent = newContent.replace(sourcePattern2, '');
+    return newContent;
   }
 }
