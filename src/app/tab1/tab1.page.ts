@@ -596,9 +596,14 @@ export class Tab1Page implements OnInit {
       });
     }
 
-    this.items.push(...this.getFilteredArticles(items));
+    // Create a array of articles that pass the source filter
+    let newItems = this.getFilteredArticles(items);
+    this.items.push(...newItems);
+
     if (this.hasSearched) this.searchShownArticles();
     this.gettingData = false;
+
+    // Only for loading the first articles
     if (this.items.length < this.limit && this.canGetMoreData){
       // Check if timing out
       if (Date.now() - this.getDataStartTime > 30000) { // 30 seconds
@@ -610,16 +615,21 @@ export class Tab1Page implements OnInit {
       await this.getData();
     }
 
-    this.getDataStartTime = null;
-    this.loading = false;
+    // Checks to make sure at least 1 new article was added to this.items
+    else if(newItems.length < 1) await this.getData();
 
-    //Check if intro.js is going to be shown
-    
-    if (this.currentUserDoc) {
-      const showIntroJS = localStorage.getItem('showHomeIntro');
-      if (showIntroJS != 'false') {
-          //localStorage.setItem('showHomeIntro', 'false');
-          //this.introService.featureOne();
+    else {
+      this.getDataStartTime = null;
+      this.loading = false;
+
+      //Check if intro.js is going to be shown
+      
+      if (this.currentUserDoc) {
+        const showIntroJS = localStorage.getItem('showHomeIntro');
+        if (showIntroJS != 'false') {
+            //localStorage.setItem('showHomeIntro', 'false');
+            //this.introService.featureOne();
+        }
       }
     }
   }
