@@ -12,10 +12,6 @@ ion-content {
     --background: #f3f3f3;
 }
 
-ion-avatar {
-    margin-top: 15px;
-}
-
 .show-gradient {
     --background: #f3f3f3;
 }
@@ -84,38 +80,6 @@ ion-segment {
     margin: 12px;
 }
 
-.news-bg {
-    --border-width: 0;
-    --color: white;
-    --border-radius: 12px;
-    --inner-padding-top: 16px;
-    --inner-padding-bottom: 16px;
-    display: inherit;
-    margin-bottom: 50px;
-}
-
-.vertical-center {
-    display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-  }
-.news-bg-nobackground {
-    --border-width: 0;
-    --color: white;
-    --border-radius: 12px;
-    --inner-padding-top: 16px;
-    --inner-padding-bottom: 16px;
-    display: inherit;
-    margin-bottom: 50px;
-}
-
-.article-data {
-    min-height: 170px;
-    max-height: 170px;
-    padding-top: 85px;
-}
-
 .article-data-thumb {
     p {
         color: black;
@@ -128,52 +92,6 @@ ion-segment {
         max-height: 65px;
         min-width: 65px;
         min-height: 65px;
-    }
-}
-
-@media (max-width: 768px) {
-    .action-btn {
-        position: absolute;
-        top: 2%;
-        right: 50%;
-        --background: white;
-        --color: red;
-    }
-
-    .stars-btn {
-        position: absolute;
-        top: 0;
-        right: 1%;
-
-        --background: white;
-        --color: rgb(194, 165, 3);
-
-        ion-icon {
-            color: rgb(194, 165, 3);
-        }
-    }
-}
-
-@media (min-width: 769px) and (max-width: 1200px) {
-    .action-btn {
-        position: absolute;
-        top: 2%;
-        right: 25%;
-        --background: white;
-        --color: red;
-    }
-
-    .stars-btn {
-        position: absolute;
-        top: 0;
-        right: 1%;
-
-        --background: white;
-        --color: rgb(194, 165, 3);
-
-        ion-icon {
-            color: rgb(194, 165, 3);
-        }
     }
 }
 
@@ -200,79 +118,6 @@ ion-label p {
     position: absolute;
     left: 50%;
     top: 80%;
-}
-
-.gunInactive {
-    --background: #26497e;
-}
-.gunActive {
-    --background: #5083d0;
-}
-
-.medInactive {
-    --background: #26497e;
-}
-.medActive {
-    --background: #5083d0;
-}
-
-.laborInactive {
-    --background: #26497e;
-}
-.laborActive {
-    --background: #5083d0;
-}
-
-.moneyInactive {
-    --background: #26497e;
-}
-.moneyActive {
-    --background: #5083d0;
-}
-
-.poInactive {
-    --background: #26497e;
-}
-.poActive {
-    --background: #5083d0;
-}
-
-.hempInactive {
-    --background: #26497e;
-}
-.hempActive {
-    --background: #5083d0;
-}
-
-.card-icon {
-    color: white;
-    font-size: 25px;
-    display: flex;
-    justify-content: center;
-}
-
-.content-card {
-    img {
-        max-width: 100%;
-        min-width: 100%;
-    }
-
-    h3 {
-        overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-    }
-    min-width: 150px;
-    max-width: 150px;
-    max-height: 300px;
-    min-height: 300px;
-}
-
-.card-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
 }
 
 .topic-label {
@@ -318,4 +163,57 @@ ion-label p {
 .toolbar-btns {
     height: 32px;
     width: 32px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .search {
+        --color: #f0f0f0;
+        --background: black;
+    }
+    ion-content {
+        --background: #1d1d1d;
+    }
+    .show-gradient {
+        --background: #1d1d1d;
+    }
+    ion-toolbar {
+        --background: #1d1d1d;
+    }
+    .topic-label {
+        color: #f0f0f0;
+    }
+    ion-segment {
+        --background: #1d1d1d;
+    
+        ion-segment-button {
+            --background: #1d1d1d;
+            --background-color: #1d1d1d;
+            --background-checked: #1d1d1d;
+            --background-focused: #1d1d1d;
+            --color: #f0f0f0;
+            --color-checked: #26497e;
+            --color-focused: #1d1d1d;
+            --indicator-box-shadow: 0 3px 0px -2px #26497e;
+        }
+    }
+    .news-section {
+        background-color: #1d1d1d;
+    }
+    .news-articles-label {
+        color: #f0f0f0;
+    }
+    ion-list {
+        background: #1d1d1d;
+    }
+    .news-link {
+        --background: #191919;
+    }
+    .article-data-thumb {
+        h3 {
+            color: #f0f0f0;
+        }
+        p {
+            color: #f0f0f0;
+        }
+    }
 }
