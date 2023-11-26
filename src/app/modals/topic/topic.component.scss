@@ -32,3 +32,41 @@
     margin-top: 8px;
 }
 
+@media (prefers-color-scheme: dark) {
+    ion-toolbar {
+        --background: #1d1d1d;
+    }
+    ion-title {
+        --color: #f0f0f0;
+    }
+    ion-content {
+        --background: #1d1d1d;
+    }
+    ion-card {
+        --background: #292929;
+    }
+    ion-list {
+        --background: #292929;
+    }
+    ion-item {
+        --background: #292929;
+        --color: #f0f0f0;
+    }
+    ion-searchbar {
+        --background: #292929;
+        --color: #f0f0f0;
+    }
+    ion-list {
+        background: #292929 !important;
+    }
+    .topic-subtitle {
+        box-shadow: none;
+    }
+    .topic-container {
+        box-shadow: none;
+    }
+    .topic-note {
+        color: #f0f0f0;
+    }
+}
+
