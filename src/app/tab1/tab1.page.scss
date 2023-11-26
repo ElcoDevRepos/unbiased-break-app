@@ -173,6 +173,9 @@ ion-label p {
     ion-content {
         --background: #1d1d1d;
     }
+    ion-title {
+        color: #f0f0f0;
+    }
     .show-gradient {
         --background: #1d1d1d;
     }
@@ -204,6 +207,14 @@ ion-label p {
     }
     ion-list {
         background: #1d1d1d;
+    }
+    ion-item-divider {
+        background-color: #191919;
+        color: #f0f0f0;
+    }
+    ion-item {
+        --background: #191919;
+        --color: #f0f0f0;
     }
     .news-link {
         --background: #191919;
