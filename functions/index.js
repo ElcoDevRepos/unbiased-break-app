@@ -443,11 +443,11 @@ async function doDailyArticlesByTopic() {
 
     let querySnapshot = await db
       .collection("users")
-      .where("reminderNotifications", "==", "true")
+      .where("reminderNotifications", "==", true)
       .get();
     querySnapshot.forEach((u) => {
       let user = u.data();
-      if (user.reminderNotifications && user.token && user.topics.length > 0) {
+      if (user.token && user.topics.length > 0) {
         //Get random topic
         let randomIndex = Math.floor(Math.random() * user.topics.length);
         let randomTopic = user.topics[randomIndex];

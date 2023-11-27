@@ -35,6 +35,7 @@ import { v4 } from 'uuid';
 import { Observable } from 'rxjs';
 import { IntrojsService } from 'src/app/introjs.service';
 import { GptSummaryService } from 'src/app/services/gpt-summary.service';
+import { replace } from 'lodash';
 
 @Component({
   selector: 'app-news-article',
@@ -171,47 +172,68 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   }
 
   async getSummary() {
+    // Return if article is already summarized
     if (this.showSummary) return;
     if (this.summary) {
       this.showSummary = true;
       return;
     }
+
+    // If user is not logged in show toast message
+    if (!this.userService.getLoggedInUser()) {
+      this.toastController
+        .create({
+          message: 'Log in to summarize articles',
+          duration: 3000,
+          position: 'bottom',
+        })
+        .then((toast) => {
+          toast.present();
+        });
+      return;
+    } 
+
+    // If user is not premium
     if (!this.userService.isPro) {
-      this.router.navigateByUrl('/tabs/tab3?openPremium=true', {});
-    } else {
-      const loader = await this.loadingController.create({
-        message: 'Summarizing article...',
-        spinner: 'crescent',
-        showBackdrop: true,
-      });
-      try {
-        await loader.present();
-        const response = await this.gptSummaryService.summarizeArticle(
-          this.artticleType,
-          this.articleId,
-          this.userService.getLoggedInUser().uid
-        );
-        if (response) {
-          this.summary = response;
-          this.showSummary = true;
-        } else {
-          throw new Error(
-            'There seemed to be an error summarizing the article'
-          );
-        }
-      } catch (error) {
-        this.toastController
-          .create({
-            message: error.message,
-            duration: 3000,
-            position: 'bottom',
-          })
-          .then((toast) => {
-            toast.present();
-          });
-      }
-      await loader.dismiss();
+      // Load interstitial ad
+      this.admobService.showInterstitial();
     }
+
+    // Create loading
+    const loader = await this.loadingController.create({
+      message: 'Summarizing article...',
+      spinner: 'crescent',
+      showBackdrop: true,
+    });
+
+    //Generate article summary
+    try {
+      await loader.present();
+      const response = await this.gptSummaryService.summarizeArticle(
+        this.artticleType,
+        this.articleId,
+        this.userService.getLoggedInUser().uid
+      );
+      if (response) {
+        this.summary = response;
+        this.showSummary = true;
+      } else {
+        throw new Error(
+          'There seemed to be an error summarizing the article'
+        );
+      }
+    } catch (error) {
+      this.toastController
+        .create({
+          message: error.message,
+          duration: 3000,
+          position: 'bottom',
+        })
+        .then((toast) => {
+          toast.present();
+        });
+    }
+    await loader.dismiss();
   }
 
   async addToRead() {
@@ -249,18 +271,40 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     docs.forEach((d) => {
       this.article = d.data();
 
+      /* Set meta tags */
       if (this.article.image) {
         this.meta.updateTag({
-          name: 'og:image',
+          name: 'image',
+          property: 'og:image',
           content: this.article.image,
         });
       } else {
         this.meta.updateTag({
-          name: 'og:image',
+          name: 'image',
+          property: 'og:image',
           content:
             'https://assets.digitalocean.com/labs/images/community_bg.png',
         });
       }
+      this.meta.updateTag({
+        name: 'title',
+        property: 'og:title',
+        content: this.article.title,
+      });
+      this.meta.updateTag({
+        name: 'type',
+        property: 'og:type',
+        content: 'website',
+      });
+      this.meta.updateTag({
+        name: 'url',
+        property: 'og:url',
+        content: 'https://app.unbiasedbreak.com/news-article/' +
+          this.articleId +
+          '/' +
+          this.artticleType,
+      });
+
 
       this.allRelatedArticles = [];
       if (d.data().related_articles) {
@@ -284,6 +328,9 @@ export class NewsArticlePage implements OnInit, OnDestroy {
 
       // Remove <picture> container to prevent double pictures
       content = content.replace(/<picture\b[^>]*>.*?<\/picture>/g, '');
+
+      // Remove timestamps for CNN article
+      if(this.article.siteName == 'CNN') content = this.removeTimestampsForCNN(content);
 
       this.article.content = this.sanitizer.bypassSecurityTrustHtml(content);
       let image = new Image();
@@ -392,16 +439,15 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   }
 
   async share() {
+
     await Share.share({
       title: this.article.title,
-      text: this.article.excerpt,
       url:
         'https://app.unbiasedbreak.com/news-article/' +
         this.articleId +
         '/' +
         this.artticleType,
       dialogTitle: 'Share with your friends',
-      files: [this.article.image],
     });
   }
 
@@ -493,5 +539,17 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     if (link.includes('nytimes.com') || link.includes('wsj.com')) {
       Browser.open({ url: link });
     }
+  }
+
+  // Sanitize CNN article from displaying timestamps
+  removeTimestampsForCNN (content) {
+    let newContent = content;
+    const pattern = /\d\d:\d\d(:\d\d)?/g;
+    const sourcePattern = /<span>\s*- Source:\s*<a href="https:\/\/www\.cnn\.com\/">CNN<\/a>\s*<\/span>/g;
+    const sourcePattern2 = /<span data-editable="source">[^<]*<\/span>\s*&nbsp;—&nbsp;/g;
+    newContent = newContent.replace(pattern, '');
+    newContent = newContent.replace(sourcePattern, '');
+    newContent = newContent.replace(sourcePattern2, '');
+    return newContent;
   }
 }

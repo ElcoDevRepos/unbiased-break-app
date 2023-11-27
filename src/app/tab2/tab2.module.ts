@@ -18,7 +18,8 @@ import { PipesModule } from '../pipes/pipes.module';
     FormsModule,
     ExploreContainerComponentModule,
     Tab2PageRoutingModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    PipesModule
   ],
   declarations: [Tab2Page]
 })
