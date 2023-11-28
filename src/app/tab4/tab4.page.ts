@@ -130,7 +130,7 @@ export class Tab4Page implements OnInit {
 
   async didChangeToNext() {
     this.summariesRead++;
-    if (this.summariesRead >= 3) {
+    if (this.summariesRead >= 5) {
       this.summariesRead = 0;
       this.admobService.showInterstitial();
     }
