@@ -36,3 +36,15 @@ img {
         color: black;
     }
   }
+
+@media (prefers-color-scheme: dark) {
+    .blue-background {
+        --background: #000000;
+        --color: white;
+    }
+    .grayscale-100 {
+        p {
+            color: #f0f0f0;
+        }
+      }
+}

@@ -42,3 +42,16 @@
 .share-btn {
   margin: 0px;
 }
+
+@media (prefers-color-scheme: dark) {
+  ion-toolbar, ion-button, ion-card, ion-card-title {
+    --background: #191919;
+    --color: #f0f0f0;
+  }
+  ion-content {
+    --background: #1d1d1d;
+  }
+  .source-container {
+    a { color: #1f70ff; }
+  }
+}

@@ -337,3 +337,61 @@ ion-list {
   display: flex;
   justify-content: center;
 }
+
+@media (prefers-color-scheme: dark) {
+  .search {
+    --color: #f0f0f0;
+    --background: black;
+  }
+  ion-toolbar {
+    --background: #1d1d1d;
+  }
+  .show-gradient {
+    --background: #1d1d1d;
+  }
+  .trending-label {
+    background-color: #1d1d1d;
+    color: #f0f0f0;
+  }
+  .category-container {
+    background-color: #1d1d1d;
+  }
+  ion-card {
+    --background: #171717;
+  }
+  .trending-article-title {
+    color: #f0f0f0;
+  }
+  .trending-article-trending-and-time-container {
+    color: rgb(186, 186, 186);
+  }
+  .trending-article-source-container {
+    p { color: rgb(186, 186, 186); }
+  }
+  .category-card-content-container {  
+    .category-and-time {
+      p {
+        color: rgb(186, 186, 186);;
+      }
+    }
+    .title {
+      color: #f0f0f0;
+    }
+    .source-container {
+      P {
+        color: rgb(186, 186, 186);
+      }
+    }
+  }
+  ion-item-divider {
+    background-color: #191919;
+    color: #f0f0f0;
+  }
+  ion-item {
+      --background: #191919;
+      --color: #f0f0f0;
+  }
+  ion-title {
+    color: #f0f0f0;
+  }
+}
