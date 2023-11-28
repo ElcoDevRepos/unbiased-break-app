@@ -227,4 +227,24 @@ ion-label p {
             color: #f0f0f0;
         }
     }
+    ion-card {
+        --background: #2f2f2f;
+        --color: #f0f0f0;
+    }
+    .topic-card {
+        box-shadow: 2px 2px 4px rgb(45, 45, 45);
+    }
+    .topic-not-checked {
+        background-color: rgba(219, 20, 27, 0.5);
+        color: #fff;
+        margin: 2px 4px 2px 4px;
+        padding: 1px 3px 1px 3px;
+        transition: all 0.15s ease-in-out;
+    }
+    
+    .topic-checked {
+        background-color: rgb(45, 22, 148);
+        color: #fff;
+        transition: all 0.15s ease-in-out;
+    }
 }
