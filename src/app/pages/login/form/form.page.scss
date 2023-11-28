@@ -3,3 +3,19 @@
     justify-content: center;
     background-color: transparent;
 }
+
+@media (prefers-color-scheme: dark) {
+    ion-content {
+        --background: #1d1d1d;
+    }
+
+    ion-card {
+        --background: #191919;
+        --color: #f0f0f0;
+    }
+
+    ion-item {
+        --background: #191919;
+        --color: #f0f0f0;
+    }
+}
