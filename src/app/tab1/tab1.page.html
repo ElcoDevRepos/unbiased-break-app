@@ -141,12 +141,15 @@
         </ion-item>
 
         <p
-          *ngIf="items.length === 0 && !loading && topicCheckedList.length != 0"
+          *ngIf="items.length === 0 && !loading && topicCheckedList.length != 0 && !noFilterSelected"
         >
           No articles found...
         </p>
         <p *ngIf="topicCheckedList.length == 0">
           Select a topic to load articles
+        </p>
+        <p *ngIf="noFilterSelected">
+          Select one or more source in "Filters" to load articles
         </p>
       </ion-list>
 
