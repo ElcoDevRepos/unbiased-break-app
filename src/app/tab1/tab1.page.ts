@@ -55,6 +55,7 @@ export class Tab1Page implements OnInit {
   leftFilters = [];
   middleFilters = [];
   rightFilters = [];
+  noFilterSelected : boolean = false;
   currentUserDoc;
   itemsHolder;
   hasSearched = false;
@@ -465,6 +466,15 @@ export class Tab1Page implements OnInit {
       this.loading = false;
       return;
     }
+
+    // Checks if at least one filter source is active for the selected tab
+    if(!this.checkIfNoSourceIsSelected()) {
+      this.noFilterSelected = true;
+      this.loading = false;
+      return;
+    }
+    else this.noFilterSelected = false;
+
     if (this.gettingData) return;
     this.gettingData = true;
 
@@ -883,5 +893,18 @@ export class Tab1Page implements OnInit {
 
   closeMenu() {
     this.menuController.close('tab2-menu');
+  }
+
+  // Checks if the selected tab has no selected sources
+  checkIfNoSourceIsSelected() {
+    if(this.selectedTab == 'middle') {
+      return this.middleFilters.some(filter => filter.on === true);
+    }
+    else if(this.selectedTab == 'right') {
+      return this.rightFilters.some(filter => filter.on === true);
+    }
+    else if(this.selectedTab == 'left') {
+      return this.leftFilters.some(filter => filter.on === true);
+    }
   }
 }
