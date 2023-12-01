@@ -1,68 +1,74 @@
 .center-btn {
-    display: flex;
-    justify-content: center;
-    background-color: transparent;
+  display: flex;
+  justify-content: center;
+  background-color: transparent;
 }
 
-@media only screen and (max-width: 300px){   
-    .button-container {
-        position: absolute;
-        display: block;
-        top: 20%;
-        background-color: transparent;
-        height: 100vh;
-    }
+@media only screen and (max-width: 300px) {
+  .button-container {
+    position: absolute;
+    display: block;
+    top: 20%;
+    background-color: transparent;
+    height: 100vh;
+  }
 }
-@media only screen and (max-width: 375px){
-    .button-container {
-        position: absolute;
-        display: block;
-        top: 20%;
-        background-color: transparent;
-        height: 100vh;
-    }
+@media only screen and (max-width: 375px) {
+  .button-container {
+    position: absolute;
+    display: block;
+    top: 20%;
+    background-color: transparent;
+    height: 100vh;
+  }
 }
-@media only screen and (max-width:600px){
-    .button-container {
-        position: absolute;
-        display: block;
-        top: 20%;
-        background-color: transparent;
-        height: 100vh;
-    }
+@media only screen and (max-width: 600px) {
+  .button-container {
+    position: absolute;
+    display: block;
+    top: 20%;
+    background-color: transparent;
+    height: 100vh;
+  }
 }
-@media only screen and (max-width:1000px){
-    .button-container {
-        position: absolute;
-        display: block;
-        top: 20%;
-        background-color: transparent;
-        height: 100vh;
-    }
+@media only screen and (max-width: 1000px) {
+  .button-container {
+    position: absolute;
+    display: block;
+    top: 20%;
+    background-color: transparent;
+    height: 100vh;
+  }
 }
 .show-gradient {
 }
 
 .header-image {
-    min-width: 100vw;
-    max-width: 100vw;
-    max-height: 600px;
+  min-width: 100vw;
+  max-width: 100vw;
+  max-height: 600px;
 }
 
 .logo-img {
-    max-width: 100vw;
-    min-width: 100vw;
-    max-height: 370px;
+  max-width: 100vw;
+  min-width: 100vw;
+  max-height: 370px;
 }
 
 .header {
-    position: absolute;
-    z-index: 1;
+  position: absolute;
+  z-index: 1;
 }
-ion-content {--overflow: hidden}
+ion-content {
+  --overflow: hidden;
+}
 
 @media (prefers-color-scheme: dark) {
-    ion-content {
-        --background: #1d1d1d;
-    }
+  ion-content {
+    --background: #1d1d1d;
+  }
+}
+
+.login-container {
+  margin-top: 150px;
 }

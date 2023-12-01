@@ -1,5 +1,5 @@
 <ion-content>
-  <div>
+  <div style="margin-top: 175px">
     <ion-card>
       <ion-card-content>
         <ion-item>
@@ -8,23 +8,44 @@
         </ion-item>
         <ion-item>
           <ion-label position="floating">Password</ion-label>
-          <ion-input type="{{ showPassword ? 'text' : 'password' }}" [(ngModel)]="password"></ion-input>
-          <ion-icon slot="end" name="{{ showPassword ? 'eye-off' : 'eye' }}" (click)="togglePasswordVisibility()"></ion-icon>
+          <ion-input
+            type="{{ showPassword ? 'text' : 'password' }}"
+            [(ngModel)]="password"
+          ></ion-input>
+          <ion-icon
+            slot="end"
+            name="{{ showPassword ? 'eye-off' : 'eye' }}"
+            (click)="togglePasswordVisibility()"
+          ></ion-icon>
         </ion-item>
         <ion-grid>
           <ion-row>
-            <ion-col class="center-btn"><ion-button color="light" shape="round" [routerLink]="['..']">Cancel</ion-button></ion-col>
+            <ion-col class="center-btn"
+              ><ion-button color="light" shape="round" [routerLink]="['..']"
+                >Cancel</ion-button
+              ></ion-col
+            >
             <ion-col class="center-btn">
-              <ion-button color="primary" shape="round" (click)="isLogin ? login() : createAccount()">
+              <ion-button
+                color="primary"
+                shape="round"
+                (click)="isLogin ? login() : createAccount()"
+              >
                 <span *ngIf="isLogin">Login</span>
                 <span *ngIf="!isLogin">Create</span>
               </ion-button>
             </ion-col>
           </ion-row>
           <ion-row>
-            <ion-col *ngIf="isLogin" style="display: flex;
-            flex-direction: row;
-            justify-content: center;"><a (click)="forgotPassword()">Reset Password</a></ion-col>
+            <ion-col
+              *ngIf="isLogin"
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+              "
+              ><a (click)="forgotPassword()">Reset Password</a></ion-col
+            >
           </ion-row>
         </ion-grid>
       </ion-card-content>

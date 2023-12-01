@@ -41,6 +41,7 @@
     "@ionic/angular": "^6.1.9",
     "@ionic/pwa-elements": "^3.1.1",
     "@types/intro.js": "^5.1.1",
+    "capacitor-plugin-app-tracking-transparency": "^2.0.4",
     "cordova-plugin-inappbrowser": "^5.0.0",
     "cordova-plugin-purchase": "^13.9.0",
     "fuse.js": "^6.6.2",

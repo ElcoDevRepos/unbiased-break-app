@@ -1,5 +1,15 @@
-[{
-    "relation": ["delegate_permission/common.handle_all_urls"],
-    "target" : { "namespace": "android_app", "package_name": "com.votercertified.votercertified",
-                 "sha256_cert_fingerprints": ["3F:D7:3C:C1:4F:D9:62:51:35:B2:8E:08:CC:F5:CC:C0:E2:26:78:6C:18:F7:6E:62:29:D0:1C:FE:E9:BA:10:AC"] }
-  }]
+[
+    {
+      "relation": [
+        "delegate_permission/common.handle_all_urls"
+      ],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.votercertified.votercertified",
+        "sha256_cert_fingerprints": [
+          "3F:D7:3C:C1:4F:D9:62:51:35:B2:8E:08:CC:F5:CC:C0:E2:26:78:6C:18:F7:6E:62:29:D0:1C:FE:E9:BA:10:AC",
+          "6D:E3:7B:CE:75:B7:F7:C1:27:77:BA:88:42:78:42:F5:96:80:69:A7:03:0B:4C:DE:8E:31:61:D4:2E:1E:37:13"
+        ]
+      }
+    }
+  ]

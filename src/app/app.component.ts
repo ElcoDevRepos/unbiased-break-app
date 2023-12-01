@@ -8,7 +8,10 @@ import {
 } from '@capacitor/push-notifications';
 import { App, App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
 import { Analytics } from '@angular/fire/analytics';
-
+import {
+  AppTrackingTransparency,
+  AppTrackingStatusResponse,
+} from 'capacitor-plugin-app-tracking-transparency';
 import { UserService } from './services/user.service';
 import { AlertController, Platform, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -60,20 +63,20 @@ export class AppComponent {
       'pushNotificationActionPerformed',
       (notification) => {
         // Navigate to tab 1
-        if(notification.notification.data.url == "tab1") {
+        if (notification.notification.data.url == 'tab1') {
           this.router.navigate(['/tabs/tab1']);
         }
         // Navigate to tab 4 (GPT summary tab)
-        else if(notification.notification.data.url == "tab4") {
+        else if (notification.notification.data.url == 'tab4') {
           this.router.navigate(['/tabs/tab4']);
         }
         // Navigate to specific replied article using category key
-        else if(notification.notification.data.category) {
+        else if (notification.notification.data.category) {
           this.router.navigate([
-            '/news-article/' + 
-            notification.notification.data.url + 
-            '/' + 
-            notification.notification.data.category
+            '/news-article/' +
+              notification.notification.data.url +
+              '/' +
+              notification.notification.data.category,
           ]);
         }
         // Navigate to specific article
@@ -89,6 +92,8 @@ export class AppComponent {
   }
 
   async ngOnInit() {
+    const response = await AppTrackingTransparency.requestPermission();
+
     CapacitorApp.addListener('backButton', ({ canGoBack }) => {
       if (!canGoBack) {
         CapacitorApp.exitApp();
