@@ -93,5 +93,5 @@
       </ion-card>
     </ion-slide>
   </ion-slides>
-  <app-first-time-pop-up></app-first-time-pop-up>
+  <app-first-time-pop-up *ngIf="showFirstTimePopUp" (buttonClicked)="closeFirstTimePopUp()"></app-first-time-pop-up>
 </ion-content>
