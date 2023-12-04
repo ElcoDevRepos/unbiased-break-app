@@ -271,13 +271,14 @@ export class Tab3Page implements OnInit, OnDestroy {
     );
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
+      const img = doc.data().img || '';
       this.requestedNewsSources.push({
         id: doc.id,
         url: doc.data()['url'],
         user: doc.data()['user'],
         timestamp: doc.data()['timestamp'],
         bias: '',
-        imageUrl: '',
+        imageUrl: img,
       });
     });
   }
