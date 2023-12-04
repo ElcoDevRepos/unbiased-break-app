@@ -43,6 +43,7 @@ export class Tab4Page implements OnInit {
   doneLoading = false;
   dateString;
   isLoggedIn = false;
+  showFirstTimePopUp = false;
   @ViewChild('slides') slides: any;
   constructor(
     private tabsPage: TabsPage,
@@ -82,6 +83,7 @@ export class Tab4Page implements OnInit {
       console.error('Failed to fetch summaries:', error);
     }
     console.log(this.gptSummaries);
+    this.checkShowFirstTimePopUp();
   }
 
   favoriteArticle(summary) {
@@ -286,5 +288,18 @@ export class Tab4Page implements OnInit {
   private getGptClearedForTodayKey() {
     const date = new Date();
     return `${this.dateString}gpt-cleared`;
+  }
+
+  // Check if the first time pop up needs to be shown
+  checkShowFirstTimePopUp () {
+    const show = localStorage.getItem('showFirstTimePopUp');
+    if(!show) {
+      this.showFirstTimePopUp = true;
+      localStorage.setItem('showFirstTimePopUp', 'false');
+    }
+  }
+  
+  closeFirstTimePopUp() {
+    this.showFirstTimePopUp = false;
   }
 }
