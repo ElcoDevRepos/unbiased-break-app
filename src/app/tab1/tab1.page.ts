@@ -46,23 +46,22 @@ export class Tab1Page implements OnInit {
   expanded = false;
   items$: Observable<any>;
   items = [];
-  limit = 10;
+  limit = 1;
   selectedTab = 'middle';
   selectedTopic = 'all';
   loading = true;
   spinning = false;
   lastVisible;
+  couldNotFindMoreArticles = false;
   leftFilters = [];
   middleFilters = [];
   rightFilters = [];
-  noFilterSelected : boolean = false;
   currentUserDoc;
   itemsHolder;
   hasSearched = false;
   sourceImages = [];
   search = '';
   topicOptions = [];
-  canGetMoreData = true;
   customAlertOptions = {
     header: 'Subscribed Topics',
     subHeader: 'Select which article topics you would like shown.',
@@ -147,6 +146,10 @@ export class Tab1Page implements OnInit {
       let promises = [];
       docSnaps.forEach(async (d) => {
         this.currentUserDoc = d;
+
+        //Check if user wants to see read articles  
+        this.showReadArticles = d.data().showReadArticles;
+          
         if (d.data().filters) {
           this.leftFilters = JSON.parse(d.data().filters[0]) || [];
           this.middleFilters = JSON.parse(d.data().filters[1]) || [];
@@ -462,186 +465,122 @@ export class Tab1Page implements OnInit {
   }
 
   async getData() {
+    console.log('Getting articles...');
+    // Return if either sources or topics checked are 0
     if (this.topicCheckedList.length == 0) {
       this.loading = false;
       return;
     }
-
-    // Checks if at least one filter source is active for the selected tab
-    if(!this.checkIfNoSourceIsSelected()) {
-      this.noFilterSelected = true;
-      this.loading = false;
-      return;
-    }
-    else this.noFilterSelected = false;
-
     if (this.gettingData) return;
     this.gettingData = true;
+    this.couldNotFindMoreArticles = false;
 
     // Start time timer for timing out
     if(!this.getDataStartTime) this.getDataStartTime = Date.now();
 
-    const responsesRef = collection(
-      this.firestore,
-      this.selectedTab.toLocaleLowerCase() + '-articles'
-    );
-
-    //Set up for collection queries in batches of 10 topics
-    let q: any[] = [];
-    const totalBatches = Math.ceil(this.topicCheckedList.length / 10);
     let topicIds = [];
 
-    for (let i = 0; i < totalBatches; i++) {
-      topicIds.push([]);
-    }
-
-    this.topicCheckedList.forEach((t, index) => {
-      const batchIndex = Math.floor(index / 10);
-      topicIds[batchIndex].push(t.id);
+    this.topicCheckedList.forEach((t) => {
+      topicIds.push(t.id);
     });
 
-    //Set new limit dependent on how many batches are going to be fetched
-    const lim = Math.ceil(this.limit / topicIds.length);
-
-    let docSnaps: QuerySnapshot<unknown>[] = [];
-    let items = [];
-    let endPoint;
-    let setEndPoint = false;
-
-    for (let i = 0; i < topicIds.length; i++) {
-      //Get first batch of 10 starting at last visable
-      if (this.lastVisible && i == 0) {
-        q[i] = query(
-          responsesRef,
-          orderBy('date', 'desc'),
-          orderBy('__name__', 'desc'),
-          where('topic', 'in', topicIds[i]),
-          where('deleted', '==', false),
-          limit(lim),
-          startAfter(this.lastVisible)
-        );
-
-        setEndPoint = true;
+    let sourceFilteredItems = [];
+    while (sourceFilteredItems.length <= 10) {
+      console.log('Finding articles...');
+      // Check if timing out
+      if (Date.now() - this.getDataStartTime > 5000) { // 5 seconds
+        console.log("Time exceeded 5 seconds");
+        this.getDataStartTime = null;
+        this.loading = false;
+        this.gettingData = false;
+        if(this.items.length != 0) this.couldNotFindMoreArticles = true; 
+        return;
       }
 
-      //Get rest of 10 batches at last visable stopping at end point
-      else if (this.lastVisible && i != 0) {
-        q[i] = query(
-          responsesRef,
-          orderBy('date', 'desc'),
-          orderBy('__name__', 'desc'),
-          where('topic', 'in', topicIds[i]),
-          where('deleted', '==', false),
-          limit(lim),
-          startAfter(this.lastVisible),
-          endBefore(endPoint)
-        );
-      }
+      // Fetch articles from Firestore based on selected topics
+      let q = await this.fetchArticles(topicIds);
+      let docSnaps = await getDocs(q);
 
-      //Very first batch of 10 with no start after
-      else if (!this.lastVisible && i == 0) {
-        q[i] = query(
-          responsesRef,
-          orderBy('date', 'desc'),
-          orderBy('__name__', 'desc'),
-          where('topic', 'in', topicIds[i]),
-          where('deleted', '==', false),
-          limit(lim)
-        );
-
-        setEndPoint = true;
-      }
-
-      //Other first batches of 10 with no start after
-      else if (!this.lastVisible && i != 0) {
-        q[i] = query(
-          responsesRef,
-          orderBy('date', 'desc'),
-          orderBy('__name__', 'desc'),
-          where('topic', 'in', topicIds[i]),
-          where('deleted', '==', false),
-          limit(lim),
-          endBefore(endPoint)
-        );
-      }
-
-      docSnaps[i] = await getDocs(q[i]);
-      if (setEndPoint) endPoint = docSnaps[0].docs[docSnaps[0].docs.length - 1];
-
-      if (docSnaps[i].size < lim) {
-        this.canGetMoreData = false;
-      }
-    }
-
-    this.lastVisible = docSnaps[0].docs[docSnaps[0].docs.length - 1];
-
-    //Check if user wants to see read articles
-    if (this.currentUserDoc) {
-      let ref = doc(this.firestore, 'users', this.currentUserDoc.id);
-      const docSnap = await getDoc(ref);
-      if (docSnap.exists()) {
-        this.showReadArticles = docSnap.data().showReadArticles;
+      // Set a 'last visible' for further fetching, if undefined then stop fetching
+      if(docSnaps.docs[docSnaps.docs.length - 1]) {
+        this.lastVisible = docSnaps.docs[docSnaps.docs.length - 1];
       } else {
-        console.log('No user doc found!');
+        this.couldNotFindMoreArticles = true;
+        this.getDataStartTime = null;
+        this.loading = false;
+        this.gettingData = false;
+        return;
       }
-    }
 
-    //Push articles to items
-    for (let i = 0; i < docSnaps.length; i++) {
-      docSnaps[i].forEach((d) => {
-        if (d.data()['deleted'] == false) {
-          if (this.userService.getLoggedInUser()) {
-            //Show read articles
-            if (this.showReadArticles) {
-              items.push(d.data());
-            }
-            //Don't show read articles
-            else {
-              if (!this.readArticles.includes(d.data()['id'])) {
+      // Push articles to items
+      let items = [];
+      docSnaps.forEach((d) => {
+          if (d.data()['deleted'] == false) {
+            if (this.userService.getLoggedInUser()) {
+              //Show read articles
+              if (this.showReadArticles) {
                 items.push(d.data());
               }
-            }
-          } else items.push(d.data());
-        }
+              //Don't show read articles
+              else {
+                if (!this.readArticles.includes(d.data()['id'])) {
+                  items.push(d.data());
+                }
+              }
+            } else items.push(d.data());
+          }
       });
-    }
 
-    // Create a array of articles that pass the source filter
-    let newItems = this.getFilteredArticles(items);
-    this.items.push(...newItems);
+      // Create a array of articles that pass the source filter
+      sourceFilteredItems = this.getFilteredArticles(items);
+      this.items.push(...sourceFilteredItems);
+    }
 
     if (this.hasSearched) this.searchShownArticles();
     this.gettingData = false;
 
-    // Only for loading the first articles
-    if (this.items.length < this.limit && this.canGetMoreData){
-      // Check if timing out
-      if (Date.now() - this.getDataStartTime > 30000) { // 30 seconds
-        console.log("Time exceeded 30 seconds");
-        this.getDataStartTime = null;
-        this.loading = false;
-        return;
-      }
-      await this.getData();
-    }
+    this.getDataStartTime = null;
+    this.loading = false;
 
-    // Checks to make sure at least 1 new article was added to this.items
-    else if(newItems.length < 1) await this.getData();
-
-    else {
-      this.getDataStartTime = null;
-      this.loading = false;
-
-      //Check if intro.js is going to be shown
-      
-      if (this.currentUserDoc) {
+    //Check if intro.js is going to be shown
+    if (this.currentUserDoc) {
         const showIntroJS = localStorage.getItem('showHomeIntro');
         if (showIntroJS != 'false') {
             //localStorage.setItem('showHomeIntro', 'false');
             //this.introService.featureOne();
         }
-      }
     }
+    
+  }
+
+  async fetchArticles(topicIds) {
+    const responsesRef = collection(
+      this.firestore,
+      this.selectedTab.toLocaleLowerCase() + '-articles'
+    );
+    let q;
+    if(this.items.length == 0) {
+      q = query(
+        responsesRef,
+        orderBy('date', 'desc'),
+        orderBy('__name__', 'desc'),
+        where('topic', 'in', topicIds),
+        where('deleted', '==', false),
+        limit(100),
+      );     
+    }
+    else {
+      q = query(
+        responsesRef,
+        orderBy('date', 'desc'),
+        orderBy('__name__', 'desc'),
+        where('topic', 'in', topicIds),
+        where('deleted', '==', false),
+        limit(100),
+        startAfter(this.lastVisible)
+      );
+    }
+    return q;
   }
 
   onLeftChanged(ev, i) {
@@ -726,6 +665,7 @@ export class Tab1Page implements OnInit {
     this.hasSearched = false;
     this.lastVisible = null;
     this.items = [];
+    this.loading = true;
     await this.getData();
   }
 
@@ -893,18 +833,5 @@ export class Tab1Page implements OnInit {
 
   closeMenu() {
     this.menuController.close('tab2-menu');
-  }
-
-  // Checks if the selected tab has no selected sources
-  checkIfNoSourceIsSelected() {
-    if(this.selectedTab == 'middle') {
-      return this.middleFilters.some(filter => filter.on === true);
-    }
-    else if(this.selectedTab == 'right') {
-      return this.rightFilters.some(filter => filter.on === true);
-    }
-    else if(this.selectedTab == 'left') {
-      return this.leftFilters.some(filter => filter.on === true);
-    }
   }
 }
