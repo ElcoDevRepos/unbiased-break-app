@@ -256,10 +256,13 @@ ion-label p {
     --color: #f0f0f0;
   }
   ion-card-content {
-    p, li { color: #f0f0f0; }
-    a { color: #1f70ff; }
+    color: #f0f0f0;
   }
   ion-list {
     background-color: #1d1d1d;
+  }
+
+  .source-container {
+    a { color: #DC151C; }
   }
 }

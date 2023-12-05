@@ -321,6 +321,7 @@ export class NewsArticlePage implements OnInit, OnDestroy {
       let content = d.data().content;
       content = content.replaceAll('<p>', '<p style="font-size: 18px">');
       content = content.replaceAll('</p>', '</p><br>');
+      if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) content = content.replaceAll('<a', '<a style="color: #DC151C"');
       content = content.replaceAll(
         '<img',
         '<img style="max-width: 100%; height: fit-content" '
