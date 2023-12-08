@@ -211,34 +211,6 @@ export class Tab4Page implements OnInit {
     });
   }
 
-  /* ion alert to verify clearing all GPT summary articles */
-  async presentGPTClearAlert() {
-    const alert = await this.alertController.create({
-      header: 'Are you sure?',
-      message: "This will clear all of today's GPT summaries.",
-      buttons: [
-      {
-        text: 'Continue',
-        handler: () => {
-          this.clearAllSummaries();
-        }
-      }, 
-      {
-        text: 'Cancel',
-        role: 'cancel',
-      }
-    ]
-    });
-
-    await alert.present();
-  }
-
-  /* Add all the summaries for the day to the cleared list */
-  clearAllSummaries() {
-    this.addSummariesToCleared(this.gptSummaries.map((s) => s.id));
-    this.gptSummaries = [];
-  }
-
   /* Add the summary to the cleared list */
   async clearSummary(event: any, articleId: string) {
     this.addSummariesToCleared([articleId]);
