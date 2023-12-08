@@ -70,6 +70,9 @@
     <ion-item button detail id="settings-modal">
       <ion-label> Notifications </ion-label>
     </ion-item>
+    <ion-item button detail id="about-us-modal">
+      <ion-label> About Us </ion-label>
+    </ion-item>
     <ion-item button detail (click)="logOut()">
       <ion-label> Log Out </ion-label>
     </ion-item>
@@ -501,6 +504,26 @@
             >
           </ion-card-content>
         </ion-card>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+  <ion-modal #modalEight trigger="about-us-modal">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-back-button
+              (click)="modalEight.dismiss()"
+              defaultHref="/tabs/tab3"
+              text=""
+            >
+              <ion-icon name="arrow-back"></ion-icon>
+            </ion-back-button>
+          </ion-buttons>
+          <ion-title>About Us</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
       </ion-content>
     </ng-template>
   </ion-modal>
