@@ -2,6 +2,10 @@
   <div style="margin-top: 175px">
     <ion-card>
       <ion-card-content>
+        <ion-item *ngIf="!isLogin">
+          <ion-label position="stacked">Username</ion-label>
+          <ion-input [(ngModel)]="username" type="text"></ion-input>
+        </ion-item>
         <ion-item>
           <ion-label position="stacked">Email</ion-label>
           <ion-input [(ngModel)]="email" type="email"></ion-input>
