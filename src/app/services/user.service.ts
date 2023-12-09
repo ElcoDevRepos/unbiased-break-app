@@ -23,6 +23,7 @@ import { AdmobService } from './admob.service';
 })
 export class UserService {
   isPro: boolean = false;
+  username: string = '';
   constructor(private firestore: Firestore, private auth: Auth, private admob : AdmobService) {
     this.auth.onAuthStateChanged((user) => {
       if (user) {
@@ -30,6 +31,7 @@ export class UserService {
         const q = query(ref, where('email', '==', user.email));
         getDocs(q).then((docs) => {
           docs.forEach((d) => {
+            this.username = d.data()['username'] || '';
             this.isPro = d.data()['isPro'] || false;
             if(this.isPro) {
               console.log('isPro');
