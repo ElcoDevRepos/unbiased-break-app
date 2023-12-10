@@ -24,7 +24,7 @@ export class CommentthreadComponent implements OnInit {
 
     let obj = {
       text: this.commenttext,
-      author: this.userService.getLoggedInUser().displayName || this.userService.getLoggedInUser().email,
+      author: this.userService.username || 'no username',
       photo: this.userService.getLoggedInUser().photoURL,
       uid: this.userService.getLoggedInUser().uid,
       date: new Date().toISOString(),
