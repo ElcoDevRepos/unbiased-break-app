@@ -17,19 +17,24 @@ import {
 } from '@angular/fire/auth';
 import _ from 'lodash-es';
 import { AdmobService } from './admob.service';
+import { AlertController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   isPro: boolean = false;
-  constructor(private firestore: Firestore, private auth: Auth, private admob : AdmobService) {
+  username: string = '';
+  constructor(private firestore: Firestore, private auth: Auth, private admob : AdmobService, private alertController : AlertController) {
     this.auth.onAuthStateChanged((user) => {
       if (user) {
         let ref = collection(this.firestore, 'users');
         const q = query(ref, where('email', '==', user.email));
         getDocs(q).then((docs) => {
           docs.forEach((d) => {
+            this.username = d.data()['username'] || '';
+            console.log('Username', this.username);
+            if(this.username == '') this.promptUserToCreateUsername();
             this.isPro = d.data()['isPro'] || false;
             if(this.isPro) {
               console.log('isPro');
@@ -280,5 +285,41 @@ export class UserService {
     docs.forEach((d) => {
       updateDoc(doc(this.firestore, 'users', d.id), { isPro: flag });
     });
+  }
+
+  async promptUserToCreateUsername () {
+    const alert = await this.alertController.create({
+      header: 'Please create a username!',
+      inputs: [
+        {
+          name: 'username',
+          type: 'text',
+          placeholder: 'Your username'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Cancel');
+          }
+        }, {
+          text: 'Confirm',
+          handler: async (data) => {
+            let ref = collection(this.firestore, 'users');
+            const q = query(ref, where('email', '==', this.auth.currentUser.email));
+            let docs = await getDocs(q);
+            docs.forEach((d) => {
+              updateDoc(doc(this.firestore, 'users', d.id), { username: data.username });
+            });
+            this.username = data.username;
+          }
+        }
+      ]
+    });
+  
+    await alert.present();
   }
 }

@@ -6,7 +6,7 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
 } from '@angular/fire/auth';
-import { Firestore, doc, query, where, orderBy, limit, startAfter, getDocs, updateDoc, setDoc } from '@angular/fire/firestore';
+import { Firestore, doc, query, where, orderBy, limit, startAfter, getDocs, updateDoc, setDoc, collection } from '@angular/fire/firestore';
 import { AlertController } from '@ionic/angular';
 
 @Component({
@@ -15,6 +15,7 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./form.page.scss'],
 })
 export class FormPage implements OnInit {
+  username: string;
   email: string;
   password: string;
   isLogin: boolean;
@@ -37,11 +38,27 @@ export class FormPage implements OnInit {
   }
 
   async createAccount() {
+
+    // Check for valid username
+    const usernameRegex = /^[^\s]{3,}$/;
+    if(!usernameRegex.test(this.username)) {
+      alert("Username has to be at least 3 characters with no white spaces");
+      return;
+    }
+    
+    // Check that username is not already taken
+    const exists = await this.checkIfUsernameExists(this.username);
+    if(exists) {
+      alert(`The username "${this.username}" is taken`);
+      return;
+    }
+
     try {
       const user = await createUserWithEmailAndPassword(this.auth, this.email, this.password);
       
       let ref = doc(this.firestore, 'users', user.user.uid);
       await setDoc(ref, {
+        username: this.username,
         email: user.user.email,
         filters: [
           JSON.stringify([]),
@@ -77,6 +94,15 @@ export class FormPage implements OnInit {
       alert("Something went wrong")
     }
     
+  }
+
+  // Checks the 'users' collection for existing username, returns false if it does not exist
+  async checkIfUsernameExists(username : string) {
+    const collectionRef = collection(this.firestore, 'users');
+    const q = query(collectionRef, where('username', '==', username));
+    const docSnaps = await getDocs(q);
+    if(docSnaps.empty) return false;
+    else return true;
   }
 
   togglePasswordVisibility() {

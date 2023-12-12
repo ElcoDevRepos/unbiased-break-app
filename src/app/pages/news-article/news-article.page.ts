@@ -371,8 +371,7 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     let obj = {
       text: this.comment,
       author:
-        this.userService.getLoggedInUser().displayName ||
-        this.userService.getLoggedInUser().email,
+      this.userService.username || 'no username',
       photo: this.userService.getLoggedInUser().photoURL,
       uid: this.userService.getLoggedInUser().uid,
       date: new Date().toISOString(),
