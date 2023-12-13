@@ -60,10 +60,17 @@ async function summarizeArticle(collection, articleId) {
   const data = article.data();
   if (data.source === "The Washington Post") return null; // Putting this here just to be safe
 
+  // Shorten textBody if it exceeds token limit
+  let text = data.textBody;
+  if (text.length > 14000) {
+    // Limit it to the first 12000 characters
+    text = text.substring(0, 14000);
+  }
+
   try {
     const chatCompletion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: generatePrompt(data.textBody) }],
+      messages: [{ role: "user", content: generatePrompt(text) }],
     });
 
     const response = chatCompletion.choices[0].message.content;
