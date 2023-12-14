@@ -23,6 +23,7 @@
     "@angular/service-worker": "^14.0.0",
     "@awesome-cordova-plugins/core": "^6.4.0",
     "@capacitor-community/admob": "^5.3.1",
+    "@capacitor-firebase/authentication": "^5.3.0",
     "@capacitor/android": "^5.0.0",
     "@capacitor/app": "^5.0.0",
     "@capacitor/assets": "^1.0.14",

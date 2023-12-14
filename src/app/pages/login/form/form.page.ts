@@ -8,6 +8,7 @@ import {
 } from '@angular/fire/auth';
 import { Firestore, doc, query, where, orderBy, limit, startAfter, getDocs, updateDoc, setDoc, collection } from '@angular/fire/firestore';
 import { AlertController } from '@ionic/angular';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-form',
@@ -21,7 +22,7 @@ export class FormPage implements OnInit {
   isLogin: boolean;
   showPassword: boolean = false;
 
-  constructor(private router: Router, public auth: Auth, private firestore: Firestore, private alertController: AlertController) { }
+  constructor(private router: Router, public auth: Auth, private firestore: Firestore, private alertController: AlertController, private authService: AuthService) { }
 
   ngOnInit() {
     this.isLogin = this.router.getCurrentNavigation().extras.state.islogin;
@@ -38,14 +39,13 @@ export class FormPage implements OnInit {
   }
 
   async createAccount() {
-
     // Check for valid username
     const usernameRegex = /^[^\s]{3,}$/;
     if(!usernameRegex.test(this.username)) {
       alert("Username has to be at least 3 characters with no white spaces");
       return;
     }
-    
+
     // Check that username is not already taken
     const exists = await this.checkIfUsernameExists(this.username);
     if(exists) {
@@ -55,7 +55,7 @@ export class FormPage implements OnInit {
 
     try {
       const user = await createUserWithEmailAndPassword(this.auth, this.email, this.password);
-      
+
       let ref = doc(this.firestore, 'users', user.user.uid);
       await setDoc(ref, {
         username: this.username,
@@ -83,17 +83,17 @@ export class FormPage implements OnInit {
           },
         ],
       });
-  
-  
+
+
       await alertBox.present();
-  
+
       const { data } = await alertBox.onDidDismiss();
       await sendPasswordResetEmail(this.auth, data.values[0]);
       alert("Password Reset Email Sent");
     } catch (error) {
       alert("Something went wrong")
     }
-    
+
   }
 
   // Checks the 'users' collection for existing username, returns false if it does not exist
@@ -107,6 +107,10 @@ export class FormPage implements OnInit {
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
+  }
+
+  loginWithGoogle() {
+    this.authService.loginGoogle();
   }
 
 }

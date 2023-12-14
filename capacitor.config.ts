@@ -6,6 +6,10 @@ const config: CapacitorConfig = {
   webDir: 'www',
   plugins: {
     InAppBrowser: {},
+    FirebaseAuthentication: {
+      skipNativeAuth: false,
+      providers: ['google.com', 'facebook.com'],
+    },
   },
   bundledWebRuntime: false
 };
