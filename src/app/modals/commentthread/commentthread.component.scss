@@ -116,8 +116,8 @@ ion-segment {
 }
 
 .comment-area {
-    --background: #f3f3f3; 
-    border-radius: 12px; 
+    --background: #f3f3f3;
+    border-radius: 12px;
     --padding-start: 15px;
     margin: 0;
 }
@@ -126,5 +126,19 @@ ion-segment {
     img {
         max-width: 100%;
         max-height: 225px !important;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    ion-toolbar, ion-button, ion-card, ion-card-title, ion-item, ion-content {
+        --background: #191919;
+        --color: #f0f0f0;
+    }
+    a { color: #DC151C; }
+    .show-gradient {
+        --background: #1d1d1d;
+    }
+    .comment-area {
+        --background: #2f2f2f;
     }
 }
