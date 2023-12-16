@@ -52,11 +52,16 @@
             >
           </ion-row>
         </ion-grid>
-        <ion-button
-          color="light"
-          shape="round"
-          (click)="loginWithGoogle()"
-        >Google</ion-button>
+        <div style="text-align: center">
+          <ion-button
+            color="primary"
+            shape="round"
+            (click)="loginWithGoogle()"
+            >
+            <ion-icon slot="start" name="logo-google"></ion-icon>
+            Google
+          </ion-button>
+        </div>
       </ion-card-content>
     </ion-card>
   </div>
