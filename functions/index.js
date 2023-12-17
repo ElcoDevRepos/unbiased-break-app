@@ -309,12 +309,16 @@ exports.deleteFeed = functions
     let promise = [deleteMyFeedArticles()];
     return Promise.all(promise);
   });
+
 async function doReplyNotifification(change, articleId) {
   let userId = change.after.data().uid;
   let comments = change.after.data().comments;
 
+  console.log('USER ID: ', userId);
+  console.log('COMMENTS: ', comments);
+
   // Find article UID
-  const collections = ['left-articles', 'right-articles', 'middle-articles', 'trending-articles'];
+  const collections = ['left-articles', 'right-articles', 'middle-articles', 'trending-articles', 'category-articles'];
   let articleData = null;
   let articleUID = '';
   let col = null;
@@ -652,6 +656,17 @@ exports.sendResponseNotificationRight = functions
 exports.sendResponseNotificationTrending = functions
   .runWith(runtimeOpts)
   .firestore.document("/trending-articles/{articleId}/comments/{commentId}")
+  .onUpdate((change, context) => {
+    // Extract the articleId from the context
+    const articleId = context.params.articleId;
+
+    let promise = [doReplyNotifification(change, articleId)];
+    return Promise.all(promise);
+  });
+
+exports.sendResponseNotificationCategory = functions
+  .runWith(runtimeOpts)
+  .firestore.document("/category-articles/{articleId}/comments/{commentId}")
   .onUpdate((change, context) => {
     // Extract the articleId from the context
     const articleId = context.params.articleId;
