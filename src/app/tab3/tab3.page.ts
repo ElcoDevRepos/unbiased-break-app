@@ -47,6 +47,7 @@ import { TabsPage } from '../tabs/tabs.page';
 import { Share } from '@capacitor/share';
 import * as _ from 'lodash';
 import 'cordova-plugin-purchase';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-tab3',
@@ -67,6 +68,15 @@ export class Tab3Page implements OnInit, OnDestroy {
   readArticlesAmount;
   loadingBookmarks: boolean = true;
   loadingReadArticles: boolean = true;
+
+  /* For determining if the user has these accounts linked.
+   * Used for displaying correct link/unlink buttons.
+   * These can be undefined in userDoc.data() if the user
+   * has not/never linked their account to these providers.
+   */
+  isEmailAndPasswordLinked: boolean = false;
+  isGoogleLinked: boolean = false;
+  isFacebookLinked: boolean = false;
 
   isDesktop: boolean;
   displayName = this.auth.currentUser.displayName;
@@ -95,7 +105,8 @@ export class Tab3Page implements OnInit, OnDestroy {
     private introService: IntrojsService,
     private tabsPage: TabsPage,
     private ref: ChangeDetectorRef,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService,
   ) {
     this.premium_id = this.platform.is('ios') ? 'PREMIUM_SUB' : 'premium_sub';
   }
@@ -131,6 +142,18 @@ export class Tab3Page implements OnInit, OnDestroy {
         }
       });
     });
+    this.userService.getUserLinkedProviders().then((providers) => {
+      if (providers.includes('password')) {
+        this.isEmailAndPasswordLinked = true;
+      }
+      if (providers.includes('google.com')) {
+        this.isGoogleLinked = true;
+      }
+      if (providers.includes('facebook.com')) {
+        this.isFacebookLinked = true;
+      }
+    }).catch((err) => {});
+
   }
 
   registerProducts() {
@@ -665,5 +688,17 @@ export class Tab3Page implements OnInit, OnDestroy {
     if (link.includes('nytimes.com') || link.includes('wsj.com')) {
       Browser.open({ url: link });
     }
+  }
+
+  async linkAccountToGoogle() {
+
+  }
+
+  async linkAccountToFacebook() {
+
+  }
+
+  async linkAccountToEmailAndPassword() {
+    this.authService.linkAccount('email');
   }
 }

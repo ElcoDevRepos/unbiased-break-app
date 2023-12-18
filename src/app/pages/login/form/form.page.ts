@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -22,10 +22,30 @@ export class FormPage implements OnInit {
   isLogin: boolean;
   showPassword: boolean = false;
 
-  constructor(private router: Router, private alertController: AlertController, private authService: AuthService) { }
+  isLink: boolean;
+
+  constructor(private router: Router, private alertController: AlertController, private authService: AuthService, private route: ActivatedRoute) { }
 
   ngOnInit() {
-    this.isLogin = this.router.getCurrentNavigation().extras.state.islogin;
+    this.route.queryParams.subscribe(params => {
+      if (params.link === "true") {
+        this.email = params.email;
+        this.isLogin = false;
+        this.isLink = true;
+      } else {
+        this.isLogin = this.router.getCurrentNavigation().extras.state.islogin;
+      }
+    });
+  }
+
+  async submitForm() {
+    if (this.isLink) {
+      this.linkAccountToEmail();
+    } else if (this.isLogin) {
+      this.login();
+    } else {
+      this.createAccount();
+    }
   }
 
   async login() {
@@ -70,6 +90,17 @@ export class FormPage implements OnInit {
     } catch (error) {
       alert("Something went wrong");
     }
+  }
+
+  async linkAccountToEmail() {
+    this.authService.linkAccountToEmail(this.email, this.password).then((user) => {
+      if (user) {
+        this.router.navigate([""], {
+          replaceUrl: true,
+        });
+      }
+    });
+
   }
 
   async forgotPassword() {
@@ -120,6 +151,14 @@ export class FormPage implements OnInit {
       } else {
         alert("Something went wrong");
       }
+    }
+  }
+
+  cancel() {
+    if (this.isLink) {
+      this.router.navigate([""]);
+    } else {
+      this.router.navigate([".."]);
     }
   }
 

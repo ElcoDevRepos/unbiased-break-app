@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, PreloadAllModules, RouterModule, RouterStateSnapshot, Routes } from '@angular/router';
 import {
   redirectLoggedInTo,
   canActivate,
@@ -21,8 +21,12 @@ const routes: Routes = [
   {
     path: 'news-article/:id/:type',
     loadChildren: () => import('./pages/news-article/news-article.module').then( m => m.NewsArticlePageModule),
-
-  }
+  },
+  {
+    path: 'link-email',
+    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule),
+    ...canActivate(redirectUnauthorizedToLogin),
+  },
 ];
 @NgModule({
   imports: [

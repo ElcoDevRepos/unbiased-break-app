@@ -14,6 +14,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
+  fetchSignInMethodsForEmail,
 } from '@angular/fire/auth';
 import _ from 'lodash-es';
 import { AdmobService } from './admob.service';
@@ -319,7 +320,29 @@ export class UserService {
         }
       ]
     });
-  
+
     await alert.present();
+  }
+
+  async getUserLinkedProviders(): Promise<string[]> {
+    if (!this.auth.currentUser) {
+      return new Promise((resolve, reject) => {
+        /* Prevent this from hanging forever. */
+        setTimeout(() => {
+          reject();
+        }, 10000);
+        const unsub = this.auth.onAuthStateChanged((user) => {
+          unsub();
+          if (!user) {
+            reject();
+          }
+          const providers = fetchSignInMethodsForEmail(this.auth, user.email);
+          resolve(providers);
+        }, reject);
+      });
+    } else {
+      const providers = fetchSignInMethodsForEmail(this.auth, this.auth.currentUser.email);
+      return providers;
+    }
   }
 }

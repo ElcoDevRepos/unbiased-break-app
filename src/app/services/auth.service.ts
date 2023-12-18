@@ -8,8 +8,10 @@ import {
   createUserWithEmailAndPassword,
   signInWithCredential,
   signInWithPopup,
-  getRedirectResult,
   UserCredential,
+  linkWithPopup,
+  linkWithCredential,
+  EmailAuthProvider,
 } from '@angular/fire/auth';
 import {
   Firestore,
@@ -18,6 +20,7 @@ import {
 } from '@angular/fire/firestore';
 import { Capacitor } from '@capacitor/core';
 import { getDoc } from '@firebase/firestore';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -29,17 +32,10 @@ export class AuthService {
   platform: string = Capacitor.getPlatform();
 
   constructor(
-    private _auth: Auth,
-    private _firestore: Firestore,
+    public auth: Auth,
+    public firestore: Firestore,
+    public router: Router,
   ) {
-  }
-
-  public get auth() {
-    return this._auth;
-  }
-
-  public get firestore() {
-    return this._firestore;
   }
 
   /* Login with email and password.
@@ -98,6 +94,67 @@ export class AuthService {
     return user;
   }
 
+  /* Links the current user to a new provider.
+    * @param provider The provider to link the account with.
+    * @returns The user object.
+    * @throws Error if the auth fails.
+    */
+  async linkAccount(provider: "fb" | "goog" | "email"): Promise<UserCredential> {
+    /* This will be same for web and native */
+    if (provider === 'email') {
+      this.router.navigate(['/link-email'], { queryParams: { link: true, email: this.auth.currentUser.email } });
+    } else if (provider === 'goog' && this.platform === 'web') {
+      return await this.linkAccountToGoogleWeb();
+    } else if (provider === 'goog' && this.platform !== 'web') {
+      return await this.linkAccountToGoogleNative();
+    } else if (provider === 'fb' && this.platform === 'web') {
+      //return await this.linkAccountToFacebookWeb();
+    } else if (provider === 'fb' && this.platform !== 'web') {
+      //return await this.linkAccountToFacebookNative();
+    }
+
+    return undefined;
+  }
+
+  /* Links the current user to an email.
+    * @param email The email to link the account with.
+    * @param password The password to link the account with.
+    * @returns The user object or undefined on failure.
+    * @throws Nothing.
+    */
+  async linkAccountToEmail(email: string, password: string): Promise<UserCredential> {
+    if (this.auth.currentUser === null) {
+      return undefined;
+    }
+    try {
+      const credential = EmailAuthProvider.credential(email, password);
+      const result = await linkWithCredential(this.auth.currentUser, credential);
+      return result;
+    } catch (error) {
+      this.directUserOnFirebaseError(error);
+      return undefined;
+    }
+  }
+
+  /* These could be improved upon, but work for now */
+  private directUserOnFirebaseError(error: any) {
+    switch (error.code) {
+      case 'auth/email-already-in-use':
+        alert('Email already in use');
+        break;
+      case 'auth/invalid-email':
+        alert('Invalid email');
+        break;
+      /* Should change this one to ask user if they want to
+        * logout, then do it for them. Can save their data
+        * and use it on login.
+        */
+      case 'auth/requires-recent-login':
+        alert('To continue, please logout then log back in');
+        break;
+    }
+  }
+
   private async createAuthAccountDefault(email: string, password: string): Promise<UserCredential> {
     return createUserWithEmailAndPassword(this.auth, email, password);
   }
@@ -122,7 +179,7 @@ export class AuthService {
       /* Sign in with redirect is probably better than signInWithPopup
        * but it will not work on browsers with third party cookies disabled.
        */
-      const result: UserCredential = await signInWithPopup(this._auth, new GoogleAuthProvider());
+      const result: UserCredential = await signInWithPopup(this.auth, new GoogleAuthProvider());
       return result;
     } catch (error) {
       return undefined;
@@ -152,5 +209,15 @@ export class AuthService {
     const result = await FirebaseAuthentication.signInWithFacebook();
     const credential = FacebookAuthProvider.credential(result.credential?.accessToken);
     await signInWithCredential(this.auth, credential);
+  }
+
+
+  private async linkAccountToGoogleWeb(): Promise<UserCredential> {
+    const result = linkWithPopup(this.auth.currentUser, new GoogleAuthProvider());
+    return result;
+  }
+
+  private async linkAccountToGoogleNative(): Promise<UserCredential> {
+    throw new Error('Not implemented');
   }
 }

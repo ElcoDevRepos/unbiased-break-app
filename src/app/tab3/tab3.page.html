@@ -78,6 +78,21 @@
     <ion-item button detail id="faq-modal">
       <ion-label> FAQ </ion-label>
     </ion-item>
+    <!-- Buttons for linking multiple auth providers to one account
+      The user can only do this if they are already logged in with one auth provider
+    -->
+    <ion-item button detail (click)="linkAccountToEmailAndPassword()"
+      [hidden]="this.isEmailAndPasswordLinked == true">
+      <ion-label> Link Email </ion-label>
+    </ion-item>
+    <ion-item button detail (click)="linkAccountToGoogle()"
+      [hidden]="this.isGoogleLinked == true">
+      <ion-label> Link Google </ion-label>
+    </ion-item>
+    <ion-item button detail (click)="linkAccountToFacebook()"
+      [hidden]="this.isFacebookLinked == true">
+      <ion-label> Link Facebook </ion-label>
+    </ion-item>
     <ion-item button detail (click)="logOut()">
       <ion-label> Log Out </ion-label>
     </ion-item>
@@ -554,7 +569,7 @@
       <ion-content>
         <ion-card>
           <ion-card-content>
-            Welcome to Unbiased Break! We're here to guide and enhance your experience with our news app. If your query isn't addressed below, our dedicated support team is always available to assist you.  
+            Welcome to Unbiased Break! We're here to guide and enhance your experience with our news app. If your query isn't addressed below, our dedicated support team is always available to assist you.
           </ion-card-content>
         </ion-card>
 
@@ -562,7 +577,7 @@
           <ion-card-header>
             <ion-card-title>General FAQs</ion-card-title>
           </ion-card-header>
-        
+
           <ion-card-content>
             <b>1. What is Unbiased Break?</b><br>
             Unbiased Break is a transformative news app aiming to reshape your news-reading habits. Key features encompass:
@@ -602,7 +617,7 @@
           <ion-card-header>
             <ion-card-title>Getting started</ion-card-title>
           </ion-card-header>
-        
+
           <ion-card-content>
             <b>5. How can I customize my news feed?</b>
             <ul>
@@ -631,7 +646,7 @@
           <ion-card-header>
             <ion-card-title>Content and Sources</ion-card-title>
           </ion-card-header>
-        
+
           <ion-card-content>
             <b>8.	How do you ensure unbiased news coverage?</b><br>
             Diversity in news presentation is our pledge. We enable users to peruse a range of viewpoints, cultivating an atmosphere of unbiased news consumption.
@@ -649,7 +664,7 @@
           <ion-card-header>
             <ion-card-title>Contact, Support, and Feedback</ion-card-title>
           </ion-card-header>
-        
+
           <ion-card-content>
             <b>10. How can I contact Unbiased Break support?</b><br>
             Reach out via email at <a href="mailto:info@votercertified.com">info@votercertified.com</a>. Also, keep an eye out for our soon-to-launch in-app reporting tool.
@@ -677,7 +692,7 @@
           <ion-card-header>
             <ion-card-title>ChatGPT Integration</ion-card-title>
           </ion-card-header>
-        
+
           <ion-card-content>
             <b>What does the ChatGPT integration do in Unbiased Break?</b><br>
             Our integration with ChatGPT elevates your news experience. ChatGPT technology assists in providing concise article summaries, enabling users to quickly grasp the essence of news articles without delving deep. This integration is instrumental in catering to users who wish to be informed swiftly without wading through extensive articles.

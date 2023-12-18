@@ -2,13 +2,13 @@
   <div style="margin-top: 175px">
     <ion-card>
       <ion-card-content>
-        <ion-item *ngIf="!isLogin">
+        <ion-item *ngIf="!isLogin && !isLink">
           <ion-label position="stacked">Username</ion-label>
           <ion-input [(ngModel)]="username" type="text"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Email</ion-label>
-          <ion-input [(ngModel)]="email" type="email"></ion-input>
+          <ion-input [(ngModel)]="email" type="email" [disabled]="isLink"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="floating">Password</ion-label>
@@ -25,7 +25,7 @@
         <ion-grid>
           <ion-row>
             <ion-col class="center-btn"
-              ><ion-button color="light" shape="round" [routerLink]="['..']"
+              ><ion-button color="light" shape="round" (click)="cancel()"
                 >Cancel</ion-button
               ></ion-col
             >
@@ -33,10 +33,11 @@
               <ion-button
                 color="primary"
                 shape="round"
-                (click)="isLogin ? login() : createAccount()"
+                (click)="submitForm()"
               >
                 <span *ngIf="isLogin">Login</span>
-                <span *ngIf="!isLogin">Create</span>
+                <span *ngIf="!isLogin && !isLink">Create</span>
+                <span *ngIf="isLink">Link</span>
               </ion-button>
             </ion-col>
           </ion-row>
@@ -52,7 +53,7 @@
             >
           </ion-row>
         </ion-grid>
-        <div style="text-align: center">
+        <div style="text-align: center" [hidden]="isLink">
           <ion-button
             color="primary"
             shape="round"

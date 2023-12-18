@@ -3,9 +3,11 @@ import { Routes, RouterModule } from '@angular/router';
 import {
   redirectLoggedInTo,
   canActivate,
+  redirectUnauthorizedTo,
 } from '@angular/fire/auth-guard';
 import { LoginPage } from './login.page';
 const redirectLoggedInToHome = () => redirectLoggedInTo(['']);
+const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
 
 const routes: Routes = [
   {
@@ -16,7 +18,10 @@ const routes: Routes = [
     path: 'form',
     loadChildren: () => import('./form/form.module').then( m => m.FormPageModule),
     ...canActivate(redirectLoggedInToHome),
-
+  },
+  {
+    path: 'link',
+    loadChildren: () => import('./form/form.module').then( m => m.FormPageModule),
   }
 ];
 
