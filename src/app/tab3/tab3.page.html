@@ -89,8 +89,9 @@
       [hidden]="this.isGoogleLinked == true">
       <ion-label> Link Google </ion-label>
     </ion-item>
+    <!-- Hide this button while the Facebook auth provider is not working -->
     <ion-item button detail (click)="linkAccountToFacebook()"
-      [hidden]="this.isFacebookLinked == true">
+      [hidden]="this.isFacebookLinked == true || true">
       <ion-label> Link Facebook </ion-label>
     </ion-item>
     <ion-item button detail (click)="logOut()">

@@ -691,11 +691,11 @@ export class Tab3Page implements OnInit, OnDestroy {
   }
 
   async linkAccountToGoogle() {
-
+    this.authService.linkAccount('goog');
   }
 
   async linkAccountToFacebook() {
-
+    this.authService.linkAccount('fb');
   }
 
   async linkAccountToEmailAndPassword() {

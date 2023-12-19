@@ -6,8 +6,10 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
+  UserCredential,
 } from '@angular/fire/auth';
 import { Firestore, doc, query, where, orderBy, limit, startAfter, getDocs, updateDoc, setDoc } from '@angular/fire/firestore';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +21,7 @@ export class LoginPage implements OnInit {
   password: string;
   isDesktop: boolean;
   isLogin = true;
-  constructor(private platform: Platform, private router: Router, public auth: Auth, private firestore: Firestore, private alertController: AlertController, private route: ActivatedRoute) { }
+  constructor(private platform: Platform, private router: Router, public auth: Auth, private firestore: Firestore, private alertController: AlertController, private route: ActivatedRoute, private authService: AuthService) { }
 
   ngOnInit() {
     this.isDesktop = this.platform.is('desktop');
@@ -62,6 +64,20 @@ export class LoginPage implements OnInit {
       this.router.navigate([""]);
     } catch (error) {
       alert(error);
+    }
+  }
+
+  async loginWithGoogle() {
+    let user: UserCredential | undefined;
+    try {
+      user = await this.authService.loginGoogle();
+    } catch (error) {
+    } finally {
+      if(user) {
+        this.router.navigate([""]);
+      } else {
+        alert("Something went wrong");
+      }
     }
   }
 

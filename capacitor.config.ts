@@ -8,7 +8,7 @@ const config: CapacitorConfig = {
     InAppBrowser: {},
     FirebaseAuthentication: {
       skipNativeAuth: false,
-      providers: ['google.com', 'facebook.com'],
+      providers: ['google.com'],
     },
   },
   bundledWebRuntime: false

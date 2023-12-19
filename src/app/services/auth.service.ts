@@ -72,13 +72,26 @@ export class AuthService {
     return loginResult;
   }
 
-  async loginFacebook() {
+  async loginFacebook(): Promise<UserCredential> {
     let loginResult: UserCredential | undefined;
-    if (this.platform === 'web') {
-      loginResult = await this.loginFacebookWeb();
-    } else {
-      loginResult = await this.loginFacebookNative();
+    try {
+      if (this.platform === 'web') {
+        loginResult = await this.loginFacebookWeb();
+      } else {
+        loginResult = await this.loginFacebookNative();
+      }
+    } catch (error) {
+      console.log(error.message);
+      return undefined;
     }
+
+    if (loginResult) {
+      /* This function checks if user exists in the database.
+       * It does not override the user if it already exists.
+       */
+      await this.createDBAccountDefault(loginResult);
+    }
+    return loginResult;
   }
 
   /* Create a new account with email and password.
@@ -108,7 +121,7 @@ export class AuthService {
     } else if (provider === 'goog' && this.platform !== 'web') {
       return await this.linkAccountToGoogleNative();
     } else if (provider === 'fb' && this.platform === 'web') {
-      //return await this.linkAccountToFacebookWeb();
+      return await this.linkAccountToFacebookWeb();
     } else if (provider === 'fb' && this.platform !== 'web') {
       //return await this.linkAccountToFacebookNative();
     }
@@ -201,7 +214,14 @@ export class AuthService {
   }
 
   private async loginFacebookWeb(): Promise<UserCredential>  {
-    throw new Error('Not implemented');
+    try {
+      const provider = new FacebookAuthProvider();
+      const result = await signInWithPopup(this.auth, provider);
+      return result;
+    } catch (error) {
+      console.log(error);
+      return undefined;
+    }
   }
 
   private async loginFacebookNative(): Promise<UserCredential>  {
@@ -211,6 +231,11 @@ export class AuthService {
     await signInWithCredential(this.auth, credential);
   }
 
+
+  private async linkAccountToFacebookWeb(): Promise<UserCredential> {
+    const result = linkWithPopup(this.auth.currentUser, new FacebookAuthProvider());
+    return result;
+  }
 
   private async linkAccountToGoogleWeb(): Promise<UserCredential> {
     const result = linkWithPopup(this.auth.currentUser, new GoogleAuthProvider());

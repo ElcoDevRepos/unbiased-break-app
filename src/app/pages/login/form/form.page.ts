@@ -154,6 +154,20 @@ export class FormPage implements OnInit {
     }
   }
 
+  async loginWithFacebook() {
+    let user: UserCredential | undefined;
+    try {
+      //user = await this.authService.loginFacebook();
+    } catch (error) {
+    } finally {
+      if(user) {
+        this.router.navigate([""]);
+      } else {
+        alert("Something went wrong");
+      }
+    }
+  }
+
   cancel() {
     if (this.isLink) {
       this.router.navigate([""]);
