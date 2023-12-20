@@ -31,5 +31,4 @@ npm-debug.log*
 /plugins
 /www
 /ios
-/android
 functions/node_modules/
