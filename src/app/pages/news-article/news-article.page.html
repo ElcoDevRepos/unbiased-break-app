@@ -141,11 +141,11 @@
             <h2>
               {{item.data.author}}
               <span *ngIf="item.data.comments" style="opacity: 0.5"
-                >{{item.data.comments.length}} Replies</span
+                >{{item.data.comments.length}} {{item.data.comments.length == 1 ? 'Reply' : 'Replies'}}</span
               >
             </h2>
             <h3>{{item.data.date | date:'mediumDate'}}</h3>
-            <p style="white-space: initial; font-size: 19px">
+            <p style="white-space: initial; font-size: 19px; color: inherit;">
               {{item.data.text}}
             </p>
           </ion-label>
