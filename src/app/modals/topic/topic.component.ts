@@ -16,6 +16,7 @@ import {
 import { Auth } from '@angular/fire/auth';
 import { TopiclistComponent } from 'src/app/components/topiclist/topiclist.component';
 import { IntrojsService } from 'src/app/introjs.service';
+import { App } from '@capacitor/app';
 
 @Component({
   selector: 'app-topic',
@@ -27,6 +28,7 @@ export class TopicComponent implements OnInit, AfterViewInit {
   isAdding = false;
   newTopic = '';
   currentUser;
+  showingPopover: boolean = false;
   constructor(
     private navParams: NavParams,
     private alertController: AlertController,
@@ -44,6 +46,10 @@ export class TopicComponent implements OnInit, AfterViewInit {
     this.topics.forEach((t) => {
       if (t.checked === undefined) t.checked = true;
     });
+    App.addListener('backButton', (data) => {
+      console.log('back button')
+      this.dismiss();
+    })
     console.log(this.topics);
   }
 
@@ -119,6 +125,7 @@ export class TopicComponent implements OnInit, AfterViewInit {
 
   async showPopup(e) {
     if (this.newTopic != '') {
+      this.showingPopover = true;
       const popover = await this.popoverController.create({
         component: TopiclistComponent,
         componentProps: {
@@ -131,6 +138,8 @@ export class TopicComponent implements OnInit, AfterViewInit {
       await popover.present();
 
       const { data } = await popover.onDidDismiss();
+      console.log('dismissed popover');
+      this.showingPopover = false;
 
       if (data) {
         let newItem = data.item;
@@ -152,7 +161,7 @@ export class TopicComponent implements OnInit, AfterViewInit {
   @HostListener('window:popstate', ['$event'])
   dismiss() {
     this.modalCtrl.dismiss(this.topics);
-    this.popoverController.dismiss();
+    if(this.showingPopover) this.popoverController.dismiss();
   }
 
   async addNewTopic() {
