@@ -77,6 +77,7 @@ export class Tab4Page implements OnInit {
       }
 
       this.gptSummaries = sum[0];
+      this.gptSummaries = this.checkForBlankImages(this.gptSummaries);
       this.goToNextNotClearedSummary();
       this.doneLoading = true;
     } catch (error) {
@@ -84,6 +85,16 @@ export class Tab4Page implements OnInit {
     }
     console.log(this.gptSummaries);
     this.checkShowFirstTimePopUp();
+  }
+
+  // Some BBC articles have placeholder images with them, this function removes them
+  checkForBlankImages (gptSummaries) {
+    let cleared = [];
+    gptSummaries.forEach((s) => {
+      if(s.image == "https://www.bbc.com/bbcx/grey-placeholder.png") s.image = null;
+      cleared.push(s);
+    });
+    return cleared;
   }
 
   favoriteArticle(summary) {
