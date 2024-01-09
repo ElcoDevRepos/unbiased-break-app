@@ -19,7 +19,7 @@ import { provideFirebaseApp, getApp, initializeApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getAuth, provideAuth, initializeAuth } from '@angular/fire/auth';
 import { getStorage, provideStorage } from '@angular/fire/storage';
-import { indexedDBLocalPersistence } from 'firebase/auth';
+import { indexedDBLocalPersistence, browserPopupRedirectResolver } from 'firebase/auth';
 import {
   provideAnalytics,
   getAnalytics,
@@ -28,6 +28,7 @@ import {
 } from '@angular/fire/analytics';
 import { HttpClientModule } from '@angular/common/http';
 import { PressDirective } from './press.directive';
+import { Capacitor } from '@capacitor/core';
 
 @NgModule({
   declarations: [AppComponent, PressDirective],
@@ -46,9 +47,19 @@ import { PressDirective } from './press.directive';
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAnalytics(() => getAnalytics()),
     provideFirestore(() => getFirestore()),
-    provideAuth(() =>
-      initializeAuth(getApp(), { persistence: indexedDBLocalPersistence })
-    ),
+    provideAuth(() => {
+      if (Capacitor.getPlatform() === 'web') {
+        return initializeAuth(getApp(), {
+          persistence: indexedDBLocalPersistence,
+          popupRedirectResolver: browserPopupRedirectResolver
+        });
+      } else {
+        /* Native does not work if the popupRedirectResolver is set */
+        return initializeAuth(getApp(), {
+          persistence: indexedDBLocalPersistence,
+        });
+      }
+    }),
     provideStorage(() => getStorage()),
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],

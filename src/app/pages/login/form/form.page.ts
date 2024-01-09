@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
-  Auth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
+  UserCredential,
 } from '@angular/fire/auth';
-import { Firestore, doc, query, where, orderBy, limit, startAfter, getDocs, updateDoc, setDoc, collection } from '@angular/fire/firestore';
+import { doc, query, where, orderBy, limit, startAfter, getDocs, updateDoc, setDoc, collection } from '@angular/fire/firestore';
 import { AlertController } from '@ionic/angular';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-form',
@@ -21,15 +22,35 @@ export class FormPage implements OnInit {
   isLogin: boolean;
   showPassword: boolean = false;
 
-  constructor(private router: Router, public auth: Auth, private firestore: Firestore, private alertController: AlertController) { }
+  isLink: boolean;
+
+  constructor(private router: Router, private alertController: AlertController, private authService: AuthService, private route: ActivatedRoute) { }
 
   ngOnInit() {
-    this.isLogin = this.router.getCurrentNavigation().extras.state.islogin;
+    this.route.queryParams.subscribe(params => {
+      if (params.link === "true") {
+        this.email = params.email;
+        this.isLogin = false;
+        this.isLink = true;
+      } else {
+        this.isLogin = this.router.getCurrentNavigation().extras.state.islogin;
+      }
+    });
+  }
+
+  async submitForm() {
+    if (this.isLink) {
+      this.linkAccountToEmail();
+    } else if (this.isLogin) {
+      this.login();
+    } else {
+      this.createAccount();
+    }
   }
 
   async login() {
     try {
-      const user = await signInWithEmailAndPassword(this.auth, this.email, this.password);
+      const user = await signInWithEmailAndPassword(this.authService.auth, this.email, this.password);
       this.router.navigate([""]);
     } catch (error) {
       alert("Wrong email/password");
@@ -38,14 +59,13 @@ export class FormPage implements OnInit {
   }
 
   async createAccount() {
-
     // Check for valid username
     const usernameRegex = /^[^\s]{3,}$/;
     if(!usernameRegex.test(this.username)) {
       alert("Username has to be at least 3 characters with no white spaces");
       return;
     }
-    
+
     // Check that username is not already taken
     const exists = await this.checkIfUsernameExists(this.username);
     if(exists) {
@@ -54,9 +74,9 @@ export class FormPage implements OnInit {
     }
 
     try {
-      const user = await createUserWithEmailAndPassword(this.auth, this.email, this.password);
-      
-      let ref = doc(this.firestore, 'users', user.user.uid);
+      const user = await createUserWithEmailAndPassword(this.authService.auth, this.email, this.password);
+
+      let ref = doc(this.authService.firestore, 'users', user.user.uid);
       await setDoc(ref, {
         username: this.username,
         email: user.user.email,
@@ -72,6 +92,17 @@ export class FormPage implements OnInit {
     }
   }
 
+  async linkAccountToEmail() {
+    this.authService.linkAccountToEmail(this.email, this.password).then((user) => {
+      if (user) {
+        this.router.navigate([""], {
+          replaceUrl: true,
+        });
+      }
+    });
+
+  }
+
   async forgotPassword() {
     try {
       const alertBox = await this.alertController.create({
@@ -83,22 +114,22 @@ export class FormPage implements OnInit {
           },
         ],
       });
-  
-  
+
+
       await alertBox.present();
-  
+
       const { data } = await alertBox.onDidDismiss();
-      await sendPasswordResetEmail(this.auth, data.values[0]);
+      await sendPasswordResetEmail(this.authService.auth, data.values[0]);
       alert("Password Reset Email Sent");
     } catch (error) {
       alert("Something went wrong")
     }
-    
+
   }
 
   // Checks the 'users' collection for existing username, returns false if it does not exist
   async checkIfUsernameExists(username : string) {
-    const collectionRef = collection(this.firestore, 'users');
+    const collectionRef = collection(this.authService.firestore, 'users');
     const q = query(collectionRef, where('username', '==', username));
     const docSnaps = await getDocs(q);
     if(docSnaps.empty) return false;
@@ -107,6 +138,42 @@ export class FormPage implements OnInit {
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
+  }
+
+  async loginWithGoogle() {
+    let user: UserCredential | undefined;
+    try {
+      user = await this.authService.loginGoogle();
+    } catch (error) {
+    } finally {
+      if(user) {
+        this.router.navigate([""]);
+      } else {
+        alert("Something went wrong");
+      }
+    }
+  }
+
+  async loginWithFacebook() {
+    let user: UserCredential | undefined;
+    try {
+      //user = await this.authService.loginFacebook();
+    } catch (error) {
+    } finally {
+      if(user) {
+        this.router.navigate([""]);
+      } else {
+        alert("Something went wrong");
+      }
+    }
+  }
+
+  cancel() {
+    if (this.isLink) {
+      this.router.navigate([""]);
+    } else {
+      this.router.navigate([".."]);
+    }
   }
 
 }

@@ -1,5 +1,7 @@
 {
   "name": "Unbiased Break",
-  "integrations": {},
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "angular"
 }
