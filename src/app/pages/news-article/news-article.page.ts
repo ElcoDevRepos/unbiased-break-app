@@ -439,6 +439,11 @@ export class NewsArticlePage implements OnInit, OnDestroy {
   }
 
   async share() {
+    // Redirects non logged in users to log in to share article
+    if(!this.auth.currentUser) {
+      this.router.navigate(['/tabs/tab3']);
+      return;
+    }
 
     await Share.share({
       title: this.article.title,
