@@ -15,6 +15,7 @@ export class AdmobService {
   clickLimit = 5;
   clicks = 0;
   isPro: boolean = false;
+  sharedArticleCount = 0; // This is to track shared articles
   constructor(private platform: Platform) {}
 
   async initialize() {
@@ -46,6 +47,15 @@ export class AdmobService {
       if (!this.isPro) await AdMob.prepareInterstitial(pOptions);
       if (!this.isPro) await AdMob.showInterstitial();
       this.clicks = 0;
+    }
+  }
+
+  // Add to number of shared articles and show ad after 2
+  async addToSharedArticleCount() {
+    this.sharedArticleCount++;
+    if(this.sharedArticleCount > 1) {
+      this.sharedArticleCount = 0;
+      this.showInterstitial();
     }
   }
 

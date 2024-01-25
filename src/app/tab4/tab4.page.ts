@@ -221,6 +221,9 @@ export class Tab4Page implements OnInit {
       return;
     }
 
+    // Call Admod Service to track number of shared articles
+    this.admobService.addToSharedArticleCount();
+    
     await Share.share({
       title: article.title,
       text: article.summary,
