@@ -32,6 +32,7 @@ import { AdmobService } from '../services/admob.service';
 import { AlertController } from '@ionic/angular';
 import { Auth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
+import { CommunityFeedService } from '../services/community-feed.service';
 
 @Component({
   selector: 'app-tab4',
@@ -56,7 +57,8 @@ export class Tab4Page implements OnInit {
     private el: ElementRef,
     private alertController: AlertController,
     private auth: Auth,
-    private router: Router
+    private router: Router,
+    private communityFeedService: CommunityFeedService
   ) {}
   
   async ngOnInit() {
@@ -223,6 +225,9 @@ export class Tab4Page implements OnInit {
 
     // Call Admod Service to track number of shared articles
     this.admobService.addToSharedArticleCount();
+
+    // Call Community Feed service to add this shared article
+    this.communityFeedService.addGPTSummaryToCommunityFeed(article);
     
     await Share.share({
       title: article.title,

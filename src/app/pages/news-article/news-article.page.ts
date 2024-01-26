@@ -36,6 +36,7 @@ import { Observable } from 'rxjs';
 import { IntrojsService } from 'src/app/introjs.service';
 import { GptSummaryService } from 'src/app/services/gpt-summary.service';
 import { replace } from 'lodash';
+import { CommunityFeedService } from 'src/app/services/community-feed.service';
 
 @Component({
   selector: 'app-news-article',
@@ -78,7 +79,8 @@ export class NewsArticlePage implements OnInit, OnDestroy {
     private router: Router,
     private gptSummaryService: GptSummaryService,
     public toastController: ToastController,
-    public loadingController: LoadingController
+    public loadingController: LoadingController,
+    private communityFeedService: CommunityFeedService
   ) {}
 
   ngOnInit() {
@@ -447,6 +449,9 @@ export class NewsArticlePage implements OnInit, OnDestroy {
 
     // Call Admod Service to track number of shared articles
     this.admobService.addToSharedArticleCount();
+
+    // Call Community Feed service to add this shared article
+    this.communityFeedService.addArticleToCommunityFeed(this.artticleType, this.article);
 
     await Share.share({
       title: this.article.title,
