@@ -77,6 +77,7 @@ export class Tab3Page implements OnInit, OnDestroy {
   sourceImages = [];
   loader;
   premium_id;
+  premium_yearly_id;
   products: any;
   store?: CdvPurchase.Store;
 
@@ -97,6 +98,9 @@ export class Tab3Page implements OnInit, OnDestroy {
     private ref: ChangeDetectorRef,
     private route: ActivatedRoute
   ) {
+    this.premium_yearly_id = this.platform.is('ios')
+      ? 'premium_yearly'
+      : 'premium_yearly';
     this.premium_id = this.platform.is('ios') ? 'PREMIUM_SUB' : 'premium_sub';
   }
 
@@ -107,13 +111,12 @@ export class Tab3Page implements OnInit, OnDestroy {
       !this.platform.is('ios');
     this.createFakeHistory();
     this.platform.ready().then(() => {
-      console.log('READY');
       this.store = CdvPurchase.store;
-      console.log(this.store.products);
+
       this.registerProducts();
 
       this.setupListeners();
-      console.log(this.products);
+
       this.ref.detectChanges();
       this.store.initialize([
         this.platform.is('ios')
@@ -121,8 +124,6 @@ export class Tab3Page implements OnInit, OnDestroy {
           : CdvPurchase.Platform.GOOGLE_PLAY,
       ]);
       this.store.ready(() => {
-        console.log('STORE READY');
-        console.log(this.products);
         this.products = this.store.products;
       });
       this.route.queryParams.subscribe((params) => {
@@ -142,6 +143,13 @@ export class Tab3Page implements OnInit, OnDestroy {
           ? CdvPurchase.Platform.APPLE_APPSTORE
           : CdvPurchase.Platform.GOOGLE_PLAY,
       },
+      {
+        type: CdvPurchase.ProductType.PAID_SUBSCRIPTION,
+        id: this.premium_yearly_id,
+        platform: this.platform.is('ios')
+          ? CdvPurchase.Platform.APPLE_APPSTORE
+          : CdvPurchase.Platform.GOOGLE_PLAY,
+      },
     ]);
   }
 
@@ -150,7 +158,7 @@ export class Tab3Page implements OnInit, OnDestroy {
       .when()
       .approved((p: any) => {
         // Handle the product deliverable
-        if (p.id === this.premium_id) {
+        if (p.id === this.premium_id || p.id === this.premium_yearly_id) {
           if (this.loader) {
             this.loader.dismiss();
           }

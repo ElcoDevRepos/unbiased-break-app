@@ -44,7 +44,10 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  ion-toolbar, ion-button, ion-card, ion-card-title {
+  ion-toolbar,
+  ion-button,
+  ion-card,
+  ion-card-title {
     --background: #191919;
     --color: #f0f0f0;
   }
@@ -52,6 +55,17 @@
     --background: #1d1d1d;
   }
   .source-container {
-    a { color: #DC151C; }
+    a {
+      color: #dc151c;
+    }
+  }
+}
+
+ion-toolbar {
+  --background: white;
+  --min-height: 75px;
+  --border-width: 0 0 0 !important;
+  ion-title {
+    font-weight: bold;
   }
 }

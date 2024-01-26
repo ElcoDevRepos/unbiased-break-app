@@ -14,9 +14,7 @@
   <div class="background">
     <span class="user-name">
       <h4>
-        <b>
-          {{userService.username}}
-        </b>
+        <b> {{userService.username}} </b>
         <br />
         {{auth.currentUser.email}}
       </h4>
@@ -483,7 +481,7 @@
       <ion-content>
         <ion-card>
           <ion-card-header>
-            <ion-card-subtitle> Purchase premium monthly! </ion-card-subtitle>
+            <ion-card-subtitle> Purchase premium! </ion-card-subtitle>
           </ion-card-header>
           <ion-card-content>
             <p>Subscribing to premium unlocks the following:</p>
@@ -507,6 +505,10 @@
               >Subscribe for {{store.products[0].pricing.price}} /
               month</ion-button
             >
+            <ion-button expand="full" (click)="purchase(store.products[1])"
+              >Subscribe for {{store.products[1].pricing.price}} /
+              year</ion-button
+            >
           </ion-card-content>
         </ion-card>
       </ion-content>
@@ -529,8 +531,7 @@
           <ion-title>About Us</ion-title>
         </ion-toolbar>
       </ion-header>
-      <ion-content>
-      </ion-content>
+      <ion-content> </ion-content>
     </ng-template>
   </ion-modal>
   <!--FAQ Modal-->
@@ -554,7 +555,9 @@
       <ion-content>
         <ion-card>
           <ion-card-content>
-            Welcome to Unbiased Break! We're here to guide and enhance your experience with our news app. If your query isn't addressed below, our dedicated support team is always available to assist you.  
+            Welcome to Unbiased Break! We're here to guide and enhance your
+            experience with our news app. If your query isn't addressed below,
+            our dedicated support team is always available to assist you.
           </ion-card-content>
         </ion-card>
 
@@ -562,39 +565,64 @@
           <ion-card-header>
             <ion-card-title>General FAQs</ion-card-title>
           </ion-card-header>
-        
+
           <ion-card-content>
-            <b>1. What is Unbiased Break?</b><br>
-            Unbiased Break is a transformative news app aiming to reshape your news-reading habits. Key features encompass:
+            <b>1. What is Unbiased Break?</b><br />
+            Unbiased Break is a transformative news app aiming to reshape your
+            news-reading habits. Key features encompass:
             <ul>
-              <li>ChatGPT Integration: A standout feature that enables article summaries using ChatGPT. This technology furnishes concise overviews of news, allowing you to focus on relevant articles and streamline your reading time.</li>
-              <li>Customized News Feed: Carve out a tailored news landscape by selecting from an array of perspectives.</li>
-              <li>Bookmarking: Make sure you can always revisit your favorite articles using our bookmark feature.</li>
+              <li>
+                ChatGPT Integration: A standout feature that enables article
+                summaries using ChatGPT. This technology furnishes concise
+                overviews of news, allowing you to focus on relevant articles
+                and streamline your reading time.
+              </li>
+              <li>
+                Customized News Feed: Carve out a tailored news landscape by
+                selecting from an array of perspectives.
+              </li>
+              <li>
+                Bookmarking: Make sure you can always revisit your favorite
+                articles using our bookmark feature.
+              </li>
             </ul>
-            <br>
+            <br />
 
-            <b>2. How do I download Unbiased Break?</b><br>
-            Find us on the App Store (iOS) or the Google Play Store (Android). Just type "Unbiased Break" in the search bar and proceed with the installation steps.
-            <br>
-            <br>
+            <b>2. How do I download Unbiased Break?</b><br />
+            Find us on the App Store (iOS) or the Google Play Store (Android).
+            Just type "Unbiased Break" in the search bar and proceed with the
+            installation steps.
+            <br />
+            <br />
 
-            <b>3. Is Unbiased Break free to use?</b><br>
-            Absolutely! While Unbiased Break offers free access, our premium subscription is packed with perks:
+            <b>3. Is Unbiased Break free to use?</b><br />
+            Absolutely! While Unbiased Break offers free access, our premium
+            subscription is packed with perks:
             <ul>
-              <li>Enhanced Summarization with ChatGPT: Delve deeper into articles with detailed summarizations.</li>
-              <li>Ad-Free Experience: Dive into a reading experience devoid of ads.</li>
-              <li>Offline Functionality: We're prepping an offline reading feature, so stay tuned!</li>
+              <li>
+                Enhanced Summarization with ChatGPT: Delve deeper into articles
+                with detailed summarizations.
+              </li>
+              <li>
+                Ad-Free Experience: Dive into a reading experience devoid of
+                ads.
+              </li>
+              <li>
+                Offline Functionality: We're prepping an offline reading
+                feature, so stay tuned!
+              </li>
             </ul>
-            <br>
+            <br />
 
-            <b>4. How do I see my bookmarked articles?</b><br>
+            <b>4. How do I see my bookmarked articles?</b><br />
             <ul>
               <li>Ensure you've registered an account with Unbiased Break.</li>
               <li>Navigate to your in-app profile.</li>
               <li>Once in your profile, tap on the "Bookmarks" tab.</li>
             </ul>
-            Here, you'll find a curated list of articles you've earmarked for future perusal.
-            <br>
+            Here, you'll find a curated list of articles you've earmarked for
+            future perusal.
+            <br />
           </ion-card-content>
         </ion-card>
 
@@ -602,28 +630,33 @@
           <ion-card-header>
             <ion-card-title>Getting started</ion-card-title>
           </ion-card-header>
-        
+
           <ion-card-content>
             <b>5. How can I customize my news feed?</b>
             <ul>
               <li>Head to the "Feed" tab.</li>
               <li>Opt for "Edit Topics" to refine your feed.</li>
-              <li>Add or eliminate topics/subscriptions to align with your preferences.</li>
+              <li>
+                Add or eliminate topics/subscriptions to align with your
+                preferences.
+              </li>
             </ul>
-            <br>
+            <br />
 
-            <b>6.	What is the trending tab for?</b><br>
-            The "Trending" hub casts a spotlight on the most buzzworthy global news, ensuring you're abreast of the latest and most impactful stories.
-            <br>
-            <br>
+            <b>6. What is the trending tab for?</b><br />
+            The "Trending" hub casts a spotlight on the most buzzworthy global
+            news, ensuring you're abreast of the latest and most impactful
+            stories.
+            <br />
+            <br />
 
-            <b>7.	How can I filter news sources?</b><br>
+            <b>7. How can I filter news sources?</b><br />
             <ul>
               <li>Access the "Feed" section.</li>
               <li>Click on the filter icon situated in the top right.</li>
               <li>Modify news sources to suit your taste.</li>
             </ul>
-            <br>
+            <br />
           </ion-card-content>
         </ion-card>
 
@@ -631,17 +664,21 @@
           <ion-card-header>
             <ion-card-title>Content and Sources</ion-card-title>
           </ion-card-header>
-        
-          <ion-card-content>
-            <b>8.	How do you ensure unbiased news coverage?</b><br>
-            Diversity in news presentation is our pledge. We enable users to peruse a range of viewpoints, cultivating an atmosphere of unbiased news consumption.
-            <br>
-            <br>
 
-            <b>9. Are you the arbitrator of truth?</b><br>
-            We step back from that role. Our ethos is rooted in delivering a plethora of news perspectives and entrusting our users to critically analyze and form well-rounded opinions.
-            <br>
-            <br>
+          <ion-card-content>
+            <b>8. How do you ensure unbiased news coverage?</b><br />
+            Diversity in news presentation is our pledge. We enable users to
+            peruse a range of viewpoints, cultivating an atmosphere of unbiased
+            news consumption.
+            <br />
+            <br />
+
+            <b>9. Are you the arbitrator of truth?</b><br />
+            We step back from that role. Our ethos is rooted in delivering a
+            plethora of news perspectives and entrusting our users to critically
+            analyze and form well-rounded opinions.
+            <br />
+            <br />
           </ion-card-content>
         </ion-card>
 
@@ -649,27 +686,39 @@
           <ion-card-header>
             <ion-card-title>Contact, Support, and Feedback</ion-card-title>
           </ion-card-header>
-        
+
           <ion-card-content>
-            <b>10. How can I contact Unbiased Break support?</b><br>
-            Reach out via email at <a href="mailto:info@votercertified.com">info@votercertified.com</a>. Also, keep an eye out for our soon-to-launch in-app reporting tool.
-            <br>
-            <br>
+            <b>10. How can I contact Unbiased Break support?</b><br />
+            Reach out via email at
+            <a href="mailto:info@votercertified.com">info@votercertified.com</a
+            >. Also, keep an eye out for our soon-to-launch in-app reporting
+            tool.
+            <br />
+            <br />
 
-            <b>11. How can I provide feedback or suggestions for Unbiased Break?</b><br>
-            Your insights shape us! Channel your feedback and recommendations to <a href="mailto:info@votercertified.com">info@votercertified.com</a>.
-            <br>
-            <br>
+            <b
+              >11. How can I provide feedback or suggestions for Unbiased
+              Break?</b
+            ><br />
+            Your insights shape us! Channel your feedback and recommendations to
+            <a href="mailto:info@votercertified.com">info@votercertified.com</a
+            >.
+            <br />
+            <br />
 
-            <b>12. How can I leave a review for Unbiased Break?</b><br>
-            Let the world know your thoughts! Android aficionados can head to the Google Play Store, while Apple enthusiasts should visit the App Store. Once there, search "Unbiased Break" and opt to pen a review. We value every piece of feedback!
-            <br>
-            <br>
+            <b>12. How can I leave a review for Unbiased Break?</b><br />
+            Let the world know your thoughts! Android aficionados can head to
+            the Google Play Store, while Apple enthusiasts should visit the App
+            Store. Once there, search "Unbiased Break" and opt to pen a review.
+            We value every piece of feedback!
+            <br />
+            <br />
 
-            <b>13. How do you manage data privacy?</b><br>
-            Your privacy is our priority. Dive into our in-depth Privacy Policy in-app to discover how we handle data from usage to protection.
-            <br>
-            <br>
+            <b>13. How do you manage data privacy?</b><br />
+            Your privacy is our priority. Dive into our in-depth Privacy Policy
+            in-app to discover how we handle data from usage to protection.
+            <br />
+            <br />
           </ion-card-content>
         </ion-card>
 
@@ -677,12 +726,16 @@
           <ion-card-header>
             <ion-card-title>ChatGPT Integration</ion-card-title>
           </ion-card-header>
-        
+
           <ion-card-content>
-            <b>What does the ChatGPT integration do in Unbiased Break?</b><br>
-            Our integration with ChatGPT elevates your news experience. ChatGPT technology assists in providing concise article summaries, enabling users to quickly grasp the essence of news articles without delving deep. This integration is instrumental in catering to users who wish to be informed swiftly without wading through extensive articles.
-            <br>
-            <br>
+            <b>What does the ChatGPT integration do in Unbiased Break?</b><br />
+            Our integration with ChatGPT elevates your news experience. ChatGPT
+            technology assists in providing concise article summaries, enabling
+            users to quickly grasp the essence of news articles without delving
+            deep. This integration is instrumental in catering to users who wish
+            to be informed swiftly without wading through extensive articles.
+            <br />
+            <br />
           </ion-card-content>
         </ion-card>
       </ion-content>

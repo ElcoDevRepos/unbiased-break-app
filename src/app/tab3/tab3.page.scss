@@ -226,21 +226,23 @@ ion-label p {
   ion-avatar {
     margin-top: 15px;
   }
-  
+
   .show-gradient {
     --background: #1d1d1d;
   }
-  
+
   ion-toolbar {
     --background: #191919;
     --color: #f0f0f0;
-
   }
   .background {
     background-color: #1d1d1d;
   }
   .user-name {
-    h3, h4 { color: #f0f0f0; }
+    h3,
+    h4 {
+      color: #f0f0f0;
+    }
   }
   ion-item {
     --background: #191919;
@@ -263,6 +265,8 @@ ion-label p {
   }
 
   .source-container {
-    a { color: #DC151C; }
+    a {
+      color: #dc151c;
+    }
   }
 }
