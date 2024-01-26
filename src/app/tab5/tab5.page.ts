@@ -35,6 +35,7 @@ export class Tab5Page implements OnInit {
     const responsesRef = collection(this.firestore, 'community-feed');
     let q = query(
       responsesRef,
+      orderBy('share_count', 'desc'),
       orderBy('timestamp', 'desc'),
     );
     let docSnaps = await getDocs(q);
@@ -42,6 +43,13 @@ export class Tab5Page implements OnInit {
     docSnaps.forEach((d) => {
       this.feed.push(d.data());
     });
+  }
+
+  // Call when user refreshes feed
+  async doRefresh(event) {
+    this.feed = [];
+    await this.loadCommunityFeedArticles();
+    event.target.complete();
   }
 
   onArticleClick(item: any) {

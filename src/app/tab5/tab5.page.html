@@ -26,10 +26,11 @@
           class="article"
           *ngFor="let item of feed"
           (click)="onArticleClick(item);"
-          [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/category-articles']"
+          [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/' + item.collection]"
           [state]="{ article: item }"
         >
           <div class="card-content-container">
+            <img [src]="item.image"/>
             <div>
               <div class="date-and-shares">
                 <p>Shares: {{item.share_count}}</p>
@@ -43,12 +44,13 @@
                 {{item.title}}
               </p>
 
+              <p>{{item.summary}}</p>
+
               <div class="source-container">
-                <p>{{item.siteName}}</p>
+                <p><b>{{item.source}}</b></p>
+                <p>Shared by: <b>{{item.created_by}}</b></p>
               </div>
             </div>
-
-            <img [src]="item.image"/>
           </div>
         </ion-card>
   </ion-list>

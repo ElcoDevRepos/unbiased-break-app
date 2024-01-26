@@ -18,7 +18,7 @@ export class CommunityFeedService {
   async addArticleToCommunityFeed (collectionRef, articleData) {
 
     // Extract article data
-    const { image, siteName, title, id, timestamp, link } = articleData;
+    const { image, siteName, title, id, link } = articleData;
     
     // Check if articles is already in community feed page
     const createNewDoc = await this.checkIfArticleExistInCommunityFeed(id);
@@ -37,7 +37,8 @@ export class CommunityFeedService {
           timestamp: Timestamp.now(),
           title: title,
           created_by: this.userService.username,
-          share_count: 1
+          share_count: 1,
+          collection: collectionRef
         }
 
         // Add summary to the Community Feed collection
@@ -53,6 +54,7 @@ export class CommunityFeedService {
     summary.share_count = 1;
     summary.created_by = this.userService.username;
     summary.timestamp = Timestamp.now();
+    summary.collection = 'trending-articles';
 
     // Check if articles is already in community feed page
     const createNewDoc = await this.checkIfArticleExistInCommunityFeed(summary.id);
