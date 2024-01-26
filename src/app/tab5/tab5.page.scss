@@ -1,0 +1,62 @@
+.show-gradient {
+    --background: #f3f3f3;
+}
+
+.article {
+    height: 130px;
+    border-radius: 10px;
+    margin: 0px 5px 10px 5px;
+}
+
+.card-content-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 130px;
+  
+    .date-and-shares {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 5px 0px 5px;
+      p {
+        color: gray;
+        margin: 0px;
+      }
+    }
+  
+    .title {
+      margin: 10px 5px 5px 5px;
+      font-size: 14px;
+      color: black;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3; /* Limit the content to three lines */
+      -webkit-box-orient: vertical;
+    }
+  
+    .source-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+  
+      img {
+        height: 20px;
+        width: 25px;
+        margin: 5px;
+      }
+  
+      P {
+        margin: 0px;
+      }
+    }
+  
+    img {
+      align-self: center;
+      width: 150px;
+      height: 90%;
+      object-fit: cover;
+      border-radius: 20px;
+      margin-right: 5px;
+    }
+  }
