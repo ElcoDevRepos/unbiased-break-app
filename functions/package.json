@@ -16,7 +16,10 @@
     "dotenv": "^16.3.1",
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^4.4.1",
+    "i": "^0.3.7",
     "node-cron": "^3.0.2",
+    "node-fetch": "^2.6.1",
+    "npm": "^10.4.0",
     "openai": "^4.12.4"
   },
   "devDependencies": {

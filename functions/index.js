@@ -28,6 +28,9 @@ const openai = new OpenAI({
   apiKey: process.env.OPEN_AI_KEY,
 });
 
+
+const bucket = admin.storage().bucket(); // For Firebase cloud storage
+
 /* This function does not check for premium users, the caller should do that */
 async function summarizeArticle(collection, articleId) {
   if (!articleId || !collection) return null;
@@ -625,7 +628,7 @@ async function doDailyRandomArticle() {
 
 // This will get called when a new doc is added to the community-feed collection.
 // It will check if the article contains a image and create one if not.
-async function checkIfArticleNeedsImage(articleId) {
+async function checkIfArticleNeedsImage(articleId) {  
   console.log('Checking if this article needs an image: ', articleId);
 
   const docRef = db.collection('community-feed').doc(articleId);
@@ -637,7 +640,7 @@ async function checkIfArticleNeedsImage(articleId) {
         console.log('No image found, generating image...');
         // Call generateImage function here
         const articleSummary = articleData.summary;
-        const aiImage = await generateImage(articleSummary);
+        const aiImage = await generateImage(articleSummary, articleId);
         await db.collection('community-feed').doc(articleId).update({image: aiImage});
 
       } else {
@@ -650,7 +653,7 @@ async function checkIfArticleNeedsImage(articleId) {
     console.error('Error fetching article: ', error);
   }
 }
-async function generateImage(articleSummary) {
+async function generateImage(articleSummary, articleId) {
   // Ensure the text is not too long
   const maxLength = 4000; // Adjust based on your API's requirements
   const trimmedText =
@@ -665,18 +668,19 @@ async function generateImage(articleSummary) {
 
     // Handle the response
     if (response.data) {
-      // Assuming the image URL is returned in response.data.image_url
-      return response.data[0].url;
+      // Upload image to firebase
+      const uploadURL = await uploadImageToFirebase(response.data[0].url, `community-feed/${articleId}`);
+      return uploadURL;
     } else {
       throw new Error("Unexpected response structure from API");
     }
   } catch (error) {
     console.log(error);
     if (error.error.code == "rate_limit_exceeded") {
-      return await generateImage(text);
+      return await generateImage(articleSummary);
     } else if (error.error.code == "content_policy_violation") {
       const kidSafeText = await getSafeSummaryForChildren(trimmedText);
-      return await generateImage(kidSafeText);
+      return await generateImage(kidSafeText, articleId);
     } else {
       console.error("Error generating image from text:", error);
       throw error;
@@ -697,6 +701,23 @@ async function getSafeSummaryForChildren(text) {
     console.error("Error generating child-safe summary:", error);
     throw error;
   }
+}
+async function downloadImage(url) {
+  console.log('Downloading image from: ', url);
+  const response = await fetch(url);
+  const buffer = await response.buffer();
+  return buffer;
+}
+async function uploadImageToFirebase(url, destinationPath) {
+  const imageBuffer = await downloadImage(url);
+  const file = bucket.file(destinationPath);
+  await file.save(imageBuffer, {
+    metadata: { contentType: 'image/jpeg' },
+  });
+  await file.makePublic();
+  const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+  console.log(`Uploaded image to ${publicUrl}`);
+  return publicUrl;
 }
 
 exports.sendResponseNotificationLeft = functions
