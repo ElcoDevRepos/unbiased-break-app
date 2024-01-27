@@ -712,7 +712,12 @@ async function uploadImageToFirebase(url, destinationPath) {
   const imageBuffer = await downloadImage(url);
   const file = bucket.file(destinationPath);
   await file.save(imageBuffer, {
-    metadata: { contentType: 'image/jpeg' },
+    metadata: { 
+      contentType: 'image/jpeg',
+      metadata: {
+        uploadedTime: new Date().toISOString()
+      }
+   },
   });
   await file.makePublic();
   const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
@@ -804,6 +809,7 @@ exports.dailyGPTSummaries = functions
     return Promise.all(promise);
   });
 
+  // Community Feed functions
   exports.checkNewCommunityFeedArticleForImage = functions
   .runWith(runtimeOpts)
   .firestore.document("/community-feed/{articleId}")
@@ -813,5 +819,23 @@ exports.dailyGPTSummaries = functions
 
     let promise = [checkIfArticleNeedsImage(articleId)];
     return Promise.all(promise);
+  });
+  exports.deleteOldFilesInCommunityFeed = functions.pubsub.schedule('every 60 minutes').onRun(async (context) => {
+    console.log('Running auto deletion for Community Feed images')
+    const prefix = 'community-feed/';  // Folder path in the bucket
+    const [files] = await bucket.getFiles({ prefix: prefix });
+  
+    files.forEach(async file => {
+      const [metadata] = await file.getMetadata();
+      const uploadedTime = metadata.metadata && metadata.metadata.uploadedTime;
+      if (uploadedTime) {
+        const fileAge = Date.now() - new Date(uploadedTime).getTime();
+        const twentyFourHoursInMs = 24 * 60 * 60 * 1000;
+        if (fileAge > twentyFourHoursInMs) {
+          await file.delete();
+          console.log(`Deleted old file: ${file.name}`);
+        }
+      }
+    });
   });
 
