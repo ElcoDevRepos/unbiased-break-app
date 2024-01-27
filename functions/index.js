@@ -820,6 +820,8 @@ exports.dailyGPTSummaries = functions
     let promise = [checkIfArticleNeedsImage(articleId)];
     return Promise.all(promise);
   });
+
+  /* Add this later for gpt summary images (POC: Olof)
   exports.deleteOldFilesInCommunityFeed = functions.pubsub.schedule('every 60 minutes').onRun(async (context) => {
     console.log('Running auto deletion for Community Feed images')
     const prefix = 'community-feed/';  // Folder path in the bucket
@@ -838,4 +840,5 @@ exports.dailyGPTSummaries = functions
       }
     });
   });
+  */
 
