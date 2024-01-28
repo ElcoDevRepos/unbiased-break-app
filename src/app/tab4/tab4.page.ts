@@ -30,6 +30,9 @@ import { UserService } from '../services/user.service';
 import { Share } from '@capacitor/share';
 import { AdmobService } from '../services/admob.service';
 import { AlertController } from '@ionic/angular';
+import { Auth } from '@angular/fire/auth';
+import { Router } from '@angular/router';
+import { CommunityFeedService } from '../services/community-feed.service';
 
 @Component({
   selector: 'app-tab4',
@@ -52,7 +55,10 @@ export class Tab4Page implements OnInit {
     private admobService: AdmobService,
     private renderer: Renderer2,
     private el: ElementRef,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private auth: Auth,
+    private router: Router,
+    private communityFeedService: CommunityFeedService
   ) {}
   
   async ngOnInit() {
@@ -211,6 +217,18 @@ export class Tab4Page implements OnInit {
 
   //Share the article using capacitor share plugin
   async share(article: any) {
+    // Redirects non logged in users to log in to share article
+    if(!this.auth.currentUser) {
+      this.router.navigate(['/tabs/tab3']);
+      return;
+    }
+
+    // Call Admod Service to track number of shared articles
+    this.admobService.addToSharedArticleCount();
+
+    // Call Community Feed service to add this shared article
+    this.communityFeedService.addGPTSummaryToCommunityFeed(article);
+    
     await Share.share({
       title: article.title,
       text: article.summary,

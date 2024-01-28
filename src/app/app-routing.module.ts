@@ -22,7 +22,11 @@ const routes: Routes = [
     path: 'news-article/:id/:type',
     loadChildren: () => import('./pages/news-article/news-article.module').then( m => m.NewsArticlePageModule),
 
+  },  {
+    path: 'tab5',
+    loadChildren: () => import('./tab5/tab5.module').then( m => m.Tab5PageModule)
   }
+
 ];
 @NgModule({
   imports: [

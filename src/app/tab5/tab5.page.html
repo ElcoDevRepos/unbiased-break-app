@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Community Feed</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="show-gradient">
+  <ion-refresher
+    slot="fixed"
+    (ionRefresh)="doRefresh($event)"
+    pullFactor="0.8"
+    pullMin="100"
+    pullMax="130"
+    style="background: #f3f3f3"
+  >
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Refreshing..."
+    ></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-list lines="none">
+    <ion-card
+          class="article"
+          *ngFor="let item of feed"
+          (click)="onArticleClick(item);"
+          [routerLink]="(item.link.includes('nytimes.com') || item.link.includes('wsj.com')) ? [] : ['/news-article/' + item.id + '/' + item.collection]"
+          [state]="{ article: item }"
+        >
+          <div class="card-content-container">
+            <img [src]="item.image"/>
+            <div>
+              <div class="date-and-shares">
+                <p>Shares: {{item.share_count}}</p>
+                <p>{{item.timestamp?.toDate() | date:'mediumDate'}}</p>
+              </div>
+
+              <p
+                class="title"
+                style="white-space: initial"
+              >
+                {{item.title}}
+              </p>
+
+              <p>{{item.summary}}</p>
+
+              <div class="source-container">
+                <p><b>{{item.source}}</b></p>
+                <p>Shared by: <b>{{item.created_by}}</b></p>
+              </div>
+            </div>
+          </div>
+        </ion-card>
+  </ion-list>
+
+</ion-content>
