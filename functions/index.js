@@ -803,7 +803,7 @@ exports.dailyRandomArticle = functions
 
 exports.dailyGPTSummaries = functions
   .runWith(runtimeOpts)
-  .pubsub.schedule("0 17 * * *")
+  .pubsub.schedule("0 5 * * *")
   .onRun(async (context) => {
     let promise = [doDailyGPT()];
     return Promise.all(promise);

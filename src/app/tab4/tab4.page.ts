@@ -147,14 +147,6 @@ export class Tab4Page implements OnInit {
     if (item.image) return item.image;
   }
 
-  async didChangeToNext() {
-    this.summariesRead++;
-    if (this.summariesRead >= 5) {
-      this.summariesRead = 0;
-      this.admobService.showInterstitial();
-    }
-  }
-
   //This will return the source img/logo based on the item
   //i.e a item from CNN will return the CNN img/logo
   getSourceImage(item) {

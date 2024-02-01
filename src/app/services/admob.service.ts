@@ -28,7 +28,7 @@ export class AdmobService {
       adId: 'ca-app-pub-4575624656787324/6256368039',
       adSize: BannerAdSize.ADAPTIVE_BANNER,
       position: BannerAdPosition.TOP_CENTER,
-      margin: this.platform.is('android') ? 75 : -35,
+      margin: this.platform.is('android') ? 75 : -15,
       isTesting: false,
     };
 
