@@ -8,6 +8,8 @@ import { Firestore, Timestamp, addDoc, collection, doc, getDocs, query, updateDo
 })
 export class CommunityFeedService {
 
+  public currentlyAddingArticle : boolean = false; // Prevents calling function multiple times
+
   constructor(
     private gptSummaryService: GptSummaryService,
     private userService: UserService,
@@ -16,6 +18,8 @@ export class CommunityFeedService {
 
   // Use for regular articles
   async addArticleToCommunityFeed (collectionRef, articleData) {
+    if(this.currentlyAddingArticle) return;
+    this.currentlyAddingArticle = true;
 
     // Extract article data
     const { image, siteName, title, id, link } = articleData;
@@ -43,13 +47,18 @@ export class CommunityFeedService {
 
         // Add summary to the Community Feed collection
         await addDoc(collection(this.firetore, 'community-feed'), summary);
+        this.currentlyAddingArticle = false;
       });
     }
     else console.log('Upvoted community feed article');
+    this.currentlyAddingArticle = false;
   }
 
   // Use for GPT summaries
   async addGPTSummaryToCommunityFeed (summary) {
+    if(this.currentlyAddingArticle) return;
+    this.currentlyAddingArticle = true;
+
     // Add info to summary object
     summary.share_count = 1;
     summary.created_by = this.userService.username;
@@ -62,8 +71,10 @@ export class CommunityFeedService {
     if(createNewDoc) {
       // Add summary to the Community Feed collection
       await addDoc(collection(this.firetore, 'community-feed'), summary);
+      this.currentlyAddingArticle = false;
     }
     else console.log('Upvoted community feed article');
+    this.currentlyAddingArticle = false;
   }
 
   // Returns true if article does not exist in community feed collection
