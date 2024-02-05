@@ -43,7 +43,22 @@
   margin: 0px;
 }
 
+ion-toolbar {
+  --background: #ffffff;
+  --min-height: 75px;
+  --border-width: 0 0 0 !important;
+  ion-title {
+    font-weight: bold;
+    color: #000000;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
+  ion-toolbar {
+    ion-title {
+      color: white;
+    }
+  }
   ion-toolbar,
   ion-button,
   ion-card,
@@ -58,15 +73,5 @@
     a {
       color: #dc151c;
     }
-  }
-}
-
-ion-toolbar {
-  --background: #ffffff;
-  --min-height: 75px;
-  --border-width: 0 0 0 !important;
-  ion-title {
-    font-weight: bold;
-    color: #000000;
   }
 }
