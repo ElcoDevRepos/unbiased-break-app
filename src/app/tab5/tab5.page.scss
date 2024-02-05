@@ -66,3 +66,33 @@ ion-toolbar {
     font-weight: bold;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  ion-toolbar {
+    --background: #171717;
+  }
+  ion-card {
+    --background: #171717;
+  }
+  .card-content-container {
+    color: #f3f3f3;
+    .date-and-shares {
+      p { color: #666666; }
+    }
+    .title {
+      color: #f3f3f3;
+    }
+    .source-container {
+      P { color: #666666; }
+    }
+  }
+  ion-title {
+    color: #f0f0f0;
+  }
+  ion-list {
+    background-color: #1d1d1d;
+  }
+  .show-gradient {
+    --background: #1d1d1d;
+  }
+}

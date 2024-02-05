@@ -447,9 +447,6 @@ export class NewsArticlePage implements OnInit, OnDestroy {
       return;
     }
 
-    // Call Admod Service to track number of shared articles
-    this.admobService.addToSharedArticleCount();
-
     // Call Community Feed service to add this shared article
     this.communityFeedService.addArticleToCommunityFeed(this.artticleType, this.article);
 
