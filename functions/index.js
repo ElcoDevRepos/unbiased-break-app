@@ -821,10 +821,11 @@ exports.dailyGPTSummaries = functions
     return Promise.all(promise);
   });
 
-  /* Add this later for gpt summary images (POC: Olof)
-  exports.deleteOldFilesInCommunityFeed = functions.pubsub.schedule('every 60 minutes').onRun(async (context) => {
+  
+  // Deletes all gpt summary ai images older than 24 hours once every day
+  exports.deleteOldGptImages= functions.pubsub.schedule("0 7 * * *").onRun(async (context) => {
     console.log('Running auto deletion for Community Feed images')
-    const prefix = 'community-feed/';  // Folder path in the bucket
+    const prefix = 'gpt-summaries/';  // Folder path in the bucket
     const [files] = await bucket.getFiles({ prefix: prefix });
   
     files.forEach(async file => {
@@ -840,5 +841,5 @@ exports.dailyGPTSummaries = functions
       }
     });
   });
-  */
+
 
