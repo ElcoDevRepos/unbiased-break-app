@@ -43,6 +43,11 @@
   margin: 0px;
 }
 
+.community-feed-btn {
+  content: url('/assets/icons/community-feed-share.svg');
+  width: 30px;
+}
+
 ion-toolbar {
   --background: #ffffff;
   --min-height: 75px;
@@ -74,4 +79,7 @@ ion-toolbar {
       color: #dc151c;
     }
   }
+  .community-feed-btn {
+    content: url('/assets/icons/community-feed-share-dark-mode.svg');
+}
 }

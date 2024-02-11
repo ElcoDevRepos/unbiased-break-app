@@ -29,7 +29,7 @@ import * as _ from 'lodash';
 import { UserService } from '../services/user.service';
 import { Share } from '@capacitor/share';
 import { AdmobService } from '../services/admob.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { Auth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { CommunityFeedService } from '../services/community-feed.service';
@@ -58,7 +58,9 @@ export class Tab4Page implements OnInit {
     private alertController: AlertController,
     private auth: Auth,
     private router: Router,
-    private communityFeedService: CommunityFeedService
+    private communityFeedService: CommunityFeedService,
+    private loadingController: LoadingController,
+    private toastController: ToastController, 
   ) {}
   
   async ngOnInit() {
@@ -214,9 +216,6 @@ export class Tab4Page implements OnInit {
       this.router.navigate(['/tabs/tab3']);
       return;
     }
-
-    // Call Community Feed service to add this shared article
-    this.communityFeedService.addGPTSummaryToCommunityFeed(article);
     
     await Share.share({
       title: article.title,
@@ -226,6 +225,52 @@ export class Tab4Page implements OnInit {
         article.id +
         '/trending-articles',
       dialogTitle: 'Share with your friends',
+    });
+  }
+
+  // This is a seperate button to share articles to community feed
+  async communityFeedShare (article: any) {
+    // Redirects non logged in users to log in to share article
+    if(!this.auth.currentUser) {
+      this.router.navigate(['/tabs/tab3']);
+      return;
+    }
+    
+    // Display a loading popup
+    const loading = await this.loadingController.create({
+      message: 'Sharing article to Community Feed Page...',
+      spinner: 'crescent',
+      showBackdrop: true,
+    });
+    await loading.present();
+
+    // Call community feed service to share article
+    this.communityFeedService.addGPTSummaryToCommunityFeed(article).then((response) => {
+      // Article got shared
+      if(response) {
+        this.toastController
+        .create({
+          message: 'Article shared to Community Feed!',
+          duration: 3000,
+          position: 'bottom',
+        })
+        .then((toast) => {
+          toast.present();
+        });
+      }
+      // Article got upvoted
+      else if(!response) {
+        this.toastController
+        .create({
+          message: 'Community Feed article upvoted!',
+          duration: 3000,
+          position: 'bottom',
+        })
+        .then((toast) => {
+          toast.present();
+        });
+      }
+      loading.dismiss();
     });
   }
 
