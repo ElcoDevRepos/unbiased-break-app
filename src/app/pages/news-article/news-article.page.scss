@@ -73,6 +73,11 @@ ion-toolbar {
     margin-left: 0px;
 }
 
+.community-feed-btn {
+    content: url('/assets/icons/community-feed-share.svg');
+    width: 30px;
+}
+
 @media (prefers-color-scheme: dark) {
     ion-toolbar, ion-button, ion-card, ion-card-title, ion-item {
         --background: #191919;
@@ -84,5 +89,8 @@ ion-toolbar {
     }
     .comment-area {
         --background: #2f2f2f;
+    }
+    .community-feed-btn {
+        content: url('/assets/icons/community-feed-share-dark-mode.svg');
     }
 }
