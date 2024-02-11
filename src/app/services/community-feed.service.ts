@@ -48,10 +48,12 @@ export class CommunityFeedService {
         // Add summary to the Community Feed collection
         await addDoc(collection(this.firetore, 'community-feed'), summary);
         this.currentlyAddingArticle = false;
+        return true;
       });
     }
     else console.log('Upvoted community feed article');
     this.currentlyAddingArticle = false;
+    return false;
   }
 
   // Use for GPT summaries
@@ -72,9 +74,11 @@ export class CommunityFeedService {
       // Add summary to the Community Feed collection
       await addDoc(collection(this.firetore, 'community-feed'), summary);
       this.currentlyAddingArticle = false;
+      return true;
     }
     else console.log('Upvoted community feed article');
     this.currentlyAddingArticle = false;
+    return false;
   }
 
   // Returns true if article does not exist in community feed collection
