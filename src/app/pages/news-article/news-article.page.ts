@@ -439,16 +439,13 @@ export class NewsArticlePage implements OnInit, OnDestroy {
       this.docid
     );
   }
-
+  
   async share() {
     // Redirects non logged in users to log in to share article
     if(!this.auth.currentUser) {
       this.router.navigate(['/tabs/tab3']);
       return;
     }
-
-    // Call Community Feed service to add this shared article
-    this.communityFeedService.addArticleToCommunityFeed(this.artticleType, this.article);
 
     await Share.share({
       title: this.article.title,
@@ -458,6 +455,52 @@ export class NewsArticlePage implements OnInit, OnDestroy {
         '/' +
         this.artticleType,
       dialogTitle: 'Share with your friends',
+    });
+  }
+
+  // This is a seperate button to share articles to community feed
+  async communityFeedShare () {
+    // Redirects non logged in users to log in to share article
+    if(!this.auth.currentUser) {
+      this.router.navigate(['/tabs/tab3']);
+      return;
+    }
+    
+    // Display a loading popup
+    const loading = await this.loadingController.create({
+      message: 'Sharing article to Community Feed Page...',
+      spinner: 'crescent',
+      showBackdrop: true,
+    });
+    await loading.present();
+
+    // Call community feed service to share article
+    this.communityFeedService.addArticleToCommunityFeed(this.artticleType, this.article).then((response) => {
+      // Article got shared
+      if(response) {
+        this.toastController
+        .create({
+          message: 'Article shared to Community Feed!',
+          duration: 3000,
+          position: 'bottom',
+        })
+        .then((toast) => {
+          toast.present();
+        });
+      }
+      // Article got upvoted
+      else if(!response) {
+        this.toastController
+        .create({
+          message: 'Community Feed article upvoted!',
+          duration: 3000,
+          position: 'bottom',
+        })
+        .then((toast) => {
+          toast.present();
+        });
+      }
+      loading.dismiss();
     });
   }
 
