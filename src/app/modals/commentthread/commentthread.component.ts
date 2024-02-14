@@ -18,6 +18,7 @@ export class CommentthreadComponent implements OnInit {
   ngOnInit() {
     this.comment = {...this.navParams.data.comment};
     this.comments = this.comment.data.comments ? this.comment.data.comments : [];
+    console.log(this.comment)
   }
 
   async submitComment() {

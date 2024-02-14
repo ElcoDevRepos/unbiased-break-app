@@ -30,7 +30,7 @@
           [state]="{ article: item }"
         >
           <div class="card-content-container">
-            <img [src]="item.image"/>
+            <img class="article-img" [src]="item.image"/>
             <div>
               <div class="date-and-shares">
                 <p>Shares: {{item.share_count}}</p>
@@ -50,6 +50,27 @@
                 <p><b>{{item.source}}</b></p>
                 <p>Shared by: <b>{{item.created_by}}</b></p>
               </div>
+              <!--Comment section UI-->
+                  <ion-list lines="none">
+                    <ion-item *ngFor="let com of item.comments" class="comment-item">
+                      <ion-avatar slot="start">
+                        <img [src]="com.data.photo" (error)="onImgError($event)" />
+                      </ion-avatar>
+                      <ion-label>
+                        <h3 class="comment-username">
+                          
+                          {{com.data.author}}
+            
+                          <span class="time-ago">
+                            {{com.data.date | timeago}}
+                          </span>
+                        </h3>
+                        <p class="comment-text">
+                          {{com.data.text}}
+                        </p>
+                      </ion-label>
+                    </ion-item>
+                  </ion-list>
             </div>
           </div>
         </ion-card>

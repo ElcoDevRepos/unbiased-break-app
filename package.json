@@ -49,6 +49,7 @@
     "intro.js": "^7.0.1",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
+    "ngx-timeago": "^2.0.0",
     "rxfire": "^6.0.3",
     "rxjs": "~6.6.0",
     "tslib": "^2.2.0",
