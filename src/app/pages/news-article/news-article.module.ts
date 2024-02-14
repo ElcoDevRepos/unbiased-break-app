@@ -10,6 +10,7 @@ import { NewsArticlePage } from './news-article.page';
 import { CommentthreadComponent } from 'src/app/modals/commentthread/commentthread.component';
 import { PipesModule } from 'src/app/pipes/pipes.module';
 import { TopBannerComponent } from 'src/app/components/top-banner/top-banner.component';
+import { TimeagoModule } from 'ngx-timeago';
 
 @NgModule({
   imports: [
@@ -17,7 +18,8 @@ import { TopBannerComponent } from 'src/app/components/top-banner/top-banner.com
     FormsModule,
     IonicModule,
     NewsArticlePageRoutingModule,
-    PipesModule
+    PipesModule,
+    TimeagoModule.forRoot()
   ],
   declarations: [NewsArticlePage, CommentthreadComponent, TopBannerComponent]
 })
