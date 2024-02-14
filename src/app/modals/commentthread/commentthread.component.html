@@ -8,19 +8,46 @@
     <ion-title>Comment Thread</ion-title>
   </ion-toolbar>
 </ion-header>
+
 <ion-content>
-  <ion-card *ngFor="let item of comments">
-    <ion-card-content>
+  <ion-card>
+    <ion-card-content class="comment-section">
       <ion-list lines="none">
-        <ion-item>
+        <!--This will display the original comment of the thread-->
+        <ion-item class="comment-item">
           <ion-avatar slot="start">
-            <img [src]="item.photo" (error) ="onImgError($event)" />
+            <img [src]="comment.data.photo" (error)="onImgError($event)" />
           </ion-avatar>
           <ion-label>
-            <h2>{{item.author}}</h2>
-            <h3>{{item.date | date:'mediumDate'}}</h3>
-            <p style="white-space: initial; font-size: 19px; color: inherit">{{item.text}}</p>
+            <h3 class="comment-username">
+              {{comment.data.author}}
+              <span class="time-ago">
+                {{comment.data.date | timeago}}
+              </span>
+            </h3>
+            <p class="comment-text">
+              {{comment.data.text}}
+            </p>
           </ion-label>
+        </ion-item>
+
+        <!--THis is for the reply comments on the thread-->
+        <ion-item *ngFor="let item of comments" class="comment-item reply">
+          <ion-avatar slot="start">
+            <img [src]="item.photo" (error)="onImgError($event)" />
+          </ion-avatar>
+          <ion-label>
+            <h3 class="comment-username">
+              {{item.author}}
+              <span class="time-ago">
+                {{item.date | timeago}}
+              </span>
+            </h3>
+            <p class="comment-text">
+              {{item.text}}
+            </p>
+          </ion-label>
+
         </ion-item>
       </ion-list>
     </ion-card-content>
