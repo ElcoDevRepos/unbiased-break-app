@@ -40,9 +40,37 @@ export class Tab5Page implements OnInit {
     );
     let docSnaps = await getDocs(q);
 
-    docSnaps.forEach((d) => {
-      this.feed.push(d.data());
+    docSnaps.forEach(async (d) => {
+      const comments = await this.getComments(d.data().id, d.data().collection);
+      let data = d.data();
+      data.comments = comments;
+      this.feed.push(data);
     });
+  }
+
+  // Find the original article and get comments if there are any
+  async getComments(id: string, collectionType: string) {
+    let comments = [];
+    let docId = '';
+    const q = query(collection(this.firestore, collectionType), where("id", "==", id));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      docId = doc.id;
+    });
+    const commentRef = collection(
+      this.firestore,
+      collectionType + '/' + docId + '/comments'
+    );
+    let docs = await getDocs(commentRef);
+    if (!docs.empty) {
+      docs.forEach((d) => {
+        comments.push({ id: d.id, data: d.data() });
+      });
+    }
+    // Return max 2 comments
+    if(comments.length > 1) return [comments[0], comments[1]];
+    else if (comments.length == 1) return [comments[0]];
+    else return [];
   }
 
   // Call when user refreshes feed
@@ -75,5 +103,10 @@ export class Tab5Page implements OnInit {
         readArticles,
       }
     );
+  }
+
+  onImgError(event) {
+    event.target.src =
+      'https://assets.digitalocean.com/labs/images/community_bg.png';
   }
 }
