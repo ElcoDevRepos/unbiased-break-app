@@ -112,9 +112,11 @@ ion-avatar {
 }
 
 @media (prefers-color-scheme: dark) {
-    ion-toolbar, ion-button, ion-card, ion-card-title, ion-item {
+    ion-toolbar, ion-button, ion-card, ion-card-title, ion-list, ion-item, ion-card-content {
         --background: #191919;
         --color: #f0f0f0;
+        background-color: #191919;
+        color: #f0f0f0;
     }
     a { color: #DC151C; }
     .show-gradient {
