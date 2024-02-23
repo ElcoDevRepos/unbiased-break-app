@@ -174,9 +174,11 @@ ion-segment {
 }
 
 @media (prefers-color-scheme: dark) {
-    ion-toolbar, ion-button, ion-card, ion-card-title, ion-item, ion-content {
+    ion-toolbar, ion-button, ion-card, ion-card-title, ion-item, ion-content, ion-list {
         --background: #191919;
         --color: #f0f0f0;
+        background-color: #191919;
+        color: #f0f0f0;
     }
     a { color: #DC151C; }
     .show-gradient {
